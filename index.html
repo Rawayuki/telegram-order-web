@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DBT Order Shop</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>🛒 DBT Order Shop</h1>
+        <p>ระบบสั่งสินค้าจำลอง พร้อมแจ้งเตือน Telegram</p>
+    </header>
+
+
+    <main class="container">
+
+        <div class="user-box">
+            ผู้ใช้งาน :
+            <span>User111</span>
+        </div>
+
+
+        <div class="product-grid">
+
+            <!-- เบอร์เกอร์ -->
+            <div class="product-card">
+
+                <div class="product-image">
+                    🍔
+                </div>
+
+                <div class="product-info">
+
+                    <h2>เบอร์เกอร์</h2>
+
+                    <div class="price">
+                        59 บาท
+                    </div>
+
+                    <div class="quantity-box">
+                        <label for="qty-burger">จำนวน</label>
+
+                        <input
+                            type="number"
+                            id="qty-burger"
+                            value="1"
+                            min="1"
+                        >
+                    </div>
+
+                    <button
+                        onclick="orderProduct('เบอร์เกอร์', 'qty-burger')"
+                    >
+                        สั่งสินค้า
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- พิซซ่า -->
+            <div class="product-card">
+
+                <div class="product-image">
+                    🍕
+                </div>
+
+                <div class="product-info">
+
+                    <h2>พิซซ่า</h2>
+
+                    <div class="price">
+                        129 บาท
+                    </div>
+
+                    <div class="quantity-box">
+                        <label for="qty-pizza">จำนวน</label>
+
+                        <input
+                            type="number"
+                            id="qty-pizza"
+                            value="1"
+                            min="1"
+                        >
+                    </div>
+
+                    <button
+                        onclick="orderProduct('พิซซ่า', 'qty-pizza')"
+                    >
+                        สั่งสินค้า
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- น้ำอัดลม -->
+            <div class="product-card">
+
+                <div class="product-image">
+                    🥤
+                </div>
+
+                <div class="product-info">
+
+                    <h2>น้ำอัดลม</h2>
+
+                    <div class="price">
+                        30 บาท
+                    </div>
+
+                    <div class="quantity-box">
+                        <label for="qty-drink">จำนวน</label>
+
+                        <input
+                            type="number"
+                            id="qty-drink"
+                            value="1"
+                            min="1"
+                        >
+                    </div>
+
+                    <button
+                        onclick="orderProduct('น้ำอัดลม', 'qty-drink')"
+                    >
+                        สั่งสินค้า
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- เฟรนช์ฟรายส์ -->
+            <div class="product-card">
+
+                <div class="product-image">
+                    🍟
+                </div>
+
+                <div class="product-info">
+
+                    <h2>เฟรนช์ฟรายส์</h2>
+
+                    <div class="price">
+                        45 บาท
+                    </div>
+
+                    <div class="quantity-box">
+                        <label for="qty-fries">จำนวน</label>
+
+                        <input
+                            type="number"
+                            id="qty-fries"
+                            value="1"
+                            min="1"
+                        >
+                    </div>
+
+                    <button
+                        onclick="orderProduct('เฟรนช์ฟรายส์', 'qty-fries')"
+                    >
+                        สั่งสินค้า
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <footer>
+        ระบบสั่งสินค้าสำหรับนาย © 2026
+    </footer>
+
+
+    <script>
+
+        async function orderProduct(product, qtyId) {
+
+            const quantityInput = document.getElementById(qtyId);
+
+            const quantity = parseInt(quantityInput.value);
+
+
+            if (quantity < 1 || isNaN(quantity)) {
+
+                alert("กรุณาเลือกจำนวนสินค้าอย่างน้อย 1 ชิ้น");
+
+                quantityInput.value = 1;
+
+                return;
+            }
+
+
+            try {
+
+                const response = await fetch("/order", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        username: "User111",
+
+                        product: product,
+
+                        quantity: quantity
+
+                    })
+
+                });
+
+
+                const result = await response.json();
+
+
+                alert(result.message);
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                alert("ไม่สามารถเชื่อมต่อระบบได้");
+
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

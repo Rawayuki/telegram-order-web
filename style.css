@@ -1,0 +1,172 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: #f5f6fa;
+    color: #222;
+}
+
+/* ส่วนหัว */
+header {
+    background: linear-gradient(135deg, #5b5ff5, #8b5cf6);
+    color: white;
+    text-align: center;
+    padding: 35px 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+header h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+header p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* เนื้อหาหลัก */
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 35px auto;
+}
+
+/* ข้อมูลผู้ใช้ */
+.user-box {
+    background: white;
+    padding: 18px 22px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.07);
+}
+
+.user-box span {
+    font-weight: bold;
+    color: #5b5ff5;
+}
+
+/* กล่องสินค้า */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    transition: 0.25s;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.13);
+    min-height:430px;
+}
+
+/* รูปสินค้าแบบ emoji ก่อน */
+.product-image {
+    height: 150px;
+    background: #eeeeff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 70px;
+}
+
+.product-info {
+    padding: 18px;
+}
+
+.product-info h2 {
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.price {
+    color: #5b5ff5;
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* ปุ่ม */
+button{
+
+    width:100%;
+    height:55px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:linear-gradient(135deg,#5b5ff5,#7c3aed);
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+button:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 10px 18px rgba(91,95,245,.35);
+
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* ท้ายหน้า */
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #888;
+    font-size: 14px;
+}
+.quantity-box {
+    margin-bottom: 15px;
+}
+
+.quantity-box label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+}
+
+.quantity-box input{
+
+    width:100%;
+
+    height:48px;
+
+    font-size:18px;
+
+    text-align:center;
+
+    border-radius:10px;
+
+    border:2px solid #ddd;
+
+}
+
+.quantity-box input:focus {
+    border-color: #5b5ff5;
+    box-shadow: 0 0 0 3px rgba(91, 95, 245, 0.12);
+}
