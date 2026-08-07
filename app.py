@@ -1,22 +1,26 @@
 from flask import Flask, send_from_directory, request
 import requests
+import os
 
 app = Flask(__name__)
 
-TOKEN = "8834186857:AAHc3P6j64FZm972kEAwCYzF5YgSDlGfm6g"
-CHAT_ID = "8588885397"
+TOKEN = os.environ.get("TELEGRAM_TOKEN")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+
 
 @app.route("/")
 def home():
     return send_from_directory(".", "index.html")
 
+
 @app.route("/style.css")
 def style():
     return send_from_directory(".", "style.css")
 
+
 @app.route("/order", methods=["POST"])
 def order():
-    data = request.get_json()
+    data = request.get_json() or {}
 
     username = data.get("username", "User111")
     product = data.get("product", "ไม่ระบุสินค้า")
@@ -31,7 +35,16 @@ def order():
         "text": message
     }
 
-    response = requests.post(url, data=telegram_data)
+    try:
+        response = requests.post(
+            url,
+            data=telegram_data,
+            timeout=10
+        )
+    except requests.RequestException:
+        return {
+            "message": "เชื่อมต่อ Telegram ไม่สำเร็จ"
+        }, 500
 
     if response.ok:
         return {
@@ -41,5 +54,10 @@ def order():
     return {
         "message": "ส่งคำสั่งซื้อไม่สำเร็จ"
     }, 500
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000))
+    )
