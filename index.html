@@ -1,252 +1,735 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>DBT Order Shop</title>
+    <title>DBT Order</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <header>
-        <h1>🛒 DBT Order Shop</h1>
-        <p>ระบบสั่งสินค้าจำลอง พร้อมแจ้งเตือน Telegram</p>
-    </header>
+<header class="topbar">
+    <div class="brand">
+        <div class="logo">D</div>
+
+        <div>
+            <h1>DBT Order</h1>
+            <p>เลือกเมนูที่คุณต้องการ</p>
+        </div>
+    </div>
+
+    <button class="cart-button" onclick="openCart()">
+        🛒
+        <span>ตะกร้า</span>
+        <span id="cartCount" class="cart-count">0</span>
+    </button>
+</header>
 
 
-    <main class="container">
+<section class="hero">
 
-        <div class="user-box">
-            ผู้ใช้งาน :
-            <span>User111</span>
+    <div class="hero-content">
+
+        <span class="hero-tag">ORDER ONLINE</span>
+
+        <h2>
+            สั่งง่าย<br>
+            <span>อร่อยได้ทันที</span>
+        </h2>
+
+        <p>
+            เลือกเมนู เพิ่มลงตะกร้า และยืนยันคำสั่งซื้อได้ในไม่กี่ขั้นตอน
+        </p>
+
+    </div>
+
+</section>
+
+
+<main class="container">
+
+    <!-- ชื่อผู้สั่ง -->
+
+    <section class="customer-section">
+
+        <div>
+            <p class="small-title">ผู้สั่งสินค้า</p>
+            <h3>สวัสดี 👋</h3>
         </div>
 
+        <div class="name-input">
 
-        <div class="product-grid">
+            <label for="customerName">ชื่อของคุณ</label>
 
-            <!-- เบอร์เกอร์ -->
-            <div class="product-card">
-
-                <div class="product-image">
-                    🍔
-                </div>
-
-                <div class="product-info">
-
-                    <h2>เบอร์เกอร์</h2>
-
-                    <div class="price">
-                        59 บาท
-                    </div>
-
-                    <div class="quantity-box">
-                        <label for="qty-burger">จำนวน</label>
-
-                        <input
-                            type="number"
-                            id="qty-burger"
-                            value="1"
-                            min="1"
-                        >
-                    </div>
-
-                    <button
-                        onclick="orderProduct('เบอร์เกอร์', 'qty-burger')"
-                    >
-                        สั่งสินค้า
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- พิซซ่า -->
-            <div class="product-card">
-
-                <div class="product-image">
-                    🍕
-                </div>
-
-                <div class="product-info">
-
-                    <h2>พิซซ่า</h2>
-
-                    <div class="price">
-                        129 บาท
-                    </div>
-
-                    <div class="quantity-box">
-                        <label for="qty-pizza">จำนวน</label>
-
-                        <input
-                            type="number"
-                            id="qty-pizza"
-                            value="1"
-                            min="1"
-                        >
-                    </div>
-
-                    <button
-                        onclick="orderProduct('พิซซ่า', 'qty-pizza')"
-                    >
-                        สั่งสินค้า
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- น้ำอัดลม -->
-            <div class="product-card">
-
-                <div class="product-image">
-                    🥤
-                </div>
-
-                <div class="product-info">
-
-                    <h2>น้ำอัดลม</h2>
-
-                    <div class="price">
-                        30 บาท
-                    </div>
-
-                    <div class="quantity-box">
-                        <label for="qty-drink">จำนวน</label>
-
-                        <input
-                            type="number"
-                            id="qty-drink"
-                            value="1"
-                            min="1"
-                        >
-                    </div>
-
-                    <button
-                        onclick="orderProduct('น้ำอัดลม', 'qty-drink')"
-                    >
-                        สั่งสินค้า
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- เฟรนช์ฟรายส์ -->
-            <div class="product-card">
-
-                <div class="product-image">
-                    🍟
-                </div>
-
-                <div class="product-info">
-
-                    <h2>เฟรนช์ฟรายส์</h2>
-
-                    <div class="price">
-                        45 บาท
-                    </div>
-
-                    <div class="quantity-box">
-                        <label for="qty-fries">จำนวน</label>
-
-                        <input
-                            type="number"
-                            id="qty-fries"
-                            value="1"
-                            min="1"
-                        >
-                    </div>
-
-                    <button
-                        onclick="orderProduct('เฟรนช์ฟรายส์', 'qty-fries')"
-                    >
-                        สั่งสินค้า
-                    </button>
-
-                </div>
-
-            </div>
+            <input
+                id="customerName"
+                type="text"
+                value="User111"
+                maxlength="40"
+                placeholder="กรอกชื่อผู้สั่ง"
+            >
 
         </div>
 
-    </main>
+    </section>
 
 
-    <footer>
-        ระบบสั่งสินค้าสำหรับนาย © 2026
-    </footer>
+    <!-- หัวข้อเมนู -->
+
+    <section class="menu-heading">
+
+        <div>
+            <p class="small-title">OUR MENU</p>
+            <h2>เมนูทั้งหมด</h2>
+        </div>
+
+        <div class="menu-count">
+            10 รายการ
+        </div>
+
+    </section>
 
 
-    <script>
+    <!-- สินค้า -->
 
-        async function orderProduct(product, qtyId) {
+    <section class="product-grid" id="productGrid">
 
-            const quantityInput = document.getElementById(qtyId);
+    </section>
 
-            const quantity = parseInt(quantityInput.value);
-
-
-            if (quantity < 1 || isNaN(quantity)) {
-
-                alert("กรุณาเลือกจำนวนสินค้าอย่างน้อย 1 ชิ้น");
-
-                quantityInput.value = 1;
-
-                return;
-            }
+</main>
 
 
-            try {
+<!-- ตะกร้า -->
 
-                const response = await fetch("/order", {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        username: "User111",
-
-                        product: product,
-
-                        quantity: quantity
-
-                    })
-
-                });
+<div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
 
 
-                const result = await response.json();
+<aside id="cartPanel" class="cart-panel">
+
+    <div class="cart-header">
+
+        <div>
+            <p class="small-title">YOUR ORDER</p>
+            <h2>ตะกร้าของคุณ</h2>
+        </div>
+
+        <button class="close-cart" onclick="closeCart()">✕</button>
+
+    </div>
 
 
-                alert(result.message);
+    <div id="cartItems" class="cart-items">
 
-            }
+    </div>
 
-            catch (error) {
 
-                console.error(error);
+    <div class="cart-footer">
 
-                alert("ไม่สามารถเชื่อมต่อระบบได้");
+        <div class="cart-summary-row">
 
-            }
+            <span>จำนวนทั้งหมด</span>
+
+            <strong>
+                <span id="totalItems">0</span> ชิ้น
+            </strong>
+
+        </div>
+
+
+        <div class="cart-total">
+
+            <span>ยอดรวม</span>
+
+            <strong>
+                ฿<span id="totalPrice">0</span>
+            </strong>
+
+        </div>
+
+
+        <button
+            id="checkoutButton"
+            class="checkout-button"
+            onclick="checkout()"
+        >
+            ยืนยันคำสั่งซื้อ
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- แจ้งเตือน -->
+
+<div id="toast" class="toast">
+    เพิ่มลงตะกร้าแล้ว
+</div>
+
+
+<footer>
+    <strong>DBT Order</strong>
+    <span>ระบบสั่งสินค้าออนไลน์</span>
+</footer>
+
+
+<script>
+
+const products = [
+
+    {
+        id: 1,
+        name: "เบอร์เกอร์",
+        price: 59,
+        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 2,
+        name: "พิซซ่า",
+        price: 129,
+        image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 3,
+        name: "เฟรนช์ฟรายส์",
+        price: 45,
+        image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 4,
+        name: "ไก่ทอด",
+        price: 69,
+        image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 5,
+        name: "ฮอตดอก",
+        price: 49,
+        image: "https://images.unsplash.com/photo-1612392062422-ef19b42f74df?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 6,
+        name: "แซนด์วิช",
+        price: 55,
+        image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 7,
+        name: "โดนัท",
+        price: 35,
+        image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 8,
+        name: "สลัดผัก",
+        price: 79,
+        image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 9,
+        name: "กาแฟเย็น",
+        price: 50,
+        image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=80"
+    },
+
+    {
+        id: 10,
+        name: "น้ำอัดลม",
+        price: 30,
+        image: "https://images.unsplash.com/photo-1581636625402-29b2a704ef13?auto=format&fit=crop&w=800&q=80"
+    }
+
+];
+
+
+let cart = [];
+
+
+/* =========================
+   แสดงสินค้า
+========================= */
+
+function renderProducts() {
+
+    const grid = document.getElementById("productGrid");
+
+    grid.innerHTML = "";
+
+
+    products.forEach(product => {
+
+        grid.innerHTML += `
+
+            <article class="product-card">
+
+                <div class="product-photo">
+
+                    <img
+                        src="${product.image}"
+                        alt="${product.name}"
+                    >
+
+                    <span class="product-price">
+                        ฿${product.price}
+                    </span>
+
+                </div>
+
+
+                <div class="product-content">
+
+                    <div>
+
+                        <p class="product-category">
+                            เมนูแนะนำ
+                        </p>
+
+                        <h3>${product.name}</h3>
+
+                    </div>
+
+
+                    <button
+                        class="add-button"
+                        onclick="addToCart(${product.id})"
+                    >
+                        <span>＋</span>
+                        เพิ่มลงตะกร้า
+                    </button>
+
+                </div>
+
+            </article>
+
+        `;
+
+    });
+
+}
+
+
+/* =========================
+   เพิ่มสินค้า
+========================= */
+
+function addToCart(productId) {
+
+    const product = products.find(
+        p => p.id === productId
+    );
+
+
+    const existing = cart.find(
+        item => item.id === productId
+    );
+
+
+    if (existing) {
+
+        existing.quantity++;
+
+    }
+
+    else {
+
+        cart.push({
+            ...product,
+            quantity: 1
+        });
+
+    }
+
+
+    updateCart();
+
+    showToast(`${product.name} เพิ่มลงตะกร้าแล้ว`);
+
+}
+
+
+/* =========================
+   เพิ่ม/ลดจำนวน
+========================= */
+
+function changeQuantity(productId, amount) {
+
+    const item = cart.find(
+        item => item.id === productId
+    );
+
+
+    if (!item) return;
+
+
+    item.quantity += amount;
+
+
+    if (item.quantity <= 0) {
+
+        cart = cart.filter(
+            item => item.id !== productId
+        );
+
+    }
+
+
+    updateCart();
+
+}
+
+
+/* =========================
+   ลบสินค้า
+========================= */
+
+function removeItem(productId) {
+
+    cart = cart.filter(
+        item => item.id !== productId
+    );
+
+    updateCart();
+
+}
+
+
+/* =========================
+   อัปเดตตะกร้า
+========================= */
+
+function updateCart() {
+
+    const cartItems =
+        document.getElementById("cartItems");
+
+
+    if (cart.length === 0) {
+
+        cartItems.innerHTML = `
+
+            <div class="empty-cart">
+
+                <div class="empty-icon">
+                    🛒
+                </div>
+
+                <h3>ตะกร้ายังว่าง</h3>
+
+                <p>
+                    เลือกเมนูที่ต้องการจากหน้าร้าน
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+    else {
+
+        cartItems.innerHTML = "";
+
+
+        cart.forEach(item => {
+
+            cartItems.innerHTML += `
+
+                <div class="cart-item">
+
+                    <img
+                        src="${item.image}"
+                        alt="${item.name}"
+                    >
+
+
+                    <div class="cart-item-info">
+
+                        <h4>${item.name}</h4>
+
+                        <p>
+                            ฿${item.price} / ชิ้น
+                        </p>
+
+
+                        <div class="quantity-control">
+
+                            <button
+                                onclick="changeQuantity(${item.id}, -1)"
+                            >
+                                −
+                            </button>
+
+                            <span>
+                                ${item.quantity}
+                            </span>
+
+                            <button
+                                onclick="changeQuantity(${item.id}, 1)"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="cart-item-right">
+
+                        <strong>
+                            ฿${item.price * item.quantity}
+                        </strong>
+
+                        <button
+                            class="delete-button"
+                            onclick="removeItem(${item.id})"
+                        >
+                            ลบ
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+
+    const totalItems = cart.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+    );
+
+
+    const totalPrice = cart.reduce(
+        (sum, item) =>
+            sum + (item.price * item.quantity),
+        0
+    );
+
+
+    document.getElementById("cartCount").textContent =
+        totalItems;
+
+
+    document.getElementById("totalItems").textContent =
+        totalItems;
+
+
+    document.getElementById("totalPrice").textContent =
+        totalPrice;
+
+
+    document.getElementById("checkoutButton").disabled =
+        cart.length === 0;
+
+}
+
+
+/* =========================
+   เปิดตะกร้า
+========================= */
+
+function openCart() {
+
+    document
+        .getElementById("cartPanel")
+        .classList.add("active");
+
+
+    document
+        .getElementById("cartOverlay")
+        .classList.add("active");
+
+
+    document.body.classList.add("no-scroll");
+
+}
+
+
+/* =========================
+   ปิดตะกร้า
+========================= */
+
+function closeCart() {
+
+    document
+        .getElementById("cartPanel")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("cartOverlay")
+        .classList.remove("active");
+
+
+    document.body.classList.remove("no-scroll");
+
+}
+
+
+/* =========================
+   สั่งซื้อ
+========================= */
+
+async function checkout() {
+
+    const customerName =
+        document
+        .getElementById("customerName")
+        .value
+        .trim();
+
+
+    if (!customerName) {
+
+        alert("กรุณากรอกชื่อผู้สั่ง");
+
+        return;
+
+    }
+
+
+    if (cart.length === 0) {
+
+        alert("กรุณาเลือกสินค้า");
+
+        return;
+
+    }
+
+
+    const orderItems = cart.map(item => ({
+
+        id: item.id,
+
+        name: item.name,
+
+        price: item.price,
+
+        quantity: item.quantity
+
+    }));
+
+
+    const button =
+        document.getElementById("checkoutButton");
+
+
+    button.disabled = true;
+
+    button.textContent = "กำลังส่งคำสั่งซื้อ...";
+
+
+    try {
+
+        const response = await fetch("/order", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                username: customerName,
+
+                items: orderItems
+
+            })
+
+        });
+
+
+        const result = await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message || "เกิดข้อผิดพลาด"
+            );
 
         }
 
-    </script>
+
+        alert(result.message);
+
+
+        cart = [];
+
+        updateCart();
+
+        closeCart();
+
+    }
+
+    catch (error) {
+
+        alert(
+            error.message ||
+            "ไม่สามารถส่งคำสั่งซื้อได้"
+        );
+
+    }
+
+    finally {
+
+        button.textContent =
+            "ยืนยันคำสั่งซื้อ";
+
+        button.disabled =
+            cart.length === 0;
+
+    }
+
+}
+
+
+/* =========================
+   Toast
+========================= */
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 1800);
+
+}
+
+
+renderProducts();
+
+updateCart();
+
+</script>
 
 
 </body>
-
 </html>
