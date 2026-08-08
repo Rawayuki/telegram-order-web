@@ -4,8 +4,8 @@ import os
 
 app = Flask(__name__)
 
-TOKEN = os.environ.get("TELEGRAM_TOKEN")
-CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+TOKEN = os.environ.get("8834186857:AAFGC_7Zkz24AQwKXDxEcNPf5snsSO8s2ZQ")
+CHAT_ID = os.environ.get("8588885397")
 
 
 @app.route("/")
@@ -22,11 +22,55 @@ def style():
 def order():
     data = request.get_json() or {}
 
-    username = data.get("username", "User111")
-    product = data.get("product", "ไม่ระบุสินค้า")
-    quantity = data.get("quantity", 1)
+    username = str(data.get("username", "")).strip()
+    items = data.get("items", [])
 
-    message = f"{username} สั่ง {product} จำนวน {quantity} ชิ้น"
+    if not username:
+        return {
+            "message": "กรุณากรอกชื่อผู้สั่ง"
+        }, 400
+
+    if not items:
+        return {
+            "message": "ไม่มีสินค้าในตะกร้า"
+        }, 400
+
+    total_items = 0
+    total_price = 0
+    item_lines = []
+
+    for item in items:
+        name = str(item.get("name", "ไม่ระบุสินค้า"))
+        price = int(item.get("price", 0))
+        quantity = int(item.get("quantity", 0))
+
+        if quantity <= 0:
+            continue
+
+        subtotal = price * quantity
+
+        total_items += quantity
+        total_price += subtotal
+
+        item_lines.append(
+            f"• {name} × {quantity} = {subtotal:,} บาท"
+        )
+
+    if total_items == 0:
+        return {
+            "message": "จำนวนสินค้าไม่ถูกต้อง"
+        }, 400
+
+    items_text = "\n".join(item_lines)
+
+    message = (
+        "🛒 คำสั่งซื้อใหม่\n\n"
+        f"👤 ผู้สั่ง: {username}\n\n"
+        f"{items_text}\n\n"
+        "──────────────\n"
+        f"📦 รวมทั้งหมด {total_items} ชิ้น\n"
+        f"💰 ยอดรวม {total_price:,} บาท"
+    )
 
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
@@ -48,16 +92,21 @@ def order():
 
     if response.ok:
         return {
-            "message": f"สั่ง {product} จำนวน {quantity} ชิ้น สำเร็จ"
+            "message": (
+                f"สั่งซื้อสำเร็จ\n"
+                f"รวม {total_items} ชิ้น "
+                f"ยอด {total_price:,} บาท"
+            )
         }
 
     return {
-        "message": "ส่งคำสั่งซื้อไม่สำเร็จ"
+        "message": "ส่งคำสั่งซื้อไปยัง Telegram ไม่สำเร็จ"
     }, 500
 
 
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
+        port=int(os.environ.get("PORT", 5000)),
+        debug=True
     )
