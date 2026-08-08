@@ -11,20 +11,22 @@
 <body>
 
 <header class="topbar">
+
     <div class="brand">
         <div class="logo">D</div>
 
         <div>
             <h1>DBT Order</h1>
-            <p>เลือกเมนูที่คุณต้องการ</p>
+            <p>ระบบสั่งสินค้าออนไลน์</p>
         </div>
     </div>
 
     <button class="cart-button" onclick="openCart()">
         🛒
-        <span>ตะกร้า</span>
+        <span class="cart-label">ตะกร้า</span>
         <span id="cartCount" class="cart-count">0</span>
     </button>
+
 </header>
 
 
@@ -32,15 +34,18 @@
 
     <div class="hero-content">
 
-        <span class="hero-tag">ORDER ONLINE</span>
+        <span class="hero-tag">
+            ORDER ONLINE
+        </span>
 
         <h2>
             สั่งง่าย<br>
-            <span>อร่อยได้ทันที</span>
+            <span>เลือกได้ตามใจ</span>
         </h2>
 
         <p>
-            เลือกเมนู เพิ่มลงตะกร้า และยืนยันคำสั่งซื้อได้ในไม่กี่ขั้นตอน
+            เลือกสินค้า เพิ่มลงตะกร้า
+            ตรวจสอบรายการ และยืนยันคำสั่งซื้อ
         </p>
 
     </div>
@@ -50,78 +55,160 @@
 
 <main class="container">
 
-    <!-- ชื่อผู้สั่ง -->
+    <!-- USER -->
 
     <section class="customer-section">
 
         <div>
-            <p class="small-title">ผู้สั่งสินค้า</p>
-            <h3>สวัสดี 👋</h3>
+            <p class="small-title">
+                CUSTOMER
+            </p>
+
+            <h3>
+                สวัสดี 👋
+            </h3>
         </div>
 
-        <div class="name-input">
 
-            <label for="customerName">ชื่อของคุณ</label>
+        <div class="customer-fields">
 
-            <input
-                id="customerName"
-                type="text"
-                value="User111"
-                maxlength="40"
-                placeholder="กรอกชื่อผู้สั่ง"
-            >
+            <div class="input-group">
+                <label for="customerName">
+                    ชื่อผู้สั่ง
+                </label>
+
+                <input
+                    id="customerName"
+                    type="text"
+                    value="User111"
+                    maxlength="40"
+                    placeholder="กรอกชื่อของคุณ"
+                >
+            </div>
+
+
+            <div class="input-group">
+                <label for="customerNote">
+                    หมายเหตุ
+                </label>
+
+                <input
+                    id="customerNote"
+                    type="text"
+                    maxlength="150"
+                    placeholder="เช่น ไม่ใส่ผัก / เผ็ดน้อย"
+                >
+            </div>
 
         </div>
 
     </section>
 
 
-    <!-- หัวข้อเมนู -->
+    <!-- MENU HEADER -->
 
     <section class="menu-heading">
 
         <div>
-            <p class="small-title">OUR MENU</p>
-            <h2>เมนูทั้งหมด</h2>
+            <p class="small-title">
+                OUR MENU
+            </p>
+
+            <h2>
+                เมนูทั้งหมด
+            </h2>
         </div>
 
-        <div class="menu-count" id="menuCount">
-        กำลังโหลด...
+        <div id="menuCount" class="menu-count">
+            กำลังโหลด...
         </div>
 
     </section>
 
 
-    <!-- สินค้า -->
+    <!-- SEARCH -->
 
-    <section class="product-grid" id="productGrid">
+    <section class="search-section">
 
+        <div class="search-box">
+
+            <span>🔎</span>
+
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="ค้นหาสินค้า..."
+                oninput="filterProducts()"
+            >
+
+            <button
+                id="clearSearch"
+                type="button"
+                onclick="clearSearch()"
+                title="ล้างการค้นหา"
+            >
+                ✕
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+
+    <section
+        class="product-grid"
+        id="productGrid"
+    >
     </section>
 
 </main>
 
 
-<!-- ตะกร้า -->
+<!-- CART OVERLAY -->
 
-<div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
+<div
+    id="cartOverlay"
+    class="cart-overlay"
+    onclick="closeCart()"
+></div>
 
 
-<aside id="cartPanel" class="cart-panel">
+<!-- CART -->
+
+<aside
+    id="cartPanel"
+    class="cart-panel"
+>
 
     <div class="cart-header">
 
         <div>
-            <p class="small-title">YOUR ORDER</p>
-            <h2>ตะกร้าของคุณ</h2>
+            <p class="small-title">
+                YOUR ORDER
+            </p>
+
+            <h2>
+                ตะกร้าของคุณ
+            </h2>
         </div>
 
-        <button class="close-cart" onclick="closeCart()">✕</button>
+
+        <button
+            class="close-cart"
+            onclick="closeCart()"
+        >
+            ✕
+        </button>
 
     </div>
 
 
-    <div id="cartItems" class="cart-items">
-
+    <div
+        id="cartItems"
+        class="cart-items"
+    >
     </div>
 
 
@@ -129,10 +216,15 @@
 
         <div class="cart-summary-row">
 
-            <span>จำนวนทั้งหมด</span>
+            <span>
+                จำนวนทั้งหมด
+            </span>
 
             <strong>
-                <span id="totalItems">0</span> ชิ้น
+                <span id="totalItems">
+                    0
+                </span>
+                ชิ้น
             </strong>
 
         </div>
@@ -140,7 +232,9 @@
 
         <div class="cart-total">
 
-            <span>ยอดรวม</span>
+            <span>
+                ยอดรวม
+            </span>
 
             <strong>
                 ฿<span id="totalPrice">0</span>
@@ -152,9 +246,9 @@
         <button
             id="checkoutButton"
             class="checkout-button"
-            onclick="checkout()"
+            onclick="openConfirm()"
         >
-            ยืนยันคำสั่งซื้อ
+            ตรวจสอบคำสั่งซื้อ
         </button>
 
     </div>
@@ -162,105 +256,389 @@
 </aside>
 
 
-<!-- แจ้งเตือน -->
+<!-- CONFIRM ORDER -->
 
-<div id="toast" class="toast">
+<div
+    id="confirmModal"
+    class="confirm-modal"
+>
+
+    <div class="confirm-box">
+
+        <div class="confirm-header">
+
+            <div>
+                <p class="small-title">
+                    CONFIRM ORDER
+                </p>
+
+                <h2>
+                    ยืนยันคำสั่งซื้อ
+                </h2>
+            </div>
+
+            <button
+                class="confirm-close"
+                onclick="closeConfirm()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <div class="confirm-customer">
+
+            <div>
+                <span>
+                    ผู้สั่ง
+                </span>
+
+                <strong id="confirmName">
+                    -
+                </strong>
+            </div>
+
+
+            <div>
+                <span>
+                    หมายเหตุ
+                </span>
+
+                <strong id="confirmNote">
+                    -
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div
+            id="confirmItems"
+            class="confirm-items"
+        >
+        </div>
+
+
+        <div class="confirm-summary">
+
+            <div>
+                <span>
+                    จำนวน
+                </span>
+
+                <strong>
+                    <span id="confirmTotalItems">
+                        0
+                    </span>
+                    ชิ้น
+                </strong>
+            </div>
+
+
+            <div class="confirm-total-row">
+
+                <span>
+                    ยอดรวม
+                </span>
+
+                <strong>
+                    ฿<span id="confirmTotalPrice">
+                        0
+                    </span>
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="confirm-actions">
+
+            <button
+                class="back-edit-button"
+                onclick="backToCart()"
+            >
+                กลับไปแก้ไข
+            </button>
+
+            <button
+                id="finalOrderButton"
+                class="final-order-button"
+                onclick="checkout()"
+            >
+                ยืนยันและส่งคำสั่งซื้อ
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
+    id="toast"
+    class="toast"
+>
     เพิ่มลงตะกร้าแล้ว
 </div>
 
 
 <footer>
-    <strong>DBT Order</strong>
-    <span>ระบบสั่งสินค้าออนไลน์</span>
+
+    <strong>
+        DBT Order
+    </strong>
+
+    <span>
+        ระบบสั่งสินค้าออนไลน์
+    </span>
+
 </footer>
 
 
 <script>
 
 let products = [];
-
-
+let filteredProducts = [];
 let cart = [];
 
 
 /* =========================
-   แสดงสินค้า
+   LOAD PRODUCTS
 ========================= */
 
-function renderProducts() {
+async function loadProducts() {
 
-    const grid = document.getElementById("productGrid");
+    try {
 
-    grid.innerHTML = "";
-    document.getElementById("menuCount").textContent =
-    `${products.length} รายการ`;
+        const response =
+            await fetch("/api/products");
 
-    products.forEach(product => {
+        if (!response.ok) {
+            throw new Error(
+                "โหลดสินค้าไม่สำเร็จ"
+            );
+        }
 
-        grid.innerHTML += `
+        products =
+            await response.json();
 
-            <article class="product-card">
+        filteredProducts =
+            [...products];
 
-                <div class="product-photo">
+        renderProducts();
 
-                    <img
-                        src="${product.image}"
-                        alt="${product.name}"
-                    >
+        updateCart();
 
-                    <span class="product-price">
-                        ฿${product.price}
-                    </span>
+    }
 
-                </div>
+    catch (error) {
 
+        console.error(error);
 
-                <div class="product-content">
+        document
+            .getElementById("productGrid")
+            .innerHTML = `
 
-                    <div>
-
-                        <p class="product-category">
-                            เมนูแนะนำ
-                        </p>
-
-                        <h3>${product.name}</h3>
-
-                    </div>
-
-
-                    <button
-                        class="add-button"
-                        onclick="addToCart(${product.id})"
-                    >
-                        <span>＋</span>
-                        เพิ่มลงตะกร้า
-                    </button>
-
-                </div>
-
-            </article>
-
+            <div class="empty-products">
+                ❌ ไม่สามารถโหลดสินค้าได้
+            </div>
         `;
-
-    });
-
+    }
 }
 
 
 /* =========================
-   เพิ่มสินค้า
+   RENDER PRODUCTS
+========================= */
+
+function renderProducts() {
+
+    const grid =
+        document.getElementById(
+            "productGrid"
+        );
+
+    grid.innerHTML = "";
+
+
+    document
+        .getElementById("menuCount")
+        .textContent =
+        `${filteredProducts.length} รายการ`;
+
+
+    if (
+        filteredProducts.length === 0
+    ) {
+
+        grid.innerHTML = `
+
+            <div class="empty-products">
+
+                <div>
+                    🔎
+                </div>
+
+                <h3>
+                    ไม่พบสินค้า
+                </h3>
+
+                <p>
+                    ลองค้นหาด้วยคำอื่น
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    filteredProducts.forEach(
+        product => {
+
+            grid.innerHTML += `
+
+                <article
+                    class="product-card"
+                >
+
+                    <div
+                        class="product-photo"
+                    >
+
+                        <img
+                            src="${product.image}"
+                            alt="${product.name}"
+                            loading="lazy"
+                        >
+
+                        <span
+                            class="product-price"
+                        >
+                            ฿${product.price}
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="product-content"
+                    >
+
+                        <div>
+
+                            <p
+                                class="product-category"
+                            >
+                                เมนูแนะนำ
+                            </p>
+
+                            <h3>
+                                ${product.name}
+                            </h3>
+
+                        </div>
+
+
+                        <button
+                            class="add-button"
+                            onclick="
+                                addToCart(
+                                    ${product.id}
+                                )
+                            "
+                        >
+                            <span>
+                                ＋
+                            </span>
+
+                            เพิ่มลงตะกร้า
+                        </button>
+
+                    </div>
+
+                </article>
+
+            `;
+
+        }
+    );
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function filterProducts() {
+
+    const keyword =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    filteredProducts =
+        products.filter(
+            product =>
+                product.name
+                    .toLowerCase()
+                    .includes(keyword)
+        );
+
+
+    renderProducts();
+}
+
+
+function clearSearch() {
+
+    document
+        .getElementById(
+            "searchInput"
+        )
+        .value = "";
+
+    filteredProducts =
+        [...products];
+
+    renderProducts();
+}
+
+
+/* =========================
+   ADD CART
 ========================= */
 
 function addToCart(productId) {
 
-    const product = products.find(
-        p => p.id === productId
-    );
+    const product =
+        products.find(
+            p => p.id === productId
+        );
 
 
-    const existing = cart.find(
-        item => item.id === productId
-    );
+    if (!product) {
+        return;
+    }
+
+
+    const existing =
+        cart.find(
+            item =>
+                item.id === productId
+        );
 
 
     if (existing) {
@@ -281,87 +659,107 @@ function addToCart(productId) {
 
     updateCart();
 
-    showToast(`${product.name} เพิ่มลงตะกร้าแล้ว`);
-
+    showToast(
+        `${product.name} เพิ่มลงตะกร้าแล้ว`
+    );
 }
 
 
 /* =========================
-   เพิ่ม/ลดจำนวน
+   QUANTITY
 ========================= */
 
-function changeQuantity(productId, amount) {
+function changeQuantity(
+    productId,
+    amount
+) {
 
-    const item = cart.find(
-        item => item.id === productId
-    );
+    const item =
+        cart.find(
+            item =>
+                item.id === productId
+        );
 
 
-    if (!item) return;
+    if (!item) {
+        return;
+    }
 
 
     item.quantity += amount;
 
 
-    if (item.quantity <= 0) {
+    if (
+        item.quantity <= 0
+    ) {
 
-        cart = cart.filter(
-            item => item.id !== productId
-        );
-
+        cart =
+            cart.filter(
+                item =>
+                    item.id !==
+                    productId
+            );
     }
 
 
     updateCart();
-
 }
 
 
 /* =========================
-   ลบสินค้า
+   REMOVE
 ========================= */
 
 function removeItem(productId) {
 
-    cart = cart.filter(
-        item => item.id !== productId
-    );
+    cart =
+        cart.filter(
+            item =>
+                item.id !== productId
+        );
 
     updateCart();
-
 }
 
 
 /* =========================
-   อัปเดตตะกร้า
+   CART
 ========================= */
 
 function updateCart() {
 
     const cartItems =
-        document.getElementById("cartItems");
+        document.getElementById(
+            "cartItems"
+        );
 
 
-    if (cart.length === 0) {
+    if (
+        cart.length === 0
+    ) {
 
         cartItems.innerHTML = `
 
             <div class="empty-cart">
 
-                <div class="empty-icon">
+                <div
+                    class="empty-icon"
+                >
                     🛒
                 </div>
 
-                <h3>ตะกร้ายังว่าง</h3>
+                <h3>
+                    ตะกร้ายังว่าง
+                </h3>
 
                 <p>
-                    เลือกเมนูที่ต้องการจากหน้าร้าน
+                    เลือกสินค้าที่ต้องการ
+                    จากหน้าร้าน
                 </p>
 
             </div>
 
         `;
-
     }
 
     else {
@@ -369,241 +767,538 @@ function updateCart() {
         cartItems.innerHTML = "";
 
 
-        cart.forEach(item => {
+        cart.forEach(
+            item => {
 
-            cartItems.innerHTML += `
+                cartItems.innerHTML += `
 
-                <div class="cart-item">
-
-                    <img
-                        src="${item.image}"
-                        alt="${item.name}"
+                    <div
+                        class="cart-item"
                     >
 
-
-                    <div class="cart-item-info">
-
-                        <h4>${item.name}</h4>
-
-                        <p>
-                            ฿${item.price} / ชิ้น
-                        </p>
+                        <img
+                            src="${item.image}"
+                            alt="${item.name}"
+                        >
 
 
-                        <div class="quantity-control">
+                        <div
+                            class="cart-item-info"
+                        >
+
+                            <h4>
+                                ${item.name}
+                            </h4>
+
+                            <p>
+                                ฿${item.price}
+                                / ชิ้น
+                            </p>
+
+
+                            <div
+                                class="quantity-control"
+                            >
+
+                                <button
+                                    onclick="
+                                        changeQuantity(
+                                            ${item.id},
+                                            -1
+                                        )
+                                    "
+                                >
+                                    −
+                                </button>
+
+                                <span>
+                                    ${item.quantity}
+                                </span>
+
+                                <button
+                                    onclick="
+                                        changeQuantity(
+                                            ${item.id},
+                                            1
+                                        )
+                                    "
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="cart-item-right"
+                        >
+
+                            <strong>
+                                ฿${
+                                    item.price *
+                                    item.quantity
+                                }
+                            </strong>
 
                             <button
-                                onclick="changeQuantity(${item.id}, -1)"
+                                class="delete-button"
+                                onclick="
+                                    removeItem(
+                                        ${item.id}
+                                    )
+                                "
                             >
-                                −
-                            </button>
-
-                            <span>
-                                ${item.quantity}
-                            </span>
-
-                            <button
-                                onclick="changeQuantity(${item.id}, 1)"
-                            >
-                                +
+                                ลบ
                             </button>
 
                         </div>
 
                     </div>
 
-
-                    <div class="cart-item-right">
-
-                        <strong>
-                            ฿${item.price * item.quantity}
-                        </strong>
-
-                        <button
-                            class="delete-button"
-                            onclick="removeItem(${item.id})"
-                        >
-                            ลบ
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        });
-
+                `;
+            }
+        );
     }
 
 
-    const totalItems = cart.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-    );
+    const totalItems =
+        cart.reduce(
+            (
+                sum,
+                item
+            ) =>
+                sum +
+                item.quantity,
+            0
+        );
 
 
-    const totalPrice = cart.reduce(
-        (sum, item) =>
-            sum + (item.price * item.quantity),
-        0
-    );
+    const totalPrice =
+        cart.reduce(
+            (
+                sum,
+                item
+            ) =>
+                sum +
+                (
+                    item.price *
+                    item.quantity
+                ),
+            0
+        );
 
 
-    document.getElementById("cartCount").textContent =
+    document
+        .getElementById(
+            "cartCount"
+        )
+        .textContent =
         totalItems;
 
 
-    document.getElementById("totalItems").textContent =
+    document
+        .getElementById(
+            "totalItems"
+        )
+        .textContent =
         totalItems;
 
 
-    document.getElementById("totalPrice").textContent =
+    document
+        .getElementById(
+            "totalPrice"
+        )
+        .textContent =
         totalPrice;
 
 
-    document.getElementById("checkoutButton").disabled =
+    document
+        .getElementById(
+            "checkoutButton"
+        )
+        .disabled =
         cart.length === 0;
-
 }
 
 
 /* =========================
-   เปิดตะกร้า
+   OPEN CART
 ========================= */
 
 function openCart() {
 
     document
-        .getElementById("cartPanel")
-        .classList.add("active");
+        .getElementById(
+            "cartPanel"
+        )
+        .classList.add(
+            "active"
+        );
 
 
     document
-        .getElementById("cartOverlay")
-        .classList.add("active");
+        .getElementById(
+            "cartOverlay"
+        )
+        .classList.add(
+            "active"
+        );
 
 
-    document.body.classList.add("no-scroll");
-
+    document
+        .body
+        .classList
+        .add(
+            "no-scroll"
+        );
 }
 
 
 /* =========================
-   ปิดตะกร้า
+   CLOSE CART
 ========================= */
 
 function closeCart() {
 
     document
-        .getElementById("cartPanel")
-        .classList.remove("active");
+        .getElementById(
+            "cartPanel"
+        )
+        .classList.remove(
+            "active"
+        );
 
 
     document
-        .getElementById("cartOverlay")
-        .classList.remove("active");
+        .getElementById(
+            "cartOverlay"
+        )
+        .classList.remove(
+            "active"
+        );
 
 
-    document.body.classList.remove("no-scroll");
-
+    document
+        .body
+        .classList
+        .remove(
+            "no-scroll"
+        );
 }
 
 
 /* =========================
-   สั่งซื้อ
+   CONFIRM
+========================= */
+
+function openConfirm() {
+
+    const customerName =
+        document
+            .getElementById(
+                "customerName"
+            )
+            .value
+            .trim();
+
+
+    const note =
+        document
+            .getElementById(
+                "customerNote"
+            )
+            .value
+            .trim();
+
+
+    if (!customerName) {
+
+        alert(
+            "กรุณากรอกชื่อผู้สั่ง"
+        );
+
+        return;
+    }
+
+
+    if (
+        cart.length === 0
+    ) {
+
+        alert(
+            "กรุณาเลือกสินค้า"
+        );
+
+        return;
+    }
+
+
+    document
+        .getElementById(
+            "confirmName"
+        )
+        .textContent =
+        customerName;
+
+
+    document
+        .getElementById(
+            "confirmNote"
+        )
+        .textContent =
+        note || "ไม่มี";
+
+
+    const confirmItems =
+        document.getElementById(
+            "confirmItems"
+        );
+
+
+    confirmItems.innerHTML = "";
+
+
+    cart.forEach(
+        item => {
+
+            confirmItems.innerHTML += `
+
+                <div
+                    class="confirm-item"
+                >
+
+                    <div>
+
+                        <strong>
+                            ${item.name}
+                        </strong>
+
+                        <span>
+                            ${item.quantity}
+                            ชิ้น
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        ฿${
+                            item.price *
+                            item.quantity
+                        }
+                    </strong>
+
+                </div>
+
+            `;
+        }
+    );
+
+
+    const totalItems =
+        cart.reduce(
+            (
+                sum,
+                item
+            ) =>
+                sum +
+                item.quantity,
+            0
+        );
+
+
+    const totalPrice =
+        cart.reduce(
+            (
+                sum,
+                item
+            ) =>
+                sum +
+                (
+                    item.price *
+                    item.quantity
+                ),
+            0
+        );
+
+
+    document
+        .getElementById(
+            "confirmTotalItems"
+        )
+        .textContent =
+        totalItems;
+
+
+    document
+        .getElementById(
+            "confirmTotalPrice"
+        )
+        .textContent =
+        totalPrice;
+
+
+    closeCart();
+
+
+    document
+        .getElementById(
+            "confirmModal"
+        )
+        .classList.add(
+            "active"
+        );
+}
+
+
+function closeConfirm() {
+
+    document
+        .getElementById(
+            "confirmModal"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .body
+        .classList
+        .remove(
+            "no-scroll"
+        );
+}
+
+
+function backToCart() {
+
+    closeConfirm();
+
+    openCart();
+}
+
+
+/* =========================
+   CHECKOUT
 ========================= */
 
 async function checkout() {
 
     const customerName =
         document
-        .getElementById("customerName")
-        .value
-        .trim();
+            .getElementById(
+                "customerName"
+            )
+            .value
+            .trim();
 
 
-    if (!customerName) {
-
-        alert("กรุณากรอกชื่อผู้สั่ง");
-
-        return;
-
-    }
-
-
-    if (cart.length === 0) {
-
-        alert("กรุณาเลือกสินค้า");
-
-        return;
-
-    }
+    const note =
+        document
+            .getElementById(
+                "customerNote"
+            )
+            .value
+            .trim();
 
 
-    const orderItems = cart.map(item => ({
+    const orderItems =
+        cart.map(
+            item => ({
 
-        id: item.id,
+                id:
+                    item.id,
 
-        name: item.name,
+                name:
+                    item.name,
 
-        price: item.price,
+                price:
+                    item.price,
 
-        quantity: item.quantity
+                quantity:
+                    item.quantity
 
-    }));
+            })
+        );
 
 
     const button =
-        document.getElementById("checkoutButton");
+        document.getElementById(
+            "finalOrderButton"
+        );
 
 
     button.disabled = true;
 
-    button.textContent = "กำลังส่งคำสั่งซื้อ...";
+    button.textContent =
+        "กำลังส่งคำสั่งซื้อ...";
 
 
     try {
 
-        const response = await fetch("/order", {
+        const response =
+            await fetch(
+                "/order",
+                {
 
-            method: "POST",
+                    method:
+                        "POST",
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-            body: JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                username: customerName,
+                            username:
+                                customerName,
 
-                items: orderItems
+                            note:
+                                note,
 
-            })
+                            items:
+                                orderItems
 
-        });
+                        })
+                }
+            );
 
 
-        const result = await response.json();
+        const result =
+            await response.json();
 
 
         if (!response.ok) {
 
             throw new Error(
-                result.message || "เกิดข้อผิดพลาด"
+                result.message ||
+                "เกิดข้อผิดพลาด"
             );
-
         }
 
 
-        alert(result.message);
+        closeConfirm();
 
 
         cart = [];
 
         updateCart();
 
-        closeCart();
+
+        document
+            .getElementById(
+                "customerNote"
+            )
+            .value = "";
+
+
+        alert(
+            result.message
+        );
 
     }
 
@@ -613,78 +1308,60 @@ async function checkout() {
             error.message ||
             "ไม่สามารถส่งคำสั่งซื้อได้"
         );
-
     }
 
     finally {
 
-        button.textContent =
-            "ยืนยันคำสั่งซื้อ";
-
         button.disabled =
-            cart.length === 0;
+            false;
 
+        button.textContent =
+            "ยืนยันและส่งคำสั่งซื้อ";
     }
-
 }
 
 
 /* =========================
-   Toast
+   TOAST
 ========================= */
 
 function showToast(message) {
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
 
 
-    toast.textContent = message;
+    toast.textContent =
+        message;
 
-    toast.classList.add("show");
+
+    toast
+        .classList
+        .add(
+            "show"
+        );
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        toast.classList.remove("show");
+            toast
+                .classList
+                .remove(
+                    "show"
+                );
 
-    }, 1800);
-
+        },
+        1800
+    );
 }
 
-
-async function loadProducts() {
-    try {
-        const response = await fetch("/api/products");
-
-        if (!response.ok) {
-            throw new Error("โหลดสินค้าไม่สำเร็จ");
-        }
-
-        products = await response.json();
-
-        renderProducts();
-        updateCart();
-
-    } catch (error) {
-        console.error(error);
-
-        document.getElementById("productGrid").innerHTML = `
-            <div style="
-                grid-column: 1 / -1;
-                text-align: center;
-                padding: 40px;
-            ">
-                ไม่สามารถโหลดสินค้าได้
-            </div>
-        `;
-    }
-}
 
 loadProducts();
 
 </script>
-
 
 </body>
 </html>

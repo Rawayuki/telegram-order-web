@@ -68,43 +68,15 @@ def get_products():
 def get_admin_products():
     return load_products()
 
+
+# =========================
+# ADD PRODUCT
+# =========================
+
 @app.route(
     "/api/admin/products",
     methods=["POST"]
 )
-@app.route(
-    "/api/admin/products/<int:product_id>",
-    methods=["DELETE"]
-)
-def delete_product(product_id):
-
-    products = load_products()
-
-    product = next(
-        (
-            item
-            for item in products
-            if item["id"] == product_id
-        ),
-        None
-    )
-
-    if product is None:
-        return {
-            "message": "ไม่พบสินค้า"
-        }, 404
-
-    products = [
-        item
-        for item in products
-        if item["id"] != product_id
-    ]
-
-    save_products(products)
-
-    return {
-        "message": "ลบสินค้าเรียบร้อย"
-    }
 def add_product():
     data = request.get_json() or {}
 
@@ -126,37 +98,30 @@ def add_product():
             "message": "ราคาไม่ถูกต้อง"
         }, 400
 
-
     if not name:
         return {
             "message": "กรุณากรอกชื่อสินค้า"
         }, 400
-
 
     if price < 0:
         return {
             "message": "ราคาต้องไม่ติดลบ"
         }, 400
 
-
     if not image:
         return {
             "message": "กรุณาใส่ URL รูปสินค้า"
         }, 400
 
-
     products = load_products()
-
 
     if products:
         new_id = max(
             product["id"]
             for product in products
         ) + 1
-
     else:
         new_id = 1
-
 
     new_product = {
         "id": new_id,
@@ -168,16 +133,19 @@ def add_product():
         )
     }
 
-
     products.append(new_product)
 
     save_products(products)
-
 
     return {
         "message": "เพิ่มสินค้าเรียบร้อย",
         "product": new_product
     }, 201
+
+
+# =========================
+# UPDATE PRODUCT
+# =========================
 
 @app.route(
     "/api/admin/products/<int:product_id>",
@@ -230,6 +198,11 @@ def update_product(product_id):
             "message": "ราคาต้องไม่ติดลบ"
         }, 400
 
+    if not image:
+        return {
+            "message": "กรุณาใส่ URL รูปสินค้า"
+        }, 400
+
     product["name"] = name
     product["price"] = price
     product["image"] = image
@@ -246,6 +219,44 @@ def update_product(product_id):
 
 
 # =========================
+# DELETE PRODUCT
+# =========================
+
+@app.route(
+    "/api/admin/products/<int:product_id>",
+    methods=["DELETE"]
+)
+def delete_product(product_id):
+    products = load_products()
+
+    product = next(
+        (
+            item
+            for item in products
+            if item["id"] == product_id
+        ),
+        None
+    )
+
+    if product is None:
+        return {
+            "message": "ไม่พบสินค้า"
+        }, 404
+
+    products = [
+        item
+        for item in products
+        if item["id"] != product_id
+    ]
+
+    save_products(products)
+
+    return {
+        "message": "ลบสินค้าเรียบร้อย"
+    }
+
+
+# =========================
 # ORDER / TELEGRAM
 # =========================
 
@@ -255,6 +266,10 @@ def order():
 
     username = str(
         data.get("username", "")
+    ).strip()
+
+    note = str(
+        data.get("note", "")
     ).strip()
 
     items = data.get("items", [])
@@ -275,7 +290,10 @@ def order():
 
     for item in items:
         name = str(
-            item.get("name", "ไม่ระบุสินค้า")
+            item.get(
+                "name",
+                "ไม่ระบุสินค้า"
+            )
         )
 
         try:
@@ -307,11 +325,20 @@ def order():
             "message": "จำนวนสินค้าไม่ถูกต้อง"
         }, 400
 
-    items_text = "\n".join(item_lines)
+    items_text = "\n".join(
+        item_lines
+    )
+
+    note_text = (
+        note
+        if note
+        else "ไม่มี"
+    )
 
     message = (
         "🛒 คำสั่งซื้อใหม่\n\n"
-        f"👤 ผู้สั่ง: {username}\n\n"
+        f"👤 ผู้สั่ง: {username}\n"
+        f"📝 หมายเหตุ: {note_text}\n\n"
         f"{items_text}\n\n"
         "──────────────\n"
         f"📦 รวมทั้งหมด {total_items} ชิ้น\n"
@@ -358,7 +385,7 @@ def order():
     if response.ok:
         return {
             "message": (
-                f"สั่งซื้อสำเร็จ!\n"
+                "สั่งซื้อสำเร็จ!\n"
                 f"รวม {total_items} ชิ้น\n"
                 f"ยอดรวม {total_price:,} บาท"
             )
@@ -383,7 +410,10 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(
-            os.environ.get("PORT", 5000)
+            os.environ.get(
+                "PORT",
+                5000
+            )
         ),
         debug=True
     )
