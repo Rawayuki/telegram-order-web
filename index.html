@@ -85,8 +85,8 @@
             <h2>เมนูทั้งหมด</h2>
         </div>
 
-        <div class="menu-count">
-            10 รายการ
+        <div class="menu-count" id="menuCount">
+        กำลังโหลด...
         </div>
 
     </section>
@@ -177,79 +177,7 @@
 
 <script>
 
-const products = [
-
-    {
-        id: 1,
-        name: "เบอร์เกอร์",
-        price: 59,
-        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 2,
-        name: "พิซซ่า",
-        price: 129,
-        image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 3,
-        name: "เฟรนช์ฟรายส์",
-        price: 45,
-        image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 4,
-        name: "ไก่ทอด",
-        price: 69,
-        image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 5,
-        name: "ฮอตดอก",
-        price: 49,
-        image: "https://images.unsplash.com/photo-1612392062422-ef19b42f74df?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 6,
-        name: "แซนด์วิช",
-        price: 55,
-        image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 7,
-        name: "โดนัท",
-        price: 35,
-        image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 8,
-        name: "สลัดผัก",
-        price: 79,
-        image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 9,
-        name: "กาแฟเย็น",
-        price: 50,
-        image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=80"
-    },
-
-    {
-        id: 10,
-        name: "น้ำอัดลม",
-        price: 30,
-        image: "https://images.unsplash.com/photo-1581636625402-29b2a704ef13?auto=format&fit=crop&w=800&q=80"
-    }
-
-];
+let products = [];
 
 
 let cart = [];
@@ -264,7 +192,8 @@ function renderProducts() {
     const grid = document.getElementById("productGrid");
 
     grid.innerHTML = "";
-
+    document.getElementById("menuCount").textContent =
+    `${products.length} รายการ`;
 
     products.forEach(product => {
 
@@ -724,9 +653,35 @@ function showToast(message) {
 }
 
 
-renderProducts();
+async function loadProducts() {
+    try {
+        const response = await fetch("/api/products");
 
-updateCart();
+        if (!response.ok) {
+            throw new Error("โหลดสินค้าไม่สำเร็จ");
+        }
+
+        products = await response.json();
+
+        renderProducts();
+        updateCart();
+
+    } catch (error) {
+        console.error(error);
+
+        document.getElementById("productGrid").innerHTML = `
+            <div style="
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 40px;
+            ">
+                ไม่สามารถโหลดสินค้าได้
+            </div>
+        `;
+    }
+}
+
+loadProducts();
 
 </script>
 

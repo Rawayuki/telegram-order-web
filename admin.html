@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DBT Order Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, "Noto Sans Thai", sans-serif;
+            background: #f5f6f8;
+            color: #171717;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 22px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 22px;
+        }
+
+        header p {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .back-button {
+            color: white;
+            text-decoration: none;
+            background: #ff6b35;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 40px auto;
+        }
+
+        .title {
+            margin-bottom: 25px;
+        }
+
+        .title p {
+            color: #ff6b35;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .title h2 {
+            font-size: 30px;
+            margin-top: 5px;
+        }
+
+        .product-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .product {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            align-items: center;
+            gap: 18px;
+            border: 1px solid #e7e7e7;
+        }
+
+        .product img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .product h3 {
+            font-size: 18px;
+            margin-bottom: 7px;
+        }
+
+        .product-id {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff6b35;
+            text-align: right;
+        }
+
+        .status {
+            display: inline-block;
+            margin-top: 7px;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .inactive {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .loading {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            color: #777;
+        }
+
+        .product-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .edit-button {
+            border: none;
+            background: #111827;
+            color: white;
+            padding: 9px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .edit-button:hover {
+            background: #ff6b35;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(500px, 100%);
+            background: white;
+            border-radius: 20px;
+            padding: 26px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+        }
+
+        .modal-box h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .modal-box label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin: 14px 0 7px;
+        }
+
+        .modal-box input[type="text"],
+        .modal-box input[type="number"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .modal-box input:focus {
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, .12);
+        }
+
+        .switch-row {
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px !important;
+            cursor: pointer;
+        }
+
+        .switch-row input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .cancel-button,
+        .save-button {
+            border: none;
+            padding: 11px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cancel-button {
+            background: #eee;
+            color: #222;
+        }
+
+        .save-button {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .save-button:hover {
+            background: #e85a27;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 18px 4%;
+            }
+
+            header h1 {
+                font-size: 18px;
+            }
+
+            .back-button {
+                font-size: 12px;
+            }
+
+            .product {
+                grid-template-columns: 65px 1fr;
+            }
+
+            .product img {
+                width: 65px;
+                height: 65px;
+            }
+
+            .product-actions {
+                grid-column: 2;
+                align-items: flex-start;
+            }
+
+            .price {
+                text-align: left;
+            }
+        }
+        .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.add-product-button {
+    border: none;
+    background: #ff6b35;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-product-button:hover {
+    background: #e85a27;
+}
+.delete-product-button {
+    border: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 9px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.delete-product-button:hover {
+    background: #dc2626;
+    color: white;
+}
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div>
+        <h1>⚙️ DBT Order Admin</h1>
+        <p>ระบบจัดการร้านค้า</p>
+    </div>
+
+    <a href="/" class="back-button">
+        กลับหน้าร้าน
+    </a>
+
+</header>
+
+
+<main class="container">
+
+    <div class="title title-row">
+
+    <div>
+        <p>PRODUCT MANAGEMENT</p>
+        <h2>จัดการสินค้า</h2>
+    </div>
+
+    <button
+        class="add-product-button"
+        onclick="openAddProduct()"
+    >
+        + เพิ่มสินค้า
+    </button>
+
+</div>
+
+    <div id="productList" class="product-list">
+
+        <div class="loading">
+            กำลังโหลดสินค้า...
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- =========================
+     EDIT MODAL
+========================= -->
+<div id="addModal" class="modal">
+
+    <div class="modal-box">
+
+        <h2>➕ เพิ่มสินค้าใหม่</h2>
+
+        <label for="addName">
+            ชื่อสินค้า
+        </label>
+
+        <input
+            id="addName"
+            type="text"
+            placeholder="เช่น ชาเย็น"
+        >
+
+
+        <label for="addPrice">
+            ราคา
+        </label>
+
+        <input
+            id="addPrice"
+            type="number"
+            min="0"
+            placeholder="เช่น 45"
+        >
+
+
+        <label for="addImage">
+            URL รูปสินค้า
+        </label>
+
+        <input
+            id="addImage"
+            type="text"
+            placeholder="https://..."
+        >
+
+
+        <label class="switch-row">
+
+            <input
+                id="addActive"
+                type="checkbox"
+                checked
+            >
+
+            เปิดขายทันที
+
+        </label>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="cancel-button"
+                onclick="closeAddProduct()"
+            >
+                ยกเลิก
+            </button>
+
+            <button
+                type="button"
+                class="save-button"
+                onclick="saveNewProduct()"
+            >
+                เพิ่มสินค้า
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="editModal" class="modal">
+
+    <div class="modal-box">
+
+        <h2>✏️ แก้ไขสินค้า</h2>
+
+        <input type="hidden" id="editId">
+
+        <label for="editName">
+            ชื่อสินค้า
+        </label>
+
+        <input
+            id="editName"
+            type="text"
+            placeholder="ชื่อสินค้า"
+        >
+
+
+        <label for="editPrice">
+            ราคา
+        </label>
+
+        <input
+            id="editPrice"
+            type="number"
+            min="0"
+            placeholder="ราคา"
+        >
+
+
+        <label for="editImage">
+            URL รูปสินค้า
+        </label>
+
+        <input
+            id="editImage"
+            type="text"
+            placeholder="https://..."
+        >
+
+
+        <label class="switch-row">
+
+            <input
+                id="editActive"
+                type="checkbox"
+            >
+
+            เปิดขายสินค้า
+
+        </label>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="cancel-button"
+                onclick="closeEdit()"
+            >
+                ยกเลิก
+            </button>
+
+            <button
+                type="button"
+                class="save-button"
+                onclick="saveProduct()"
+            >
+                บันทึกการแก้ไข
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let adminProducts = [];
+
+function openAddProduct() {
+
+    document.getElementById("addName").value = "";
+    document.getElementById("addPrice").value = "";
+    document.getElementById("addImage").value = "";
+    document.getElementById("addActive").checked = true;
+
+    document
+        .getElementById("addModal")
+        .classList.add("active");
+}
+
+
+function closeAddProduct() {
+
+    document
+        .getElementById("addModal")
+        .classList.remove("active");
+}
+
+
+async function saveNewProduct() {
+
+    const name =
+        document
+            .getElementById("addName")
+            .value
+            .trim();
+
+    const price =
+        parseInt(
+            document.getElementById("addPrice").value
+        );
+
+    const image =
+        document
+            .getElementById("addImage")
+            .value
+            .trim();
+
+    const active =
+        document
+            .getElementById("addActive")
+            .checked;
+
+
+    if (!name) {
+        alert("กรุณากรอกชื่อสินค้า");
+        return;
+    }
+
+    if (Number.isNaN(price) || price < 0) {
+        alert("กรุณากรอกราคาให้ถูกต้อง");
+        return;
+    }
+
+    if (!image) {
+        alert("กรุณาใส่ URL รูปสินค้า");
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "/api/admin/products",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    name,
+                    price,
+                    image,
+                    active
+                })
+            }
+        );
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                "เพิ่มสินค้าไม่สำเร็จ"
+            );
+        }
+
+
+        closeAddProduct();
+
+        await loadProducts();
+
+        alert("✅ เพิ่มสินค้าเรียบร้อย");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "เกิดข้อผิดพลาด"
+        );
+    }
+}
+async function deleteProduct(productId) {
+
+    const product = adminProducts.find(
+        item => item.id === productId
+    );
+
+    if (!product) {
+        alert("ไม่พบสินค้า");
+        return;
+    }
+
+    const confirmed = confirm(
+        `ต้องการลบ "${product.name}" จริงหรือไม่?`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/admin/products/${productId}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.message ||
+                "ลบสินค้าไม่สำเร็จ"
+            );
+        }
+
+        await loadProducts();
+
+        alert("✅ ลบสินค้าเรียบร้อย");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "เกิดข้อผิดพลาด"
+        );
+    }
+}
+/* =========================
+   LOAD PRODUCTS
+========================= */
+
+async function loadProducts() {
+
+    const productList =
+        document.getElementById("productList");
+
+    try {
+
+        const response =
+            await fetch("/api/admin/products");
+
+        if (!response.ok) {
+            throw new Error("โหลดสินค้าไม่สำเร็จ");
+        }
+
+        const products =
+            await response.json();
+
+        adminProducts = products;
+
+        productList.innerHTML = "";
+
+
+        products.forEach(product => {
+
+            const statusClass =
+                product.active
+                    ? "active"
+                    : "inactive";
+
+            const statusText =
+                product.active
+                    ? "เปิดขาย"
+                    : "ปิดขาย";
+
+
+            productList.innerHTML += `
+
+                <div class="product">
+
+                    <img
+                        src="${product.image}"
+                        alt="${product.name}"
+                    >
+
+                    <div>
+
+                        <h3>
+                            ${product.name}
+                        </h3>
+
+                        <div class="product-id">
+                            Product ID: ${product.id}
+                        </div>
+
+                        <span class="status ${statusClass}">
+                            ${statusText}
+                        </span>
+
+                    </div>
+
+
+                    <div class="product-actions">
+
+                        <div class="price">
+                            ฿${product.price}
+                        </div>
+
+                        <button
+                            type="button"
+                            class="edit-button"
+                            onclick="openEditById(${product.id})"
+                        >
+                            ✏️ แก้ไข
+                        </button>
+                    <button
+    type="button"
+    class="delete-product-button"
+    onclick="deleteProduct(${product.id})"
+>
+    🗑️ ลบ
+</button>
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        productList.innerHTML = `
+
+            <div class="loading">
+                ❌ ไม่สามารถโหลดสินค้าได้
+            </div>
+
+        `;
+    }
+}
+
+
+/* =========================
+   OPEN EDIT
+========================= */
+
+function openEditById(productId) {
+
+    const product =
+        adminProducts.find(
+            item => item.id === productId
+        );
+
+    if (!product) {
+
+        alert("ไม่พบข้อมูลสินค้า");
+
+        return;
+    }
+
+
+    document.getElementById("editId").value =
+        product.id;
+
+    document.getElementById("editName").value =
+        product.name;
+
+    document.getElementById("editPrice").value =
+        product.price;
+
+    document.getElementById("editImage").value =
+        product.image;
+
+    document.getElementById("editActive").checked =
+        product.active;
+
+
+    document
+        .getElementById("editModal")
+        .classList.add("active");
+}
+
+
+/* =========================
+   CLOSE EDIT
+========================= */
+
+function closeEdit() {
+
+    document
+        .getElementById("editModal")
+        .classList.remove("active");
+}
+
+
+/* =========================
+   SAVE PRODUCT
+========================= */
+
+async function saveProduct() {
+
+    const id =
+        parseInt(
+            document.getElementById("editId").value
+        );
+
+    const name =
+        document
+            .getElementById("editName")
+            .value
+            .trim();
+
+    const price =
+        parseInt(
+            document.getElementById("editPrice").value
+        );
+
+    const image =
+        document
+            .getElementById("editImage")
+            .value
+            .trim();
+
+    const active =
+        document
+            .getElementById("editActive")
+            .checked;
+
+
+    if (!name) {
+
+        alert("กรุณากรอกชื่อสินค้า");
+
+        return;
+    }
+
+
+    if (
+        Number.isNaN(price) ||
+        price < 0
+    ) {
+
+        alert("กรุณากรอกราคาให้ถูกต้อง");
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/admin/products/${id}`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    name,
+                    price,
+                    image,
+                    active
+                })
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                "บันทึกไม่สำเร็จ"
+            );
+        }
+
+
+        closeEdit();
+
+        await loadProducts();
+
+        alert("✅ บันทึกสินค้าเรียบร้อย");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "เกิดข้อผิดพลาด"
+        );
+    }
+}
+
+
+/* ปิด Modal เมื่อกดพื้นหลัง */
+
+document
+    .getElementById("editModal")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (event.target === this) {
+                closeEdit();
+            }
+        }
+    );
+
+
+loadProducts();
+
+</script>
+
+</body>
+</html>
