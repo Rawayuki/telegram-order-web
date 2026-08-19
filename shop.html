@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111827">
+    <title>DBT Shop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --dark: #111827;
+            --dark-2: #1f2937;
+            --orange: #ff6b35;
+            --orange-dark: #e85a27;
+            --orange-soft: #fff1eb;
+            --bg: #f6f7fb;
+            --surface: #ffffff;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+            --success: #16a34a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, "Noto Sans Thai", sans-serif;
+            background:
+                radial-gradient(circle at 10% 12%, rgba(255,107,53,.05), transparent 28%),
+                var(--bg);
+            color: #171717;
+        }
+
+        body.no-scroll {
+            overflow: hidden;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            min-height: 72px;
+            padding: 13px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            background: rgba(17,24,39,.96);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            color: white;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: white;
+            background: #2b3545;
+            padding: 10px 14px;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 800;
+            transition: .2s;
+        }
+
+        .back-button:hover {
+            background: #3a4556;
+            transform: translateY(-1px);
+        }
+
+        .header-center {
+            text-align: center;
+            min-width: 0;
+        }
+
+        .header-center span {
+            display: block;
+            color: #9ca3af;
+            font-size: 10px;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .header-center strong {
+            display: block;
+            margin-top: 2px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 280px;
+        }
+
+        .cart-button {
+            border: none;
+            background: var(--orange);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: .2s;
+        }
+
+        .cart-button:hover {
+            background: var(--orange-dark);
+            transform: translateY(-1px);
+        }
+
+        .cart-badge {
+            min-width: 23px;
+            height: 23px;
+            padding: 0 6px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: var(--orange);
+            font-size: 11px;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            min-height: 310px;
+            padding: 55px 6% 70px;
+            display: flex;
+            align-items: center;
+            color: white;
+            background:
+                linear-gradient(120deg, rgba(17,24,39,.98), rgba(31,41,55,.92) 68%, rgba(255,107,53,.18));
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border: 50px solid rgba(255,255,255,.03);
+            border-radius: 50%;
+            right: -80px;
+            top: -105px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 720px;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 11px;
+            border-radius: 30px;
+            background: rgba(255,107,53,.14);
+            border: 1px solid rgba(255,137,91,.30);
+            color: #ffaf8f;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.1px;
+            margin-bottom: 14px;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 58px);
+            line-height: 1.06;
+            letter-spacing: -1.4px;
+        }
+
+        .hero-desc {
+            margin-top: 12px;
+            max-width: 540px;
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           MAIN / SEARCH
+        ========================= */
+
+        .container {
+            width: min(1150px, 92%);
+            margin: -26px auto 75px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .toolbar {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            box-shadow: 0 14px 35px rgba(17,24,39,.08);
+            margin-bottom: 28px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 620px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 48px;
+            padding: 0 45px 0 44px;
+            border: 1px solid #d9dde4;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            background: #fbfbfc;
+        }
+
+        .search-box input:focus {
+            background: white;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(255,107,53,.11);
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 7px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 50%;
+            background: #eef0f3;
+            cursor: pointer;
+        }
+
+        .product-count {
+            color: var(--muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        /* =========================
+           PRODUCTS
+        ========================= */
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 19px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            box-shadow: 0 8px 22px rgba(17,24,39,.045);
+            transition: .25s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 38px rgba(17,24,39,.10);
+        }
+
+        .product-photo {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #eee;
+            overflow: hidden;
+        }
+
+        .product-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .4s;
+        }
+
+        .product-card:hover .product-photo img {
+            transform: scale(1.04);
+        }
+
+        .product-price-badge {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            padding: 7px 10px;
+            border-radius: 30px;
+            background: rgba(255,255,255,.95);
+            color: var(--dark);
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 5px 14px rgba(0,0,0,.12);
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-type {
+            color: #9ca3af;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .9px;
+            margin-bottom: 5px;
+        }
+
+        .product-info h3 {
+            font-size: 17px;
+            margin-bottom: 13px;
+            min-height: 40px;
+        }
+
+        .add-button {
+            width: 100%;
+            border: none;
+            background: var(--dark);
+            color: white;
+            padding: 11px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .add-button:hover {
+            background: var(--orange);
+        }
+
+        .loading {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 46px 20px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            text-align: center;
+            color: #777;
+        }
+
+        .empty-state {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        /* =========================
+           CART OVERLAY + PANEL
+        ========================= */
+
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 450;
+            background: rgba(17,24,39,.52);
+            opacity: 0;
+            visibility: hidden;
+            transition: .25s;
+        }
+
+        .cart-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-panel {
+            position: fixed;
+            top: 0;
+            right: -470px;
+            width: min(450px, 100%);
+            height: 100dvh;
+            background: white;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -12px 0 40px rgba(0,0,0,.20);
+            transition: right .3s ease;
+        }
+
+        .cart-panel.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 22px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header p {
+            color: var(--orange);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .cart-header h2 {
+            font-size: 23px;
+        }
+
+        .close-button {
+            border: none;
+            background: #eef0f3;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 20px 18px;
+        }
+
+        .cart-empty {
+            min-height: 300px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .cart-empty-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .cart-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--line);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+        }
+
+        .cart-item-name {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .quantity-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .quantity-row button {
+            border: none;
+            background: #eef0f3;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .quantity-row span {
+            min-width: 22px;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .cart-item-total {
+            font-weight: 800;
+            color: var(--orange);
+        }
+
+        .cart-footer {
+            padding: 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            border-top: 1px solid var(--line);
+            background: white;
+        }
+
+        .cart-summary-line,
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-summary-line {
+            margin-bottom: 9px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .cart-total {
+            margin-bottom: 15px;
+            font-size: 17px;
+        }
+
+        .cart-total strong {
+            font-size: 27px;
+            color: var(--orange);
+        }
+
+        .checkout-button {
+            width: 100%;
+            border: none;
+            background: var(--orange);
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .checkout-button:disabled {
+            background: #c8cdd5;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           CONFIRM
+        ========================= */
+
+        .confirm-overlay,
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(17,24,39,.68);
+            backdrop-filter: blur(7px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .confirm-overlay.active,
+        .success-overlay.active {
+            display: flex;
+        }
+
+        .confirm-card {
+            width: min(620px, 100%);
+            max-height: calc(100dvh - 40px);
+            overflow-y: auto;
+            background: white;
+            border-radius: 24px;
+            padding: 26px;
+            box-shadow: 0 30px 80px rgba(0,0,0,.28);
+            animation: rise .22s ease;
+        }
+
+        @keyframes rise {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .confirm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .confirm-tag {
+            display: inline-block;
+            color: var(--orange);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            margin-bottom: 5px;
+        }
+
+        .confirm-header h2 {
+            font-size: 26px;
+        }
+
+        .confirm-header p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .confirm-close {
+            width: 39px;
+            height: 39px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 50%;
+            background: #eef0f3;
+            cursor: pointer;
+        }
+
+        .confirm-items {
+            border-top: 1px solid var(--line);
+        }
+
+        .confirm-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .confirm-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .confirm-item-info span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .confirm-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 19px 0;
+        }
+
+        .confirm-total strong {
+            font-size: 28px;
+            color: var(--orange);
+        }
+
+        .checkout-form {
+            background: #f7f8fa;
+            padding: 18px;
+            border-radius: 16px;
+        }
+
+        .form-group + .form-group {
+            margin-top: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .form-group label span {
+            color: #9ca3af;
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            border: 1px solid #d9dde4;
+            border-radius: 11px;
+            padding: 12px 14px;
+            font-size: 15px;
+            outline: none;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(255,107,53,.11);
+        }
+
+        .confirm-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .edit-cart-button,
+        .final-checkout-button {
+            min-height: 49px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .edit-cart-button {
+            background: #eef0f3;
+            color: #333;
+        }
+
+        .final-checkout-button {
+            background: var(--orange);
+            color: white;
+        }
+
+        .final-checkout-button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           SUCCESS MODAL
+        ========================= */
+
+        .success-card {
+            width: min(440px, 100%);
+            background: white;
+            border-radius: 24px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,.28);
+            animation: rise .22s ease;
+        }
+
+        .success-icon {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #dcfce7;
+            color: var(--success);
+            font-size: 31px;
+            font-weight: 800;
+        }
+
+        .success-card h2 {
+            font-size: 25px;
+        }
+
+        .success-card p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .success-data {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 14px;
+            background: #f7f8fa;
+            display: grid;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .success-data div {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            font-size: 12px;
+        }
+
+        .success-data span {
+            color: var(--muted);
+        }
+
+        .success-close {
+            margin-top: 20px;
+            width: 100%;
+            border: none;
+            background: var(--dark);
+            color: white;
+            min-height: 48px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* =========================
+           TOAST
+        ========================= */
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: -100px;
+            transform: translateX(-50%);
+            z-index: 1200;
+            background: var(--dark);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.18);
+            transition: .3s;
+        }
+
+        .toast.show {
+            bottom: 28px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 900px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            header {
+                min-height: 66px;
+                padding: 12px 13px;
+            }
+
+            .back-button {
+                font-size: 11px;
+                padding: 9px 10px;
+            }
+
+            .header-center {
+                display: none;
+            }
+
+            .cart-button {
+                font-size: 11px;
+                padding: 9px 10px;
+            }
+
+            .hero {
+                min-height: 245px;
+                padding: 42px 18px 58px;
+            }
+
+            .hero h1 {
+                font-size: 39px;
+            }
+
+            .container {
+                width: calc(100% - 28px);
+                margin-top: -21px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .search-box input {
+                font-size: 16px;
+            }
+
+            .product-count {
+                padding-left: 3px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .product-card {
+                border-radius: 15px;
+            }
+
+            .product-info {
+                padding: 11px;
+            }
+
+            .product-info h3 {
+                font-size: 15px;
+                min-height: 36px;
+            }
+
+            .product-price-badge {
+                font-size: 12px;
+                right: 8px;
+                bottom: 8px;
+            }
+
+            .add-button {
+                min-height: 41px;
+                font-size: 11px;
+            }
+
+            .cart-panel {
+                top: auto;
+                bottom: -100%;
+                right: 0;
+                width: 100%;
+                height: min(86dvh, 720px);
+                border-radius: 22px 22px 0 0;
+                transition: bottom .3s ease;
+            }
+
+            .cart-panel.active {
+                right: 0;
+                bottom: 0;
+            }
+
+            .confirm-overlay,
+            .success-overlay {
+                align-items: flex-end;
+                padding: 0;
+            }
+
+            .confirm-card,
+            .success-card {
+                width: 100%;
+                max-height: 92dvh;
+                border-radius: 23px 23px 0 0;
+            }
+
+            .confirm-card {
+                padding: 20px 17px;
+            }
+
+            .confirm-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .edit-cart-button,
+            .final-checkout-button {
+                min-height: 50px;
+                font-size: 15px;
+            }
+
+            .toast {
+                max-width: calc(100% - 28px);
+                white-space: normal;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 390px) {
+            .hero h1 {
+                font-size: 35px;
+            }
+
+            .product-grid {
+                gap: 9px;
+            }
+
+            .product-info {
+                padding: 9px;
+            }
+
+            .add-button {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="home.html" class="back-button">← ร้านทั้งหมด</a>
+
+    <div class="header-center">
+        <span>DBT MULTI SHOP</span>
+        <strong id="headerShopName">ร้านค้า</strong>
+    </div>
+
+    <button class="cart-button" onclick="openCart()">
+        🛒 <span>ตะกร้า</span>
+        <span class="cart-badge" id="cartCount">0</span>
+    </button>
+</header>
+
+
+<section class="hero">
+    <div class="hero-content">
+        <span class="hero-tag">SHOP NOW</span>
+        <h1 id="shopName">กำลังโหลดร้าน...</h1>
+        <p class="hero-desc">
+            ค้นหาสินค้าที่ต้องการ เพิ่มลงตะกร้า และตรวจสอบรายละเอียดก่อนยืนยันคำสั่งซื้อ
+        </p>
+    </div>
+</section>
+
+
+<main class="container">
+
+    <section class="toolbar">
+        <div class="search-box">
+            <span class="search-icon">🔎</span>
+
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="ค้นหาสินค้าในร้านนี้..."
+                oninput="filterProducts()"
+            >
+
+            <button class="clear-search" onclick="clearSearch()" title="ล้างการค้นหา">✕</button>
+        </div>
+
+        <div id="productCount" class="product-count">
+            กำลังโหลด...
+        </div>
+    </section>
+
+    <section id="productGrid" class="product-grid">
+        <div class="loading">กำลังโหลดสินค้า...</div>
+    </section>
+
+</main>
+
+
+<div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
+
+<aside id="cartPanel" class="cart-panel">
+
+    <div class="cart-header">
+        <div>
+            <p>YOUR CART</p>
+            <h2>ตะกร้าของคุณ</h2>
+        </div>
+
+        <button class="close-button" onclick="closeCart()">✕</button>
+    </div>
+
+    <div id="cartItems" class="cart-items"></div>
+
+    <div class="cart-footer">
+
+        <div class="cart-summary-line">
+            <span>จำนวนสินค้า</span>
+            <strong><span id="totalItems">0</span> ชิ้น</strong>
+        </div>
+
+        <div class="cart-total">
+            <span>ยอดรวม</span>
+            <strong>฿<span id="totalPrice">0</span></strong>
+        </div>
+
+        <button
+            id="checkoutButton"
+            class="checkout-button"
+            onclick="openConfirmOrder()"
+        >
+            ตรวจสอบคำสั่งซื้อ
+        </button>
+
+    </div>
+
+</aside>
+
+
+<div id="confirmOverlay" class="confirm-overlay">
+
+    <div class="confirm-card">
+
+        <div class="confirm-header">
+            <div>
+                <span class="confirm-tag">CHECKOUT</span>
+                <h2>ตรวจสอบคำสั่งซื้อ</h2>
+                <p>เช็กรายการและรายละเอียดให้ถูกต้องก่อนยืนยัน</p>
+            </div>
+
+            <button class="confirm-close" onclick="closeConfirmOrder()">✕</button>
+        </div>
+
+        <div id="confirmItems" class="confirm-items"></div>
+
+        <div class="confirm-total">
+            <span>ยอดรวมทั้งหมด</span>
+            <strong>฿<span id="confirmTotalPrice">0</span></strong>
+        </div>
+
+        <div class="checkout-form">
+
+            <div class="form-group">
+                <label>ชื่อผู้สั่ง</label>
+
+                <input
+                    id="customerName"
+                    type="text"
+                    placeholder="กรอกชื่อของคุณ"
+                    maxlength="40"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>
+                    รายละเอียดคำสั่งซื้อ
+                    <span>ไม่บังคับ</span>
+                </label>
+
+                <textarea
+                    id="orderNote"
+                    maxlength="200"
+                    placeholder="เช่น ไม่ใส่ผัก / แยกน้ำแข็ง / รายละเอียดเพิ่มเติม..."
+                ></textarea>
+            </div>
+
+        </div>
+
+        <div class="confirm-buttons">
+
+            <button class="edit-cart-button" onclick="backToCart()">
+                ← กลับไปแก้ไข
+            </button>
+
+            <button
+                id="finalCheckoutButton"
+                class="final-checkout-button"
+                onclick="checkout()"
+            >
+                ยืนยันคำสั่งซื้อ
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="successOverlay" class="success-overlay">
+
+    <div class="success-card">
+
+        <div class="success-icon">✓</div>
+
+        <h2>สั่งซื้อสำเร็จ!</h2>
+
+        <p>คำสั่งซื้อของคุณถูกบันทึกเรียบร้อยแล้ว</p>
+
+        <div class="success-data">
+
+            <div>
+                <span>รหัสคำสั่งซื้อ</span>
+                <strong id="successOrderId">-</strong>
+            </div>
+
+            <div>
+                <span>จำนวน</span>
+                <strong id="successQty">0 ชิ้น</strong>
+            </div>
+
+            <div>
+                <span>ยอดรวม</span>
+                <strong id="successTotal">฿0</strong>
+            </div>
+
+        </div>
+
+        <button class="success-close" onclick="closeSuccess()">
+            เลือกสินค้าต่อ
+        </button>
+
+    </div>
+
+</div>
+
+
+<div id="toast" class="toast">เพิ่มลงตะกร้าแล้ว</div>
+
+
+<script>
+
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+
+let products = [];
+let filteredProducts = [];
+let cart = [];
+
+const params = new URLSearchParams(window.location.search);
+
+const shopId = params.get("shop_id");
+
+const shopName =
+    params.get("shop_name") || "ร้านค้า";
+
+document.getElementById("shopName").textContent = shopName;
+document.getElementById("headerShopName").textContent = shopName;
+
+
+/* =========================
+   LOAD PRODUCTS
+========================= */
+
+async function loadProducts() {
+
+    const grid =
+        document.getElementById("productGrid");
+
+    if (!shopId) {
+
+        grid.innerHTML = `
+            <div class="loading">
+                <div class="empty-state">🏪</div>
+                ไม่พบรหัสร้านค้า
+            </div>
+        `;
+
+        document.getElementById("productCount").textContent =
+            "0 รายการ";
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}?action=products&shop_id=${encodeURIComponent(shopId)}`
+            );
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+            throw new Error(
+                result.message ||
+                "โหลดสินค้าไม่สำเร็จ"
+            );
+        }
+
+        products =
+            result.data.filter(
+                product =>
+                    product.active === true ||
+                    product.active === "TRUE"
+            );
+
+        filteredProducts = [...products];
+
+        renderProducts();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        grid.innerHTML = `
+            <div class="loading">
+                <div class="empty-state">⚠️</div>
+                โหลดสินค้าไม่สำเร็จ
+            </div>
+        `;
+
+        document.getElementById("productCount").textContent =
+            "โหลดไม่สำเร็จ";
+    }
+}
+
+
+/* =========================
+   RENDER PRODUCTS
+========================= */
+
+function renderProducts() {
+
+    const grid =
+        document.getElementById("productGrid");
+
+    grid.innerHTML = "";
+
+    document.getElementById("productCount").textContent =
+        `${filteredProducts.length} รายการ`;
+
+    if (filteredProducts.length === 0) {
+
+        grid.innerHTML = `
+            <div class="loading">
+                <div class="empty-state">🔎</div>
+                ไม่พบสินค้าที่ค้นหา
+            </div>
+        `;
+
+        return;
+    }
+
+    filteredProducts.forEach(product => {
+
+        grid.innerHTML += `
+
+            <article class="product-card">
+
+                <div class="product-photo">
+
+                    <img
+                        src="${product.image}"
+                        alt="${product.name}"
+                        loading="lazy"
+                        onerror="this.src='https://placehold.co/800x800?text=Product'"
+                    >
+
+                    <span class="product-price-badge">
+                        ฿${product.price}
+                    </span>
+
+                </div>
+
+                <div class="product-info">
+
+                    <div class="product-type">
+                        ${product.product_id}
+                    </div>
+
+                    <h3>${product.name}</h3>
+
+                    <button
+                        class="add-button"
+                        onclick="addToCart('${product.product_id}')"
+                    >
+                        ＋ เพิ่มลงตะกร้า
+                    </button>
+
+                </div>
+
+            </article>
+
+        `;
+    });
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function filterProducts() {
+
+    const keyword =
+        document
+            .getElementById("searchInput")
+            .value
+            .trim()
+            .toLowerCase();
+
+    filteredProducts =
+        products.filter(
+            product =>
+                String(product.name)
+                    .toLowerCase()
+                    .includes(keyword)
+        );
+
+    renderProducts();
+}
+
+
+function clearSearch() {
+
+    document.getElementById("searchInput").value = "";
+
+    filteredProducts = [...products];
+
+    renderProducts();
+}
+
+
+/* =========================
+   CART
+========================= */
+
+function addToCart(productId) {
+
+    const product =
+        products.find(
+            item =>
+                String(item.product_id)
+                === String(productId)
+        );
+
+    if (!product) return;
+
+    const existing =
+        cart.find(
+            item =>
+                String(item.product_id)
+                === String(productId)
+        );
+
+    if (existing) {
+        existing.quantity++;
+    }
+
+    else {
+        cart.push({
+            ...product,
+            quantity: 1
+        });
+    }
+
+    updateCart();
+
+    showToast(
+        `${product.name} เพิ่มลงตะกร้าแล้ว`
+    );
+}
+
+
+function changeQuantity(productId, amount) {
+
+    const item =
+        cart.find(
+            item =>
+                String(item.product_id)
+                === String(productId)
+        );
+
+    if (!item) return;
+
+    item.quantity += amount;
+
+    if (item.quantity <= 0) {
+
+        cart =
+            cart.filter(
+                item =>
+                    String(item.product_id)
+                    !== String(productId)
+            );
+    }
+
+    updateCart();
+}
+
+
+function updateCart() {
+
+    const cartItems =
+        document.getElementById("cartItems");
+
+    if (cart.length === 0) {
+
+        cartItems.innerHTML = `
+            <div class="cart-empty">
+                <div class="cart-empty-icon">🛒</div>
+                <strong>ตะกร้ายังว่าง</strong>
+                <span style="margin-top:6px;font-size:12px;">
+                    เลือกสินค้าที่ต้องการจากหน้าร้าน
+                </span>
+            </div>
+        `;
+    }
+
+    else {
+
+        cartItems.innerHTML = "";
+
+        cart.forEach(item => {
+
+            const subtotal =
+                Number(item.price) *
+                item.quantity;
+
+            cartItems.innerHTML += `
+
+                <div class="cart-item">
+
+                    <div>
+
+                        <div class="cart-item-name">
+                            <strong>${item.name}</strong>
+                        </div>
+
+                        <div class="quantity-row">
+
+                            <button
+                                onclick="changeQuantity('${item.product_id}', -1)"
+                            >
+                                −
+                            </button>
+
+                            <span>${item.quantity}</span>
+
+                            <button
+                                onclick="changeQuantity('${item.product_id}', 1)"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="cart-item-total">
+                        ฿${subtotal}
+                    </div>
+
+                </div>
+
+            `;
+        });
+    }
+
+    const totalItems =
+        cart.reduce(
+            (sum, item) =>
+                sum + item.quantity,
+            0
+        );
+
+    const totalPrice =
+        cart.reduce(
+            (sum, item) =>
+                sum +
+                (
+                    Number(item.price) *
+                    item.quantity
+                ),
+            0
+        );
+
+    document.getElementById("cartCount").textContent =
+        totalItems;
+
+    document.getElementById("totalItems").textContent =
+        totalItems;
+
+    document.getElementById("totalPrice").textContent =
+        totalPrice;
+
+    document.getElementById("checkoutButton").disabled =
+        cart.length === 0;
+}
+
+
+function openCart() {
+
+    document.getElementById("cartPanel")
+        .classList.add("active");
+
+    document.getElementById("cartOverlay")
+        .classList.add("active");
+
+    document.body.classList.add("no-scroll");
+}
+
+
+function closeCart() {
+
+    document.getElementById("cartPanel")
+        .classList.remove("active");
+
+    document.getElementById("cartOverlay")
+        .classList.remove("active");
+
+    document.body.classList.remove("no-scroll");
+}
+
+
+/* =========================
+   CONFIRM
+========================= */
+
+function openConfirmOrder() {
+
+    if (cart.length === 0) {
+
+        alert("กรุณาเลือกสินค้าก่อน");
+
+        return;
+    }
+
+    const confirmItems =
+        document.getElementById("confirmItems");
+
+    confirmItems.innerHTML = "";
+
+    cart.forEach(item => {
+
+        const subtotal =
+            Number(item.price) *
+            item.quantity;
+
+        confirmItems.innerHTML += `
+
+            <div class="confirm-item">
+
+                <div class="confirm-item-info">
+
+                    <strong>${item.name}</strong>
+
+                    <span>
+                        ${item.quantity} ชิ้น × ฿${item.price}
+                    </span>
+
+                </div>
+
+                <strong>฿${subtotal}</strong>
+
+            </div>
+
+        `;
+    });
+
+    const totalPrice =
+        cart.reduce(
+            (sum, item) =>
+                sum +
+                (
+                    Number(item.price) *
+                    item.quantity
+                ),
+            0
+        );
+
+    document.getElementById("confirmTotalPrice").textContent =
+        totalPrice;
+
+    closeCart();
+
+    document.getElementById("confirmOverlay")
+        .classList.add("active");
+
+    document.body.classList.add("no-scroll");
+}
+
+
+function closeConfirmOrder() {
+
+    document.getElementById("confirmOverlay")
+        .classList.remove("active");
+
+    document.body.classList.remove("no-scroll");
+}
+
+
+function backToCart() {
+
+    closeConfirmOrder();
+
+    openCart();
+}
+
+
+/* =========================
+   CHECKOUT
+========================= */
+
+async function checkout() {
+
+    if (cart.length === 0) {
+        alert("ไม่มีสินค้าในตะกร้า");
+        return;
+    }
+
+    const customer =
+        document
+            .getElementById("customerName")
+            .value
+            .trim();
+
+    const note =
+        document
+            .getElementById("orderNote")
+            .value
+            .trim();
+
+    if (!customer) {
+
+        alert("กรุณากรอกชื่อผู้สั่ง");
+
+        document.getElementById("customerName").focus();
+
+        return;
+    }
+
+    const orderItems =
+        cart.map(item => ({
+            product_id: item.product_id,
+            name: item.name,
+            price: Number(item.price),
+            quantity: item.quantity
+        }));
+
+    const button =
+        document.getElementById("finalCheckoutButton");
+
+    button.disabled = true;
+    button.textContent = "กำลังบันทึก...";
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            action: "addOrder",
+                            customer: customer,
+                            note: note,
+                            shop_id: shopId,
+                            items: orderItems
+                        })
+                }
+            );
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+
+            throw new Error(
+                result.message ||
+                "บันทึกคำสั่งซื้อไม่สำเร็จ"
+            );
+        }
+
+        closeConfirmOrder();
+
+        document.getElementById("successOrderId").textContent =
+            result.order_id;
+
+        document.getElementById("successQty").textContent =
+            `${result.total_qty} ชิ้น`;
+
+        document.getElementById("successTotal").textContent =
+            `฿${result.total_price}`;
+
+        document.getElementById("successOverlay")
+            .classList.add("active");
+
+        document.body.classList.add("no-scroll");
+
+        cart = [];
+        updateCart();
+
+        document.getElementById("orderNote").value = "";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "เกิดข้อผิดพลาด"
+        );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+        button.textContent = "ยืนยันคำสั่งซื้อ";
+    }
+}
+
+
+function closeSuccess() {
+
+    document.getElementById("successOverlay")
+        .classList.remove("active");
+
+    document.body.classList.remove("no-scroll");
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 1700);
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadProducts();
+updateCart();
+
+</script>
+
+</body>
+</html>

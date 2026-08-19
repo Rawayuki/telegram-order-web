@@ -34,8 +34,11 @@ def save_products(products):
 
 @app.route("/")
 def home():
-    return send_from_directory(".", "index.html")
+    return send_from_directory(".", "home.html")
 
+@app.route("/<path:filename>")
+def serve_files(filename):
+    return send_from_directory(".", filename)
 
 @app.route("/admin")
 def admin():
