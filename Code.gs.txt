@@ -1,0 +1,4056 @@
+function doGet(e) {
+  const action =
+    String(e.parameter.action || "").trim();
+
+  if (action === "shops") {
+    return getShops();
+  }
+
+  if (action === "products") {
+    return getProducts(e);
+  }
+
+  if (action === "account") {
+    return getUserAccount(e);
+  }
+
+  // Dashboard หลังบ้าน
+  if (action === "adminStats") {
+    return getAdminStats();
+  }
+
+  // สินค้าขายดี V2
+  if (action === "bestSellers") {
+    return getBestSellers();
+  }
+
+  if (action === "reviews") {
+    return getReviews(e);
+  }
+
+  if (action === "riderOrders") {
+    return getRiderOrders(e);
+  }
+
+  if (action === "riderDashboard") {
+    return getRiderDashboard(e);
+  }
+
+  if (action === "adminRiders") {
+    return getAdminRiders();
+  }
+
+  return jsonResponse({
+    success: false,
+    message: "ไม่พบ action ที่ร้องขอ",
+    received_action: action
+  });
+}
+
+
+function getShops() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Shops");
+
+  if (!sheet) {
+    return jsonResponse({
+      success: false,
+      message: "ไม่พบชีต Shops"
+    });
+  }
+
+  const values = sheet.getDataRange().getValues();
+
+  if (values.length < 2) {
+    return jsonResponse({
+      success: true,
+      data: []
+    });
+  }
+
+  const headers = values[0];
+  const rows = values.slice(1);
+
+  const data = rows
+    .filter(row => String(row[0]).trim() !== "")
+    .map(row => {
+      const obj = {};
+
+      headers.forEach((header, index) => {
+        obj[String(header).trim()] = row[index];
+      });
+
+      return obj;
+    });
+
+  return jsonResponse({
+    success: true,
+    data: data
+  });
+}
+
+
+function getProducts(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Products");
+
+  if (!sheet) {
+    return jsonResponse({
+      success: false,
+      message: "ไม่พบชีต Products"
+    });
+  }
+
+  const values = sheet.getDataRange().getValues();
+
+  if (values.length < 2) {
+    return jsonResponse({
+      success: true,
+      data: []
+    });
+  }
+
+  const headers = values[0];
+  const rows = values.slice(1);
+
+  let data = rows
+    .filter(row => String(row[0]).trim() !== "")
+    .map(row => {
+      const obj = {};
+
+      headers.forEach((header, index) => {
+        obj[String(header).trim()] = row[index];
+      });
+
+      return obj;
+    });
+
+  const shopId = String(e.parameter.shop_id || "").trim();
+
+  if (shopId) {
+    data = data.filter(item =>
+      String(item.shop_id).trim() === shopId
+    );
+  }
+
+  return jsonResponse({
+    success: true,
+    data: data
+  });
+}
+
+
+function jsonResponse(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(
+      e.postData.contents || "{}"
+    );
+
+    const action = String(
+      data.action || ""
+    ).trim();
+
+
+    if (action === "addOrder") {
+      return addOrder(data);
+    }
+
+
+    if (action === "addProduct") {
+      return addProduct(data);
+    }
+
+
+    if (action === "updateProduct") {
+      return updateProduct(data);
+    }
+
+
+    if (action === "deleteProduct") {
+      return deleteProduct(data);
+    }
+
+
+    if (action === "toggleProduct") {
+      return toggleProduct(data);
+    }
+
+
+    if (action === "uploadImage") {
+      return uploadImage(data);
+    }
+
+    if (action === "addShop") {
+      return addShop(data);
+    }
+
+    if (action === "updateShop") {
+      return updateShop(data);
+    }
+
+    if (action === "toggleShop") {
+      return toggleShop(data);
+    }
+
+    if (action === "deleteShop") {
+      return deleteShop(data);
+    }
+
+    if (action === "addReview") {
+      return addReview(data);
+    }
+
+    if (action === "updateOrderStatus") {
+      return updateOrderStatus(data);
+    }
+
+    if (action === "riderAuth") {
+      return riderAuth(data);
+    }
+
+    if (action === "claimOrder") {
+      return claimOrder(data);
+    }
+
+    if (action === "updateRiderOrder") {
+      return updateRiderOrder(data);
+    }
+
+    if (action === "cancelOrderByCustomer") {
+      return cancelOrderByCustomer(data);
+    }
+
+    if (action === "toggleRiderActive") {
+      return toggleRiderActive(data);
+    }
+
+    if (action === "deleteRider") {
+      return deleteRider(data);
+    }
+
+    return jsonResponse({
+      success: false,
+      message: "ไม่พบ action ที่ร้องขอ"
+    });
+
+  } catch (error) {
+
+    return jsonResponse({
+      success: false,
+      message: error.toString()
+    });
+
+  }
+}
+
+
+function addOrder(data) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Orders");
+
+  if (!sheet) {
+    return jsonResponse({
+      success: false,
+      message: "ไม่พบชีต Orders"
+    });
+  }
+
+  const orderId =
+    "ORD-" + new Date().getTime();
+
+  const customer =
+    String(data.customer || "").trim();
+
+  const note =
+    String(data.note || "").trim();
+
+  let shopId =
+    String(data.shop_id || "").trim();
+
+  const items =
+    Array.isArray(data.items)
+      ? data.items
+      : [];
+
+  const itemShopIds =
+    [
+      ...new Set(
+        items
+          .map(item =>
+            String(
+              item.shop_id || ""
+            ).trim()
+          )
+          .filter(Boolean)
+      )
+    ];
+
+  if (itemShopIds.length > 1) {
+    shopId = "MULTI";
+  }
+  else if (
+    itemShopIds.length === 1
+  ) {
+    shopId =
+      itemShopIds[0];
+  }
+
+  if (!customer) {
+    return jsonResponse({
+      success: false,
+      message: "กรุณากรอกชื่อผู้สั่ง"
+    });
+  }
+
+  if (items.length === 0) {
+    return jsonResponse({
+      success: false,
+      message: "ไม่มีสินค้าในตะกร้า"
+    });
+  }
+
+  let totalQty = 0;
+  let totalPrice = 0;
+
+  const itemText = items
+    .map(item => {
+
+      const quantity =
+        Number(item.quantity || 0);
+
+      const price =
+        Number(item.price || 0);
+
+      const subtotal =
+        quantity * price;
+
+      totalQty += quantity;
+      totalPrice += subtotal;
+
+      return `${item.name} x${quantity}`;
+    })
+    .join(", ");
+
+  const date = new Date();
+
+sheet.appendRow([
+  orderId,
+  customer,
+  note,
+  itemText,
+  totalQty,
+  totalPrice,
+  date,
+  shopId
+]);
+
+// เพิ่มสถานะเริ่มต้นให้ Order ใหม่
+try {
+  const orderHeaders =
+    ensureOrderStatusColumns(sheet);
+
+  const statusIndex =
+    orderHeaders.indexOf("status");
+
+  const updatedIndex =
+    orderHeaders.indexOf("status_updated_at");
+
+  const lastRow =
+    sheet.getLastRow();
+
+  if (statusIndex !== -1) {
+    sheet
+      .getRange(
+        lastRow,
+        statusIndex + 1
+      )
+      .setValue(
+        "รอไรเดอร์รับงาน"
+      );
+  }
+
+  if (updatedIndex !== -1) {
+    sheet
+      .getRange(
+        lastRow,
+        updatedIndex + 1
+      )
+      .setValue(
+        new Date()
+      );
+  }
+} catch (statusError) {
+  console.log(
+    "Order status init error:",
+    statusError
+  );
+}
+
+
+const telegramItems =
+  items.map(item => {
+
+    const quantity =
+      Number(item.quantity || 0);
+
+    const price =
+      Number(item.price || 0);
+
+    const subtotal =
+      quantity * price;
+
+    const itemShop =
+      String(
+        item.shop_name ||
+        item.shop_id ||
+        "ร้านค้า"
+      ).trim();
+
+    return (
+      "• [" +
+      itemShop +
+      "] " +
+      item.name +
+      " × " +
+      quantity +
+      " = " +
+      subtotal +
+      " บาท"
+    );
+  })
+  .join("\n");
+
+
+const telegramSent =
+  sendTelegramOrder({
+
+    order_id:
+      orderId,
+
+    customer:
+      customer,
+
+    note:
+      note,
+
+    shop_id:
+      shopId,
+
+    items_text:
+      telegramItems,
+
+    total_qty:
+      totalQty,
+
+    total_price:
+      totalPrice
+
+  });
+
+
+return jsonResponse({
+  success: true,
+  message:
+    telegramSent
+      ? "บันทึกคำสั่งซื้อและแจ้ง Telegram เรียบร้อย"
+      : "บันทึกคำสั่งซื้อแล้ว แต่ Telegram ส่งไม่สำเร็จ",
+
+  order_id:
+    orderId,
+
+  total_qty:
+    totalQty,
+
+  total_price:
+    totalPrice,
+
+  telegram_sent:
+    telegramSent,
+
+  shop_count:
+    itemShopIds.length
+});
+}
+function getUserAccount(e) {
+  const customer =
+    String(
+      e.parameter.customer || ""
+    ).trim();
+
+  if (!customer) {
+    return jsonResponse({
+      success: false,
+      message: "กรุณาระบุชื่อผู้ใช้"
+    });
+  }
+
+  const ss =
+    SpreadsheetApp
+      .getActiveSpreadsheet();
+
+  const sheet =
+    ss.getSheetByName("Orders");
+
+  if (!sheet) {
+    return jsonResponse({
+      success: false,
+      message: "ไม่พบชีต Orders"
+    });
+  }
+
+  const headers =
+    ensureOrderStatusColumns(sheet);
+
+  const values =
+    sheet
+      .getDataRange()
+      .getValues();
+
+  if (values.length < 2) {
+    return jsonResponse({
+      success: true,
+      customer: customer,
+      total_orders: 0,
+      active_orders: 0,
+      completed_orders: 0,
+      cancelled_orders: 0,
+      total_spent: 0,
+      orders: []
+    });
+  }
+
+  const customerIndex =
+    headers.indexOf("customer");
+
+  const orders =
+    values
+      .slice(1)
+      .filter(row =>
+        String(
+          row[customerIndex] || ""
+        )
+        .trim()
+        .toLowerCase()
+        === customer.toLowerCase()
+      )
+      .map(row => {
+        const obj = {};
+
+        headers.forEach(
+          (header, index) => {
+            let value =
+              row[index];
+
+            if (
+              value
+              instanceof Date
+            ) {
+              value =
+                value.toISOString();
+            }
+
+            obj[header] =
+              value;
+          }
+        );
+
+        if (
+          !String(
+            obj.status || ""
+          ).trim()
+        ) {
+          obj.status =
+            "รอไรเดอร์รับงาน";
+        }
+
+        return obj;
+      })
+      .reverse();
+
+  const terminal = [
+    "จัดส่งสำเร็จ",
+    "ยกเลิก"
+  ];
+
+  const completedOrders =
+    orders.filter(
+      order =>
+        order.status ===
+        "จัดส่งสำเร็จ"
+    ).length;
+
+  const cancelledOrders =
+    orders.filter(
+      order =>
+        order.status ===
+        "ยกเลิก"
+    ).length;
+
+  const activeOrders =
+    orders.filter(
+      order =>
+        !terminal.includes(
+          order.status
+        )
+    ).length;
+
+  // ไม่นับยอดออเดอร์ที่ยกเลิก
+  const totalSpent =
+    orders.reduce(
+      (sum, order) =>
+        order.status === "ยกเลิก"
+          ? sum
+          : sum +
+            Number(
+              order.total_price || 0
+            ),
+      0
+    );
+
+  return jsonResponse({
+    success: true,
+    customer: customer,
+    total_orders: orders.length,
+    active_orders: activeOrders,
+    completed_orders: completedOrders,
+    cancelled_orders: cancelledOrders,
+    total_spent: totalSpent,
+    orders: orders
+  });
+}
+
+function addProduct(data) {
+
+  const sheet =
+    SpreadsheetApp
+      .getActiveSpreadsheet()
+      .getSheetByName("Products");
+
+
+  if (!sheet) {
+    return jsonResponse({
+      success: false,
+      message: "ไม่พบชีต Products"
+    });
+  }
+
+
+  const name =
+    String(data.name || "").trim();
+
+  const shopId =
+    String(data.shop_id || "").trim();
+
+  const image =
+    String(data.image || "").trim();
+
+  const price =
+    Number(data.price || 0);
+
+
+  if (!name) {
+    return jsonResponse({
+      success: false,
+      message: "กรุณากรอกชื่อสินค้า"
+    });
+  }
+
+
+  if (!shopId) {
+    return jsonResponse({
+      success: false,
+      message: "กรุณาระบุร้านค้า"
+    });
+  }
+
+
+  const values =
+    sheet.getDataRange().getValues();
+
+
+  let maxId = 0;
+
+
+  for (let i = 1; i < values.length; i++) {
+
+    const id =
+      String(values[i][0] || "");
+
+    const number =
+      Number(
+        id.replace("P", "")
+      );
+
+
+    if (!isNaN(number)) {
+      maxId = Math.max(
+        maxId,
+        number
+      );
+    }
+  }
+
+
+  const productId =
+    "P" +
+    String(maxId + 1)
+      .padStart(3, "0");
+
+
+  const newProduct = {
+    product_id: productId,
+    shop_id: shopId,
+    name: name,
+    price: price,
+    image: image,
+    active:
+      data.active !== false
+  };
+
+
+  const headers =
+    sheet
+      .getRange(
+        1,
+        1,
+        1,
+        sheet.getLastColumn()
+      )
+      .getValues()[0];
+
+
+  const row =
+    headers.map(header => {
+
+      const key =
+        String(header).trim();
+
+      return (
+        newProduct[key] !== undefined
+          ? newProduct[key]
+          : ""
+      );
+
+    });
+
+
+  sheet.appendRow(row);
+
+
+  return jsonResponse({
+    success: true,
+    message: "เพิ่มสินค้าเรียบร้อย",
+    product: newProduct
+  });
+}
+
+function updateProduct(data) {
+  try {
+    const sheet =
+      SpreadsheetApp
+        .getActiveSpreadsheet()
+        .getSheetByName("Products");
+
+    if (!sheet) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบชีต Products"
+      });
+    }
+
+    const productId =
+      String(data.product_id || "").trim();
+
+    if (!productId) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบ Product ID"
+      });
+    }
+
+    const values =
+      sheet.getDataRange().getValues();
+
+    const headers =
+      values[0].map(header =>
+        String(header).trim()
+      );
+
+    const idIndex =
+      headers.indexOf("product_id");
+
+    if (idIndex === -1) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบคอลัมน์ product_id"
+      });
+    }
+
+    let targetRow = -1;
+
+    for (let row = 1; row < values.length; row++) {
+      if (
+        String(values[row][idIndex]).trim()
+        === productId
+      ) {
+        targetRow = row + 1;
+        break;
+      }
+    }
+
+    if (targetRow === -1) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบสินค้า"
+      });
+    }
+
+    const updates = {
+      shop_id: String(data.shop_id || "").trim(),
+      name: String(data.name || "").trim(),
+      price: Number(data.price || 0),
+      image: String(data.image || "").trim(),
+      active: Boolean(data.active)
+    };
+
+    if (!updates.name) {
+      return jsonResponse({
+        success: false,
+        message: "กรุณากรอกชื่อสินค้า"
+      });
+    }
+
+    if (
+      Number.isNaN(updates.price) ||
+      updates.price < 0
+    ) {
+      return jsonResponse({
+        success: false,
+        message: "ราคาไม่ถูกต้อง"
+      });
+    }
+
+    headers.forEach((header, index) => {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          updates,
+          header
+        )
+      ) {
+        sheet
+          .getRange(targetRow, index + 1)
+          .setValue(updates[header]);
+      }
+    });
+
+    return jsonResponse({
+      success: true,
+      message: "แก้ไขสินค้าเรียบร้อย"
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message: error.toString()
+    });
+  }
+}
+
+
+function deleteProduct(data) {
+
+  const sheet =
+    SpreadsheetApp
+      .getActiveSpreadsheet()
+      .getSheetByName("Products");
+
+
+  const productId =
+    String(
+      data.product_id || ""
+    ).trim();
+
+
+  const values =
+    sheet
+      .getDataRange()
+      .getValues();
+
+
+  const headers =
+    values[0].map(
+      header =>
+        String(header).trim()
+    );
+
+
+  const idIndex =
+    headers.indexOf(
+      "product_id"
+    );
+
+
+  for (
+    let row = 1;
+    row < values.length;
+    row++
+  ) {
+
+    if (
+      String(
+        values[row][idIndex]
+      ).trim() === productId
+    ) {
+
+      sheet.deleteRow(
+        row + 1
+      );
+
+
+      return jsonResponse({
+        success: true,
+        message:
+          "ลบสินค้าเรียบร้อย"
+      });
+    }
+  }
+
+
+  return jsonResponse({
+    success: false,
+    message: "ไม่พบสินค้า"
+  });
+}
+
+function toggleProduct(data) {
+
+  const sheet =
+    SpreadsheetApp
+      .getActiveSpreadsheet()
+      .getSheetByName("Products");
+
+
+  const productId =
+    String(
+      data.product_id || ""
+    ).trim();
+
+
+  const active =
+    Boolean(
+      data.active
+    );
+
+
+  const values =
+    sheet
+      .getDataRange()
+      .getValues();
+
+
+  const headers =
+    values[0].map(
+      header =>
+        String(header).trim()
+    );
+
+
+  const idIndex =
+    headers.indexOf(
+      "product_id"
+    );
+
+  const activeIndex =
+    headers.indexOf(
+      "active"
+    );
+
+
+  for (
+    let row = 1;
+    row < values.length;
+    row++
+  ) {
+
+    if (
+      String(
+        values[row][idIndex]
+      ).trim() === productId
+    ) {
+
+      sheet
+        .getRange(
+          row + 1,
+          activeIndex + 1
+        )
+        .setValue(active);
+
+
+      return jsonResponse({
+        success: true,
+        message:
+          active
+            ? "เปิดขายสินค้าแล้ว"
+            : "ปิดขายสินค้าแล้ว"
+      });
+    }
+  }
+
+
+  return jsonResponse({
+    success: false,
+    message: "ไม่พบสินค้า"
+  });
+}
+
+// ==========================================================
+// IMAGE UPLOAD TO GOOGLE DRIVE
+// ==========================================================
+
+function uploadImage(data) {
+  try {
+    const fileName =
+      String(data.file_name || "").trim();
+
+    const mimeType =
+      String(data.mime_type || "").trim();
+
+    const base64Data =
+      String(data.base64 || "").trim();
+
+    if (!fileName || !mimeType || !base64Data) {
+      return jsonResponse({
+        success: false,
+        message: "ข้อมูลรูปภาพไม่ครบ"
+      });
+    }
+
+    if (!mimeType.startsWith("image/")) {
+      return jsonResponse({
+        success: false,
+        message: "รองรับเฉพาะไฟล์รูปภาพ"
+      });
+    }
+
+    if (base64Data.length > 7000000) {
+      return jsonResponse({
+        success: false,
+        message: "ไฟล์รูปใหญ่เกินไป กรุณาใช้รูปไม่เกินประมาณ 5 MB"
+      });
+    }
+
+    const bytes =
+      Utilities.base64Decode(base64Data);
+
+    const blob =
+      Utilities.newBlob(
+        bytes,
+        mimeType,
+        fileName
+      );
+
+    const folder =
+      getDbtImageFolder();
+
+    const file =
+      folder.createFile(blob);
+
+    file.setSharing(
+      DriveApp.Access.ANYONE_WITH_LINK,
+      DriveApp.Permission.VIEW
+    );
+
+const fileId =
+  file.getId();
+
+const imageUrl =
+  "https://drive.google.com/thumbnail?id=" +
+  fileId +
+  "&sz=w1200";
+
+return jsonResponse({
+  success: true,
+  message: "อัปโหลดรูปเรียบร้อย",
+  image_url: imageUrl,
+  file_id: fileId
+});
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message: error.toString()
+    });
+  }
+}
+
+
+function getDbtImageFolder() {
+  const folderName =
+    "DBT_Multi_Shop_Images";
+
+  const folders =
+    DriveApp.getFoldersByName(folderName);
+
+  if (folders.hasNext()) {
+    return folders.next();
+  }
+
+  return DriveApp.createFolder(folderName);
+}
+
+function sendTelegramOrder(order) {
+  try {
+    const properties =
+      PropertiesService.getScriptProperties();
+
+    const token =
+      properties.getProperty("TELEGRAM_TOKEN");
+
+    const chatId =
+      properties.getProperty("TELEGRAM_CHAT_ID");
+
+    if (!token || !chatId) {
+      console.log(
+        "ไม่พบ TELEGRAM_TOKEN หรือ TELEGRAM_CHAT_ID"
+      );
+
+      return false;
+    }
+
+
+    const noteText =
+      order.note
+        ? order.note
+        : "ไม่มี";
+
+
+    const shopName =
+      getTelegramShopName(
+        order.shop_id
+      );
+
+
+    const message =
+      "🛒 คำสั่งซื้อใหม่\n\n" +
+
+      "🧾 Order ID: " +
+      order.order_id +
+      "\n" +
+
+      "👤 ผู้สั่ง: " +
+      order.customer +
+      "\n" +
+
+      "🏪 ร้าน: " +
+      shopName +
+      "\n" +
+
+      "📝 หมายเหตุ: " +
+      noteText +
+      "\n\n" +
+
+      order.items_text +
+      "\n\n" +
+
+      "──────────────\n" +
+
+      "📦 รวม " +
+      order.total_qty +
+      " ชิ้น\n" +
+
+      "💰 ยอดรวม " +
+      order.total_price +
+      " บาท";
+
+
+    const url =
+      "https://api.telegram.org/bot" +
+      token +
+      "/sendMessage";
+
+
+    const response =
+      UrlFetchApp.fetch(
+        url,
+        {
+          method: "post",
+
+          payload: {
+            chat_id: chatId,
+            text: message
+          },
+
+          muteHttpExceptions: true
+        }
+      );
+
+
+    const status =
+      response.getResponseCode();
+
+
+    if (
+      status >= 200 &&
+      status < 300
+    ) {
+      return true;
+    }
+
+
+    console.log(
+      "Telegram Error:",
+      response.getContentText()
+    );
+
+    return false;
+
+  }
+
+  catch (error) {
+
+    console.log(
+      "Telegram Exception:",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+function getTelegramShopName(shopId) {
+
+  if (shopId === "S001") {
+    return "108Shop";
+  }
+
+  if (shopId === "S002") {
+    return "ร้านขนม";
+  }
+
+  if (shopId === "S003") {
+    return "ร้านป้าชู";
+  }
+
+  if (shopId === "MULTI") {
+    return "หลายร้านในบิลเดียว";
+  }
+
+  return shopId || "-";
+}
+
+// ==========================================================
+// DBT MULTI SHOP V2 - PHASE 2 : BEST SELLERS API
+// ==========================================================
+//
+// 1) ใน doGet(e) เพิ่ม:
+// if (action === "bestSellers") {
+//   return getBestSellers();
+// }
+//
+// 2) วางฟังก์ชันด้านล่างต่อท้าย Code.gs
+//
+// ใช้ข้อมูล Orders เดิมได้ โดยอ่านข้อความในคอลัมน์ items เช่น
+// "ชาเย็น x2, คุกกี้ x1"
+// จึงไม่ต้องเพิ่มคอลัมน์ใหม่ใน Mini Project ตอนนี้
+
+function getBestSellers() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ordersSheet = ss.getSheetByName("Orders");
+    const productsSheet = ss.getSheetByName("Products");
+    const shopsSheet = ss.getSheetByName("Shops");
+
+    if (!ordersSheet || !productsSheet) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบชีต Orders หรือ Products"
+      });
+    }
+
+    const productValues = productsSheet.getDataRange().getValues();
+    const productHeaders = productValues[0].map(h => String(h).trim());
+
+    const productIdIndex = productHeaders.indexOf("product_id");
+    const productShopIndex = productHeaders.indexOf("shop_id");
+    const productNameIndex = productHeaders.indexOf("name");
+    const productPriceIndex = productHeaders.indexOf("price");
+    const productImageIndex = productHeaders.indexOf("image");
+
+    const products = productValues.slice(1)
+      .filter(row => String(row[productIdIndex] || "").trim() !== "")
+      .map(row => ({
+        product_id: String(row[productIdIndex] || "").trim(),
+        shop_id: String(row[productShopIndex] || "").trim(),
+        name: String(row[productNameIndex] || "").trim(),
+        price: Number(row[productPriceIndex] || 0),
+        image: String(row[productImageIndex] || "").trim()
+      }));
+
+    const productByName = {};
+    products.forEach(product => {
+      productByName[product.name.toLowerCase()] = product;
+    });
+
+    const shopNames = {};
+
+    if (shopsSheet) {
+      const shopValues = shopsSheet.getDataRange().getValues();
+      const shopHeaders = shopValues[0].map(h => String(h).trim());
+      const idIndex = shopHeaders.indexOf("shop_id");
+      const nameIndex = shopHeaders.indexOf("shop_name");
+
+      shopValues.slice(1).forEach(row => {
+        const id = String(row[idIndex] || "").trim();
+        if (id) {
+          shopNames[id] = String(row[nameIndex] || id).trim();
+        }
+      });
+    }
+
+    const orderValues = ordersSheet.getDataRange().getValues();
+
+    if (orderValues.length < 2) {
+      return jsonResponse({
+        success: true,
+        data: []
+      });
+    }
+
+    const orderHeaders = orderValues[0].map(h => String(h).trim());
+    const itemsIndex = orderHeaders.indexOf("items");
+
+    if (itemsIndex === -1) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบคอลัมน์ items ใน Orders"
+      });
+    }
+
+    const counts = {};
+
+    orderValues.slice(1).forEach(row => {
+      const text = String(row[itemsIndex] || "").trim();
+      if (!text) return;
+
+      text.split(",").forEach(part => {
+        const value = part.trim();
+
+        // จับรูปแบบ "ชื่อสินค้า x2"
+        const match = value.match(/^(.*?)\s+x(\d+)$/i);
+
+        if (!match) return;
+
+        const name = String(match[1] || "").trim();
+        const quantity = Number(match[2] || 0);
+
+        if (!name || quantity <= 0) return;
+
+        const key = name.toLowerCase();
+
+        counts[key] = (counts[key] || 0) + quantity;
+      });
+    });
+
+    const data = Object.keys(counts)
+      .map(key => {
+        const product = productByName[key];
+
+        if (!product) return null;
+
+        return {
+          ...product,
+          shop_name: shopNames[product.shop_id] || product.shop_id,
+          quantity: counts[key]
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 8);
+
+    return jsonResponse({
+      success: true,
+      data: data
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message: error.toString()
+    });
+  }
+}
+
+function getAdminStats() {
+  try {
+    const ss =
+      SpreadsheetApp.getActiveSpreadsheet();
+
+    const productsSheet =
+      ss.getSheetByName("Products");
+
+    const shopsSheet =
+      ss.getSheetByName("Shops");
+
+    const ordersSheet =
+      ss.getSheetByName("Orders");
+
+
+    let totalProducts = 0;
+    let activeProducts = 0;
+    let totalShops = 0;
+    let totalOrders = 0;
+    let totalSales = 0;
+    let recentOrders = [];
+
+
+    // =========================
+    // PRODUCTS
+    // =========================
+
+    if (productsSheet) {
+
+      const values =
+        productsSheet
+          .getDataRange()
+          .getValues();
+
+      if (values.length > 1) {
+
+        const headers =
+          values[0].map(
+            header =>
+              String(header).trim()
+          );
+
+        const activeIndex =
+          headers.indexOf("active");
+
+
+        const rows =
+          values
+            .slice(1)
+            .filter(
+              row =>
+                String(
+                  row[0] || ""
+                ).trim() !== ""
+            );
+
+
+        totalProducts =
+          rows.length;
+
+
+        activeProducts =
+          rows.filter(row => {
+
+            if (activeIndex === -1) {
+              return true;
+            }
+
+            const value =
+              row[activeIndex];
+
+            return (
+              value === true ||
+              String(value)
+                .trim()
+                .toUpperCase()
+                === "TRUE"
+            );
+
+          }).length;
+      }
+    }
+
+
+    // =========================
+    // SHOPS
+    // =========================
+
+    if (shopsSheet) {
+
+      const values =
+        shopsSheet
+          .getDataRange()
+          .getValues();
+
+      if (values.length > 1) {
+
+        totalShops =
+          values
+            .slice(1)
+            .filter(
+              row =>
+                String(
+                  row[0] || ""
+                ).trim() !== ""
+            )
+            .length;
+      }
+    }
+
+
+    // =========================
+    // ORDERS
+    // =========================
+
+    if (ordersSheet) {
+
+      const values =
+        ordersSheet
+          .getDataRange()
+          .getValues();
+
+      if (values.length > 1) {
+
+        const headers =
+          values[0].map(
+            header =>
+              String(header).trim()
+          );
+
+        const priceIndex =
+          headers.indexOf(
+            "total_price"
+          );
+
+
+        const rows =
+          values
+            .slice(1)
+            .filter(
+              row =>
+                String(
+                  row[0] || ""
+                ).trim() !== ""
+            );
+
+
+        totalOrders =
+          rows.length;
+
+
+        if (priceIndex !== -1) {
+
+          totalSales =
+            rows.reduce(
+              (sum, row) =>
+                sum +
+                Number(
+                  row[priceIndex] || 0
+                ),
+              0
+            );
+        }
+
+
+        recentOrders =
+          rows
+            .slice(-5)
+            .reverse()
+            .map(row => {
+              const obj = {};
+
+              headers.forEach(
+                (header, index) => {
+                  let value = row[index];
+
+                  if (value instanceof Date) {
+                    value = value.toISOString();
+                  }
+
+                  obj[header] = value;
+                }
+              );
+
+              return obj;
+            });
+      }
+    }
+
+
+    // =========================
+    // RESPONSE
+    // =========================
+
+    return jsonResponse({
+      success: true,
+
+      total_products:
+        totalProducts,
+
+      active_products:
+        activeProducts,
+
+      total_shops:
+        totalShops,
+
+      total_orders:
+        totalOrders,
+
+      total_sales:
+        totalSales,
+
+      recent_orders:
+        recentOrders
+    });
+
+
+  } catch (error) {
+
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function ensureShopColumns(sheet) {
+  const required = ["shop_id","shop_name","image","active","description","announcement"];
+  let headers = sheet.getRange(1,1,1,Math.max(sheet.getLastColumn(),1)).getValues()[0]
+    .map(h=>String(h).trim());
+  required.forEach(col=>{
+    if(!headers.includes(col)){
+      sheet.getRange(1,headers.length+1).setValue(col);
+      headers.push(col);
+    }
+  });
+  return headers;
+}
+
+function addShop(data) {
+  try{
+    const sheet=SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Shops");
+    if(!sheet)return jsonResponse({success:false,message:"ไม่พบชีต Shops"});
+    const headers=ensureShopColumns(sheet);
+    const name=String(data.shop_name||"").trim();
+    const image=String(data.image||"").trim();
+    if(!name)return jsonResponse({success:false,message:"กรุณากรอกชื่อร้าน"});
+    if(!image)return jsonResponse({success:false,message:"กรุณาใส่รูปร้าน"});
+
+    const values=sheet.getDataRange().getValues();
+    const idIndex=headers.indexOf("shop_id");
+    let maxId=0;
+    for(let i=1;i<values.length;i++){
+      const n=Number(String(values[i][idIndex]||"").replace(/^S/i,""));
+      if(!isNaN(n))maxId=Math.max(maxId,n);
+    }
+    const shopId="S"+String(maxId+1).padStart(3,"0");
+    const shop={
+      shop_id:shopId,
+      shop_name:name,
+      image:image,
+      active:data.active!==false,
+      description:String(data.description||"").trim(),
+      announcement:String(data.announcement||"").trim()
+    };
+    sheet.appendRow(headers.map(h=>shop[h]!==undefined?shop[h]:""));
+    return jsonResponse({success:true,message:"เพิ่มร้านเรียบร้อย",shop});
+  }catch(error){
+    return jsonResponse({success:false,message:error.toString()});
+  }
+}
+
+function updateShop(data) {
+  try{
+    const sheet=SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Shops");
+    if(!sheet)return jsonResponse({success:false,message:"ไม่พบชีต Shops"});
+    const headers=ensureShopColumns(sheet);
+    const values=sheet.getDataRange().getValues();
+    const idIndex=headers.indexOf("shop_id");
+    const shopId=String(data.shop_id||"").trim();
+    let target=-1;
+    for(let i=1;i<values.length;i++){
+      if(String(values[i][idIndex]).trim()===shopId){target=i+1;break;}
+    }
+    if(target===-1)return jsonResponse({success:false,message:"ไม่พบร้านค้า"});
+    const updates={
+      shop_name:String(data.shop_name||"").trim(),
+      image:String(data.image||"").trim(),
+      active:Boolean(data.active),
+      description:String(data.description||"").trim(),
+      announcement:String(data.announcement||"").trim()
+    };
+    if(!updates.shop_name)return jsonResponse({success:false,message:"กรุณากรอกชื่อร้าน"});
+    headers.forEach((h,i)=>{
+      if(Object.prototype.hasOwnProperty.call(updates,h)){
+        sheet.getRange(target,i+1).setValue(updates[h]);
+      }
+    });
+    return jsonResponse({success:true,message:"แก้ไขร้านเรียบร้อย"});
+  }catch(error){
+    return jsonResponse({success:false,message:error.toString()});
+  }
+}
+
+function toggleShop(data) {
+  try{
+    const sheet=SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Shops");
+    if(!sheet)return jsonResponse({success:false,message:"ไม่พบชีต Shops"});
+    const headers=ensureShopColumns(sheet);
+    const idIndex=headers.indexOf("shop_id");
+    const activeIndex=headers.indexOf("active");
+    const values=sheet.getDataRange().getValues();
+    const shopId=String(data.shop_id||"").trim();
+    const active=Boolean(data.active);
+    for(let i=1;i<values.length;i++){
+      if(String(values[i][idIndex]).trim()===shopId){
+        sheet.getRange(i+1,activeIndex+1).setValue(active);
+        return jsonResponse({success:true,message:active?"เปิดร้านแล้ว":"ปิดร้านแล้ว"});
+      }
+    }
+    return jsonResponse({success:false,message:"ไม่พบร้านค้า"});
+  }catch(error){
+    return jsonResponse({success:false,message:error.toString()});
+  }
+}
+
+function deleteShop(data) {
+  try{
+    const ss=SpreadsheetApp.getActiveSpreadsheet();
+    const shopSheet=ss.getSheetByName("Shops");
+    const productSheet=ss.getSheetByName("Products");
+    if(!shopSheet)return jsonResponse({success:false,message:"ไม่พบชีต Shops"});
+
+    const shopHeaders=ensureShopColumns(shopSheet);
+    const idIndex=shopHeaders.indexOf("shop_id");
+    const shopId=String(data.shop_id||"").trim();
+
+    if(productSheet){
+      const pv=productSheet.getDataRange().getValues();
+      if(pv.length>1){
+        const ph=pv[0].map(h=>String(h).trim());
+        const si=ph.indexOf("shop_id");
+        if(si!==-1 && pv.slice(1).some(r=>String(r[si]||"").trim()===shopId)){
+          return jsonResponse({success:false,message:"ร้านนี้ยังมีสินค้าอยู่ กรุณาย้ายหรือลบสินค้าก่อน"});
+        }
+      }
+    }
+
+    const values=shopSheet.getDataRange().getValues();
+    for(let i=1;i<values.length;i++){
+      if(String(values[i][idIndex]).trim()===shopId){
+        shopSheet.deleteRow(i+1);
+        return jsonResponse({success:true,message:"ลบร้านเรียบร้อย"});
+      }
+    }
+    return jsonResponse({success:false,message:"ไม่พบร้านค้า"});
+  }catch(error){
+    return jsonResponse({success:false,message:error.toString()});
+  }
+}
+
+
+
+// ==========================================================
+// SHOP REVIEWS
+// ==========================================================
+
+function getReviewSheet() {
+
+  const ss =
+    SpreadsheetApp
+      .getActiveSpreadsheet();
+
+
+  let sheet =
+    ss.getSheetByName(
+      "Reviews"
+    );
+
+
+  if (!sheet) {
+
+    sheet =
+      ss.insertSheet(
+        "Reviews"
+      );
+
+
+    sheet.appendRow([
+      "review_id",
+      "shop_id",
+      "customer",
+      "rating",
+      "comment",
+      "date"
+    ]);
+  }
+
+
+  return sheet;
+}
+
+
+function addReview(data) {
+
+  try {
+
+    const shopId =
+      String(
+        data.shop_id || ""
+      ).trim();
+
+
+    const customer =
+      String(
+        data.customer || ""
+      ).trim();
+
+
+    const rating =
+      Number(
+        data.rating || 0
+      );
+
+
+    const comment =
+      String(
+        data.comment || ""
+      ).trim();
+
+
+    if (!shopId) {
+
+      return jsonResponse({
+        success:
+          false,
+
+        message:
+          "ไม่พบรหัสร้าน"
+      });
+    }
+
+
+    if (!customer) {
+
+      return jsonResponse({
+        success:
+          false,
+
+        message:
+          "กรุณากรอกชื่อผู้รีวิว"
+      });
+    }
+
+
+    if (
+      rating < 1 ||
+      rating > 5
+    ) {
+
+      return jsonResponse({
+        success:
+          false,
+
+        message:
+          "คะแนนต้องอยู่ระหว่าง 1 ถึง 5"
+      });
+    }
+
+
+    if (!comment) {
+
+      return jsonResponse({
+        success:
+          false,
+
+        message:
+          "กรุณาเขียนความคิดเห็น"
+      });
+    }
+
+
+    const reviewId =
+      "REV-" +
+      new Date()
+        .getTime();
+
+
+    const sheet =
+      getReviewSheet();
+
+
+    sheet.appendRow([
+      reviewId,
+      shopId,
+      customer,
+      rating,
+      comment,
+      new Date()
+    ]);
+
+
+    SpreadsheetApp.flush();
+
+
+    return jsonResponse({
+      success:
+        true,
+
+      message:
+        "บันทึกรีวิวเรียบร้อย",
+
+      review_id:
+        reviewId
+    });
+
+
+  } catch (error) {
+
+    return jsonResponse({
+      success:
+        false,
+
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function getReviews(e) {
+
+  try {
+
+    const shopId =
+      String(
+        e.parameter.shop_id || ""
+      ).trim();
+
+
+    if (!shopId) {
+
+      return jsonResponse({
+        success:
+          false,
+
+        message:
+          "กรุณาระบุ shop_id"
+      });
+    }
+
+
+    const sheet =
+      getReviewSheet();
+
+
+    const values =
+      sheet
+        .getDataRange()
+        .getValues();
+
+
+    if (
+      values.length < 2
+    ) {
+
+      return jsonResponse({
+        success:
+          true,
+
+        average:
+          0,
+
+        count:
+          0,
+
+        data:
+          []
+      });
+    }
+
+
+    const headers =
+      values[0]
+        .map(header =>
+          String(
+            header
+          ).trim()
+        );
+
+
+    const shopIndex =
+      headers.indexOf(
+        "shop_id"
+      );
+
+
+    const ratingIndex =
+      headers.indexOf(
+        "rating"
+      );
+
+
+    const reviews =
+      values
+        .slice(1)
+        .filter(row =>
+          String(
+            row[
+              shopIndex
+            ] || ""
+          ).trim()
+          === shopId
+        )
+        .map(row => {
+
+          const obj = {};
+
+
+          headers.forEach(
+            (header, index) => {
+
+              let value =
+                row[index];
+
+
+              if (
+                value
+                instanceof Date
+              ) {
+
+                value =
+                  value.toISOString();
+              }
+
+
+              obj[
+                header
+              ] = value;
+            }
+          );
+
+
+          return obj;
+        })
+        .reverse();
+
+
+    const total =
+      reviews.reduce(
+        (sum, review) =>
+          sum +
+          Number(
+            review.rating || 0
+          ),
+        0
+      );
+
+
+    const average =
+      reviews.length
+        ? total /
+          reviews.length
+        : 0;
+
+
+    return jsonResponse({
+      success:
+        true,
+
+      average:
+        average,
+
+      count:
+        reviews.length,
+
+      data:
+        reviews
+    });
+
+
+  } catch (error) {
+
+    return jsonResponse({
+      success:
+        false,
+
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+
+// ==========================================================
+// RIDER / ORDER STATUS
+// ==========================================================
+
+function ensureOrderStatusColumns(sheet) {
+  const required = [
+    "status",
+    "rider",
+    "status_updated_at"
+  ];
+
+  const lastColumn =
+    Math.max(
+      sheet.getLastColumn(),
+      1
+    );
+
+  let headers =
+    sheet
+      .getRange(
+        1,
+        1,
+        1,
+        lastColumn
+      )
+      .getValues()[0]
+      .map(header =>
+        String(
+          header || ""
+        ).trim()
+      );
+
+
+  while (
+    headers.length > 0 &&
+    headers[
+      headers.length - 1
+    ] === ""
+  ) {
+    headers.pop();
+  }
+
+
+  required.forEach(column => {
+    if (!headers.includes(column)) {
+      headers.push(column);
+    }
+  });
+
+
+  sheet
+    .getRange(
+      1,
+      1,
+      1,
+      headers.length
+    )
+    .setValues([headers]);
+
+
+  SpreadsheetApp.flush();
+
+  return headers;
+}
+
+
+function getRiderOrders(e) {
+  try {
+    const ss =
+      SpreadsheetApp
+        .getActiveSpreadsheet();
+
+    const sheet =
+      ss.getSheetByName(
+        "Orders"
+      );
+
+
+    if (!sheet) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบชีต Orders"
+      });
+    }
+
+
+    const headers =
+      ensureOrderStatusColumns(
+        sheet
+      );
+
+
+    const values =
+      sheet
+        .getDataRange()
+        .getValues();
+
+
+    if (
+      values.length < 2
+    ) {
+      return jsonResponse({
+        success: true,
+        data: []
+      });
+    }
+
+
+    const limit =
+      Math.max(
+        1,
+        Math.min(
+          100,
+          Number(
+            e.parameter.limit ||
+            50
+          )
+        )
+      );
+
+
+    const rows =
+      values
+        .slice(1)
+        .filter(row =>
+          String(
+            row[0] || ""
+          ).trim() !== ""
+        );
+
+
+    const data =
+      rows
+        .slice(-limit)
+        .reverse()
+        .map(row => {
+          const obj = {};
+
+          headers.forEach(
+            (header, index) => {
+              let value =
+                row[index];
+
+              if (
+                value
+                instanceof Date
+              ) {
+                value =
+                  value.toISOString();
+              }
+
+              obj[header] =
+                value;
+            }
+          );
+
+
+          if (
+            !String(
+              obj.status || ""
+            ).trim()
+          ) {
+            obj.status =
+              "รอไรเดอร์รับงาน";
+          }
+
+
+          return obj;
+        });
+
+
+    return jsonResponse({
+      success: true,
+      data: data
+    });
+
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function updateOrderStatus(data) {
+  try {
+    const ss =
+      SpreadsheetApp
+        .getActiveSpreadsheet();
+
+    const sheet =
+      ss.getSheetByName(
+        "Orders"
+      );
+
+
+    if (!sheet) {
+      return jsonResponse({
+        success: false,
+        message: "ไม่พบชีต Orders"
+      });
+    }
+
+
+    const headers =
+      ensureOrderStatusColumns(
+        sheet
+      );
+
+
+    const orderId =
+      String(
+        data.order_id || ""
+      ).trim();
+
+
+    const status =
+      String(
+        data.status || ""
+      ).trim();
+
+
+    const rider =
+      String(
+        data.rider || ""
+      ).trim();
+
+
+    const allowed = [
+      "รอไรเดอร์รับงาน",
+      "กำลังเตรียมสินค้า",
+      "พร้อมให้ไรเดอร์รับ",
+      "ไรเดอร์รับสินค้าแล้ว",
+      "กำลังจัดส่ง",
+      "จัดส่งสำเร็จ",
+      "ยกเลิก"
+    ];
+
+
+    if (!orderId) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบ Order ID"
+      });
+    }
+
+
+    if (
+      !allowed.includes(
+        status
+      )
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "สถานะไม่ถูกต้อง"
+      });
+    }
+
+
+    const values =
+      sheet
+        .getDataRange()
+        .getValues();
+
+
+    const idIndex =
+      headers.indexOf(
+        "order_id"
+      );
+
+    const statusIndex =
+      headers.indexOf(
+        "status"
+      );
+
+    const riderIndex =
+      headers.indexOf(
+        "rider"
+      );
+
+    const updatedIndex =
+      headers.indexOf(
+        "status_updated_at"
+      );
+
+
+    if (idIndex === -1) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบคอลัมน์ order_id"
+      });
+    }
+
+
+    let targetRow = -1;
+
+
+    for (
+      let row = 1;
+      row < values.length;
+      row++
+    ) {
+      if (
+        String(
+          values[row][idIndex] ||
+          ""
+        ).trim()
+        === orderId
+      ) {
+        targetRow =
+          row + 1;
+
+        break;
+      }
+    }
+
+
+    if (
+      targetRow === -1
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบคำสั่งซื้อ"
+      });
+    }
+
+
+    sheet
+      .getRange(
+        targetRow,
+        statusIndex + 1
+      )
+      .setValue(
+        status
+      );
+
+
+    if (
+      riderIndex !== -1
+    ) {
+      sheet
+        .getRange(
+          targetRow,
+          riderIndex + 1
+        )
+        .setValue(
+          rider
+        );
+    }
+
+
+    if (
+      updatedIndex !== -1
+    ) {
+      sheet
+        .getRange(
+          targetRow,
+          updatedIndex + 1
+        )
+        .setValue(
+          new Date()
+        );
+    }
+
+
+    SpreadsheetApp.flush();
+
+
+    return jsonResponse({
+      success: true,
+      message:
+        "อัปเดตสถานะเรียบร้อย",
+      order_id:
+        orderId,
+      status:
+        status,
+      rider:
+        rider
+    });
+
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+
+// ==========================================================
+// RIDER V2: LOGIN / CLAIM / DASHBOARD / CUSTOMER CANCEL
+// ==========================================================
+
+function hashRiderCode(code) {
+  const bytes =
+    Utilities.computeDigest(
+      Utilities.DigestAlgorithm.SHA_256,
+      String(code || ""),
+      Utilities.Charset.UTF_8
+    );
+
+  return bytes
+    .map(byte => {
+      const value =
+        (byte + 256) % 256;
+
+      return value
+        .toString(16)
+        .padStart(2, "0");
+    })
+    .join("");
+}
+
+
+function getRidersSheet() {
+  const ss =
+    SpreadsheetApp
+      .getActiveSpreadsheet();
+
+  let sheet =
+    ss.getSheetByName(
+      "Riders"
+    );
+
+  const headers = [
+    "rider_id",
+    "rider_name",
+    "code_hash",
+    "active",
+    "created_at",
+    "session_token",
+    "last_login"
+  ];
+
+  if (!sheet) {
+    sheet =
+      ss.insertSheet(
+        "Riders"
+      );
+
+    sheet.appendRow(
+      headers
+    );
+
+    SpreadsheetApp.flush();
+
+    return sheet;
+  }
+
+  const current =
+    sheet
+      .getRange(
+        1,
+        1,
+        1,
+        Math.max(
+          sheet.getLastColumn(),
+          1
+        )
+      )
+      .getValues()[0]
+      .map(value =>
+        String(
+          value || ""
+        ).trim()
+      );
+
+  const finalHeaders =
+    current.filter(Boolean);
+
+  headers.forEach(header => {
+    if (
+      !finalHeaders.includes(
+        header
+      )
+    ) {
+      finalHeaders.push(
+        header
+      );
+    }
+  });
+
+  sheet
+    .getRange(
+      1,
+      1,
+      1,
+      finalHeaders.length
+    )
+    .setValues([
+      finalHeaders
+    ]);
+
+  SpreadsheetApp.flush();
+
+  return sheet;
+}
+
+
+function getRiderRecordByName(name) {
+  const sheet =
+    getRidersSheet();
+
+  const values =
+    sheet
+      .getDataRange()
+      .getValues();
+
+  if (
+    values.length < 2
+  ) {
+    return null;
+  }
+
+  const headers =
+    values[0]
+      .map(value =>
+        String(
+          value || ""
+        ).trim()
+      );
+
+  const nameIndex =
+    headers.indexOf(
+      "rider_name"
+    );
+
+  for (
+    let row = 1;
+    row < values.length;
+    row++
+  ) {
+    if (
+      String(
+        values[row][nameIndex] ||
+        ""
+      )
+      .trim()
+      .toLowerCase()
+      === String(name)
+        .trim()
+        .toLowerCase()
+    ) {
+      const obj = {
+        row_number:
+          row + 1
+      };
+
+      headers.forEach(
+        (header, index) => {
+          obj[header] =
+            values[row][index];
+        }
+      );
+
+      return obj;
+    }
+  }
+
+  return null;
+}
+
+
+function verifyRiderSession(
+  riderId,
+  token
+) {
+  const sheet =
+    getRidersSheet();
+
+  const values =
+    sheet
+      .getDataRange()
+      .getValues();
+
+  if (
+    values.length < 2
+  ) {
+    return null;
+  }
+
+  const headers =
+    values[0]
+      .map(value =>
+        String(
+          value || ""
+        ).trim()
+      );
+
+  const idIndex =
+    headers.indexOf(
+      "rider_id"
+    );
+
+  const tokenIndex =
+    headers.indexOf(
+      "session_token"
+    );
+
+  const activeIndex =
+    headers.indexOf(
+      "active"
+    );
+
+  for (
+    let row = 1;
+    row < values.length;
+    row++
+  ) {
+    const sameId =
+      String(
+        values[row][idIndex] ||
+        ""
+      ).trim()
+      === String(
+        riderId || ""
+      ).trim();
+
+    const sameToken =
+      String(
+        values[row][tokenIndex] ||
+        ""
+      ).trim()
+      === String(
+        token || ""
+      ).trim();
+
+    const active =
+      values[row][activeIndex] === true ||
+      String(
+        values[row][activeIndex]
+      ).toUpperCase()
+      === "TRUE";
+
+    if (
+      sameId &&
+      sameToken &&
+      active
+    ) {
+      const obj = {
+        row_number:
+          row + 1
+      };
+
+      headers.forEach(
+        (header, index) => {
+          obj[header] =
+            values[row][index];
+        }
+      );
+
+      return obj;
+    }
+  }
+
+  return null;
+}
+
+
+function riderAuth(data) {
+  try {
+    const mode =
+      String(
+        data.mode || "login"
+      ).trim();
+
+    const name =
+      String(
+        data.rider_name || ""
+      ).trim();
+
+    const code =
+      String(
+        data.access_code || ""
+      ).trim();
+
+    if (
+      name.length < 2
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "กรุณากรอกชื่อไรเดอร์อย่างน้อย 2 ตัวอักษร"
+      });
+    }
+
+    if (
+      code.length < 4
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "รหัสต้องมีอย่างน้อย 4 ตัว"
+      });
+    }
+
+    const sheet =
+      getRidersSheet();
+
+    const existing =
+      getRiderRecordByName(
+        name
+      );
+
+    if (
+      mode === "register"
+    ) {
+      if (existing) {
+        return jsonResponse({
+          success: false,
+          message:
+            "ชื่อไรเดอร์นี้มีอยู่แล้ว กรุณาเข้าสู่ระบบ"
+        });
+      }
+
+      const values =
+        sheet
+          .getDataRange()
+          .getValues();
+
+      let maxId = 0;
+
+      if (
+        values.length > 1
+      ) {
+        const headers =
+          values[0]
+            .map(value =>
+              String(
+                value || ""
+              ).trim()
+            );
+
+        const idIndex =
+          headers.indexOf(
+            "rider_id"
+          );
+
+        values
+          .slice(1)
+          .forEach(row => {
+            const number =
+              Number(
+                String(
+                  row[idIndex] || ""
+                )
+                .replace(
+                  /^R/i,
+                  ""
+                )
+              );
+
+            if (
+              !isNaN(number)
+            ) {
+              maxId =
+                Math.max(
+                  maxId,
+                  number
+                );
+            }
+          });
+      }
+
+      const riderId =
+        "R" +
+        String(
+          maxId + 1
+        ).padStart(
+          3,
+          "0"
+        );
+
+      const token =
+        Utilities.getUuid();
+
+      sheet.appendRow([
+        riderId,
+        name,
+        hashRiderCode(code),
+        true,
+        new Date(),
+        token,
+        new Date()
+      ]);
+
+      SpreadsheetApp.flush();
+
+      return jsonResponse({
+        success: true,
+        message:
+          "สร้างโปรไฟล์ไรเดอร์เรียบร้อย",
+        rider: {
+          rider_id:
+            riderId,
+          rider_name:
+            name,
+          session_token:
+            token
+        }
+      });
+    }
+
+    if (!existing) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบชื่อไรเดอร์นี้"
+      });
+    }
+
+    const active =
+      existing.active === true ||
+      String(
+        existing.active
+      ).toUpperCase()
+      === "TRUE";
+
+    if (!active) {
+      return jsonResponse({
+        success: false,
+        message:
+          "บัญชีไรเดอร์นี้ถูกปิดใช้งาน"
+      });
+    }
+
+    if (
+      String(
+        existing.code_hash || ""
+      )
+      !==
+      hashRiderCode(code)
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "รหัสไรเดอร์ไม่ถูกต้อง"
+      });
+    }
+
+    const token =
+      Utilities.getUuid();
+
+    const headers =
+      sheet
+        .getRange(
+          1,
+          1,
+          1,
+          sheet.getLastColumn()
+        )
+        .getValues()[0]
+        .map(value =>
+          String(
+            value || ""
+          ).trim()
+        );
+
+    const tokenIndex =
+      headers.indexOf(
+        "session_token"
+      );
+
+    const loginIndex =
+      headers.indexOf(
+        "last_login"
+      );
+
+    sheet
+      .getRange(
+        existing.row_number,
+        tokenIndex + 1
+      )
+      .setValue(
+        token
+      );
+
+    sheet
+      .getRange(
+        existing.row_number,
+        loginIndex + 1
+      )
+      .setValue(
+        new Date()
+      );
+
+    SpreadsheetApp.flush();
+
+    return jsonResponse({
+      success: true,
+      message:
+        "เข้าสู่ระบบสำเร็จ",
+      rider: {
+        rider_id:
+          existing.rider_id,
+        rider_name:
+          existing.rider_name,
+        session_token:
+          token
+      }
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function getOrderObjects() {
+  const ss =
+    SpreadsheetApp
+      .getActiveSpreadsheet();
+
+  const sheet =
+    ss.getSheetByName(
+      "Orders"
+    );
+
+  if (!sheet) {
+    return {
+      sheet: null,
+      headers: [],
+      orders: []
+    };
+  }
+
+  const headers =
+    ensureOrderStatusColumns(
+      sheet
+    );
+
+  const values =
+    sheet
+      .getDataRange()
+      .getValues();
+
+  const orders =
+    values
+      .slice(1)
+      .filter(row =>
+        String(
+          row[0] || ""
+        ).trim() !== ""
+      )
+      .map((row, offset) => {
+        const obj = {
+          row_number:
+            offset + 2
+        };
+
+        headers.forEach(
+          (header, index) => {
+            let value =
+              row[index];
+
+            if (
+              value
+              instanceof Date
+            ) {
+              value =
+                value.toISOString();
+            }
+
+            obj[header] =
+              value;
+          }
+        );
+
+        if (
+          !String(
+            obj.status || ""
+          ).trim()
+        ) {
+          obj.status =
+            "รอไรเดอร์รับงาน";
+        }
+
+        return obj;
+      });
+
+  return {
+    sheet:
+      sheet,
+    headers:
+      headers,
+    orders:
+      orders
+  };
+}
+
+
+function getRiderDashboard(e) {
+  try {
+    const riderId =
+      String(
+        e.parameter.rider_id || ""
+      ).trim();
+
+    const token =
+      String(
+        e.parameter.token || ""
+      ).trim();
+
+    const rider =
+      verifyRiderSession(
+        riderId,
+        token
+      );
+
+    if (!rider) {
+      return jsonResponse({
+        success: false,
+        auth_error: true,
+        message:
+          "Session ไรเดอร์หมดอายุ กรุณาเข้าสู่ระบบใหม่"
+      });
+    }
+
+    const result =
+      getOrderObjects();
+
+    const all =
+      result.orders;
+
+    const riderName =
+      String(
+        rider.rider_name
+      ).trim();
+
+    const terminal = [
+      "จัดส่งสำเร็จ",
+      "ยกเลิก"
+    ];
+
+    const available =
+      all
+        .filter(order => {
+          const assigned =
+            String(
+              order.rider || ""
+            ).trim();
+
+          return (
+            !assigned &&
+            !terminal.includes(
+              order.status
+            )
+          );
+        })
+        .reverse()
+        .slice(
+          0,
+          40
+        );
+
+    const mine =
+      all
+        .filter(order =>
+          String(
+            order.rider || ""
+          )
+          .trim()
+          .toLowerCase()
+          === riderName.toLowerCase()
+        )
+        .reverse();
+
+    const activeMine =
+      mine.filter(
+        order =>
+          !terminal.includes(
+            order.status
+          )
+      );
+
+    const completed =
+      mine.filter(
+        order =>
+          order.status ===
+          "จัดส่งสำเร็จ"
+      );
+
+    const cancelled =
+      mine.filter(
+        order =>
+          order.status ===
+          "ยกเลิก"
+      );
+
+    return jsonResponse({
+      success: true,
+      rider: {
+        rider_id:
+          rider.rider_id,
+        rider_name:
+          rider.rider_name
+      },
+      stats: {
+        available_jobs:
+          available.length,
+        accepted_total:
+          mine.length,
+        active_jobs:
+          activeMine.length,
+        completed_jobs:
+          completed.length,
+        cancelled_jobs:
+          cancelled.length,
+        credits:
+          completed.length * 10
+      },
+      available_orders:
+        available,
+      my_active_orders:
+        activeMine,
+      history:
+        mine.slice(0, 30)
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function claimOrder(data) {
+  const lock =
+    LockService.getScriptLock();
+
+  try {
+    lock.waitLock(
+      10000
+    );
+
+    const rider =
+      verifyRiderSession(
+        data.rider_id,
+        data.token
+      );
+
+    if (!rider) {
+      return jsonResponse({
+        success: false,
+        auth_error: true,
+        message:
+          "Session ไรเดอร์หมดอายุ"
+      });
+    }
+
+    const result =
+      getOrderObjects();
+
+    if (!result.sheet) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบชีต Orders"
+      });
+    }
+
+    const orderId =
+      String(
+        data.order_id || ""
+      ).trim();
+
+    const order =
+      result.orders.find(
+        item =>
+          String(
+            item.order_id
+          ).trim()
+          === orderId
+      );
+
+    if (!order) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบออเดอร์"
+      });
+    }
+
+    if (
+      order.status ===
+      "จัดส่งสำเร็จ" ||
+      order.status ===
+      "ยกเลิก"
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ออเดอร์นี้ไม่สามารถรับงานได้"
+      });
+    }
+
+    const assigned =
+      String(
+        order.rider || ""
+      ).trim();
+
+    if (assigned) {
+      return jsonResponse({
+        success: false,
+        message:
+          "มีไรเดอร์รับออเดอร์นี้ไปแล้ว"
+      });
+    }
+
+    const riderIndex =
+      result.headers.indexOf(
+        "rider"
+      );
+
+    const statusIndex =
+      result.headers.indexOf(
+        "status"
+      );
+
+    const updatedIndex =
+      result.headers.indexOf(
+        "status_updated_at"
+      );
+
+    result.sheet
+      .getRange(
+        order.row_number,
+        riderIndex + 1
+      )
+      .setValue(
+        rider.rider_name
+      );
+
+    result.sheet
+      .getRange(
+        order.row_number,
+        statusIndex + 1
+      )
+      .setValue(
+        "ไรเดอร์รับงานแล้ว"
+      );
+
+    result.sheet
+      .getRange(
+        order.row_number,
+        updatedIndex + 1
+      )
+      .setValue(
+        new Date()
+      );
+
+    SpreadsheetApp.flush();
+
+    return jsonResponse({
+      success: true,
+      message:
+        "รับออเดอร์เรียบร้อย"
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+
+  } finally {
+    try {
+      lock.releaseLock();
+    } catch (_) {}
+  }
+}
+
+
+function updateRiderOrder(data) {
+  try {
+    const rider =
+      verifyRiderSession(
+        data.rider_id,
+        data.token
+      );
+
+    if (!rider) {
+      return jsonResponse({
+        success: false,
+        auth_error: true,
+        message:
+          "Session ไรเดอร์หมดอายุ"
+      });
+    }
+
+    const allowed = [
+      "ไรเดอร์รับงานแล้ว",
+      "กำลังไปรับสินค้า",
+      "รับสินค้าแล้ว",
+      "กำลังจัดส่ง",
+      "จัดส่งสำเร็จ"
+    ];
+
+    const status =
+      String(
+        data.status || ""
+      ).trim();
+
+    if (
+      !allowed.includes(
+        status
+      )
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "สถานะไม่ถูกต้อง"
+      });
+    }
+
+    const result =
+      getOrderObjects();
+
+    if (!result.sheet) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบชีต Orders"
+      });
+    }
+
+    const orderId =
+      String(
+        data.order_id || ""
+      ).trim();
+
+    const order =
+      result.orders.find(
+        item =>
+          String(
+            item.order_id
+          ).trim()
+          === orderId
+      );
+
+    if (!order) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบออเดอร์"
+      });
+    }
+
+    if (
+      String(
+        order.rider || ""
+      )
+      .trim()
+      .toLowerCase()
+      !==
+      String(
+        rider.rider_name
+      )
+      .trim()
+      .toLowerCase()
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ออเดอร์นี้ไม่ใช่งานของคุณ"
+      });
+    }
+
+    if (
+      order.status ===
+      "ยกเลิก"
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ออเดอร์ถูกยกเลิกแล้ว"
+      });
+    }
+
+    const statusIndex =
+      result.headers.indexOf(
+        "status"
+      );
+
+    const updatedIndex =
+      result.headers.indexOf(
+        "status_updated_at"
+      );
+
+    result.sheet
+      .getRange(
+        order.row_number,
+        statusIndex + 1
+      )
+      .setValue(
+        status
+      );
+
+    result.sheet
+      .getRange(
+        order.row_number,
+        updatedIndex + 1
+      )
+      .setValue(
+        new Date()
+      );
+
+    SpreadsheetApp.flush();
+
+    return jsonResponse({
+      success: true,
+      message:
+        "อัปเดตสถานะเรียบร้อย",
+      status:
+        status
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function cancelOrderByCustomer(data) {
+  const lock =
+    LockService.getScriptLock();
+
+  try {
+    lock.waitLock(
+      10000
+    );
+
+    const orderId =
+      String(
+        data.order_id || ""
+      ).trim();
+
+    const customer =
+      String(
+        data.customer || ""
+      ).trim();
+
+    if (
+      !orderId ||
+      !customer
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ข้อมูลยกเลิกไม่ครบ"
+      });
+    }
+
+    const result =
+      getOrderObjects();
+
+    if (!result.sheet) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบชีต Orders"
+      });
+    }
+
+    const order =
+      result.orders.find(
+        item =>
+          String(
+            item.order_id
+          ).trim()
+          === orderId
+      );
+
+    if (!order) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบคำสั่งซื้อ"
+      });
+    }
+
+    if (
+      String(
+        order.customer || ""
+      )
+      .trim()
+      .toLowerCase()
+      !== customer.toLowerCase()
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ชื่อผู้สั่งไม่ตรงกับออเดอร์"
+      });
+    }
+
+    const assigned =
+      String(
+        order.rider || ""
+      ).trim();
+
+    if (assigned) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไรเดอร์รับออเดอร์แล้ว ไม่สามารถยกเลิกจากหน้าลูกค้าได้"
+      });
+    }
+
+    if (
+      order.status ===
+      "จัดส่งสำเร็จ" ||
+      order.status ===
+      "ยกเลิก"
+    ) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ออเดอร์นี้ยกเลิกไม่ได้"
+      });
+    }
+
+    const statusIndex =
+      result.headers.indexOf(
+        "status"
+      );
+
+    const updatedIndex =
+      result.headers.indexOf(
+        "status_updated_at"
+      );
+
+    result.sheet
+      .getRange(
+        order.row_number,
+        statusIndex + 1
+      )
+      .setValue(
+        "ยกเลิก"
+      );
+
+    result.sheet
+      .getRange(
+        order.row_number,
+        updatedIndex + 1
+      )
+      .setValue(
+        new Date()
+      );
+
+    SpreadsheetApp.flush();
+
+    return jsonResponse({
+      success: true,
+      message:
+        "ยกเลิกคำสั่งซื้อเรียบร้อย"
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+
+  } finally {
+    try {
+      lock.releaseLock();
+    } catch (_) {}
+  }
+}
+
+
+
+// ==========================================================
+// ADMIN RIDER MANAGEMENT
+// ==========================================================
+
+function getAdminRiders() {
+  try {
+    const riderSheet =
+      getRidersSheet();
+
+    const riderValues =
+      riderSheet
+        .getDataRange()
+        .getValues();
+
+    if (riderValues.length < 2) {
+      return jsonResponse({
+        success: true,
+        data: []
+      });
+    }
+
+    const riderHeaders =
+      riderValues[0]
+        .map(value =>
+          String(
+            value || ""
+          ).trim()
+        );
+
+    const orderResult =
+      getOrderObjects();
+
+    const orders =
+      orderResult.orders || [];
+
+    const data =
+      riderValues
+        .slice(1)
+        .filter(row =>
+          String(
+            row[0] || ""
+          ).trim() !== ""
+        )
+        .map(row => {
+          const rider = {};
+
+          riderHeaders.forEach(
+            (header, index) => {
+              let value =
+                row[index];
+
+              if (
+                value
+                instanceof Date
+              ) {
+                value =
+                  value.toISOString();
+              }
+
+              rider[header] =
+                value;
+            }
+          );
+
+          // ห้ามส่ง hash/session กลับหน้า Admin
+          delete rider.code_hash;
+          delete rider.session_token;
+
+          const riderName =
+            String(
+              rider.rider_name || ""
+            ).trim();
+
+          const myOrders =
+            orders.filter(order =>
+              String(
+                order.rider || ""
+              )
+              .trim()
+              .toLowerCase()
+              === riderName.toLowerCase()
+            );
+
+          const activeJobs =
+            myOrders.filter(order =>
+              ![
+                "จัดส่งสำเร็จ",
+                "ยกเลิก"
+              ].includes(
+                order.status
+              )
+            ).length;
+
+          const completedJobs =
+            myOrders.filter(order =>
+              order.status ===
+              "จัดส่งสำเร็จ"
+            ).length;
+
+          const cancelledJobs =
+            myOrders.filter(order =>
+              order.status ===
+              "ยกเลิก"
+            ).length;
+
+          rider.accepted_total =
+            myOrders.length;
+
+          rider.active_jobs =
+            activeJobs;
+
+          rider.completed_jobs =
+            completedJobs;
+
+          rider.cancelled_jobs =
+            cancelledJobs;
+
+          rider.credits =
+            completedJobs * 10;
+
+          return rider;
+        });
+
+    data.sort(
+      (a, b) =>
+        Number(
+          b.completed_jobs || 0
+        ) -
+        Number(
+          a.completed_jobs || 0
+        )
+    );
+
+    return jsonResponse({
+      success: true,
+      data: data
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function toggleRiderActive(data) {
+  try {
+    const riderId =
+      String(
+        data.rider_id || ""
+      ).trim();
+
+    const active =
+      Boolean(
+        data.active
+      );
+
+    if (!riderId) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบ Rider ID"
+      });
+    }
+
+    const sheet =
+      getRidersSheet();
+
+    const values =
+      sheet
+        .getDataRange()
+        .getValues();
+
+    const headers =
+      values[0]
+        .map(value =>
+          String(
+            value || ""
+          ).trim()
+        );
+
+    const idIndex =
+      headers.indexOf(
+        "rider_id"
+      );
+
+    const activeIndex =
+      headers.indexOf(
+        "active"
+      );
+
+    const tokenIndex =
+      headers.indexOf(
+        "session_token"
+      );
+
+    for (
+      let row = 1;
+      row < values.length;
+      row++
+    ) {
+      if (
+        String(
+          values[row][idIndex] || ""
+        ).trim()
+        === riderId
+      ) {
+        sheet
+          .getRange(
+            row + 1,
+            activeIndex + 1
+          )
+          .setValue(
+            active
+          );
+
+        // ปิดบัญชี = เตะ session เดิมออกทันที
+        if (
+          !active &&
+          tokenIndex !== -1
+        ) {
+          sheet
+            .getRange(
+              row + 1,
+              tokenIndex + 1
+            )
+            .setValue("");
+        }
+
+        SpreadsheetApp.flush();
+
+        return jsonResponse({
+          success: true,
+          message:
+            active
+              ? "เปิดบัญชีไรเดอร์แล้ว"
+              : "ปิดบัญชีไรเดอร์แล้ว"
+        });
+      }
+    }
+
+    return jsonResponse({
+      success: false,
+      message:
+        "ไม่พบไรเดอร์"
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+
+
+function deleteRider(data) {
+  try {
+    const riderId =
+      String(
+        data.rider_id || ""
+      ).trim();
+
+    if (!riderId) {
+      return jsonResponse({
+        success: false,
+        message:
+          "ไม่พบ Rider ID"
+      });
+    }
+
+    const sheet =
+      getRidersSheet();
+
+    const values =
+      sheet
+        .getDataRange()
+        .getValues();
+
+    const headers =
+      values[0]
+        .map(value =>
+          String(
+            value || ""
+          ).trim()
+        );
+
+    const idIndex =
+      headers.indexOf(
+        "rider_id"
+      );
+
+    const nameIndex =
+      headers.indexOf(
+        "rider_name"
+      );
+
+    for (
+      let row = 1;
+      row < values.length;
+      row++
+    ) {
+      if (
+        String(
+          values[row][idIndex] || ""
+        ).trim()
+        === riderId
+      ) {
+        const riderName =
+          String(
+            values[row][nameIndex] || ""
+          ).trim();
+
+        const orders =
+          getOrderObjects().orders;
+
+        const hasActiveJob =
+          orders.some(order =>
+            String(
+              order.rider || ""
+            )
+            .trim()
+            .toLowerCase()
+            === riderName.toLowerCase()
+            &&
+            ![
+              "จัดส่งสำเร็จ",
+              "ยกเลิก"
+            ].includes(
+              order.status
+            )
+          );
+
+        if (hasActiveJob) {
+          return jsonResponse({
+            success: false,
+            message:
+              "ไรเดอร์ยังมีงานที่กำลังดำเนินการอยู่ ลบไม่ได้"
+          });
+        }
+
+        sheet.deleteRow(
+          row + 1
+        );
+
+        SpreadsheetApp.flush();
+
+        return jsonResponse({
+          success: true,
+          message:
+            "ลบไรเดอร์เรียบร้อย"
+        });
+      }
+    }
+
+    return jsonResponse({
+      success: false,
+      message:
+        "ไม่พบไรเดอร์"
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message:
+        error.toString()
+    });
+  }
+}
+

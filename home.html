@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#111827">
 <title>DBT Multi Shop</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="theme.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--dark:#111827;--dark2:#1f2937;--orange:#ff6b35;--soft:#fff1eb;--muted:#6b7280;--line:#e5e7eb;--bg:#f6f7fb}
@@ -31,6 +34,52 @@ header{position:sticky;top:0;z-index:100;min-height:72px;padding:13px 6%;display
 footer{background:var(--dark);color:white;padding:34px 7%;display:flex;justify-content:space-between;gap:20px}footer span{color:#8f98a6;font-size:12px}
 @media(max-width:850px){.shop-grid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}.nav-link{display:none}}
 @media(max-width:600px){header{padding:13px 14px}.brand h1{font-size:18px}.brand p{display:none}.account-button{font-size:12px;padding:9px 11px}.hero{min-height:510px;padding:55px 18px 90px;background-position:62% center}.hero h2{font-size:43px;letter-spacing:-1.3px}.hero-actions{flex-direction:column}.hero-actions a{text-align:center}.quick-stats{width:calc(100% - 28px);margin-top:-44px;grid-template-columns:1fr 1fr;gap:21px 8px;padding:20px 14px}.divider{display:none}.container{width:calc(100% - 28px);margin-top:58px}.section-head,.how-head{flex-direction:column;align-items:flex-start}.section-head h2,.how-head h2,.features h2{font-size:26px}.shop-grid,.feature-grid{grid-template-columns:1fr}.shop-photo{aspect-ratio:1/.72}.how{margin-top:55px;padding-top:42px}.step{min-height:auto}.features{margin-top:60px}.cta{margin-top:58px;padding:31px 23px;flex-direction:column;align-items:flex-start}.cta h2{font-size:26px}.cta a{width:100%;text-align:center}footer{flex-direction:column;padding:28px 18px}}
+
+.shop-card{position:relative}
+.shop-fav{
+position:absolute;top:12px;right:12px;z-index:3
+}
+
+
+.smart-search-wrap{margin-bottom:24px}
+.smart-search-box{
+display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;background:white;
+border:1px solid var(--line);border-radius:16px;padding:9px 10px 9px 15px;
+box-shadow:0 10px 28px rgba(17,24,39,.06)
+}
+.smart-search-box input{
+width:100%;height:42px;border:none;outline:none;background:transparent;font-size:15px;color:inherit
+}
+.smart-search-box button{
+width:38px;height:38px;border:none;border-radius:10px;background:#eef0f3;cursor:pointer
+}
+.smart-search-hint{font-size:10px;color:var(--muted);margin:7px 3px 0}
+.smart-search-results{
+display:none;margin-top:10px;background:white;border:1px solid var(--line);border-radius:16px;
+padding:8px;box-shadow:0 16px 38px rgba(17,24,39,.10)
+}
+.smart-search-results.show{display:grid;gap:5px}
+.smart-result{
+display:grid;grid-template-columns:54px 1fr auto;gap:11px;align-items:center;padding:8px;
+border-radius:11px;text-decoration:none;color:inherit
+}
+.smart-result:hover{background:#f6f7f9}
+.smart-result img{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#eee}
+.smart-result strong{display:block;font-size:13px}
+.smart-result span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.smart-result-go{font-size:11px;font-weight:800;color:var(--orange)}
+html[data-theme="dark"] .smart-search-box,
+html[data-theme="dark"] .smart-search-results{
+background:var(--ui-surface)!important;border-color:var(--ui-line)!important
+}
+html[data-theme="dark"] .smart-search-box button{background:#222b38!important;color:white!important}
+html[data-theme="dark"] .smart-result:hover{background:#1b2330}
+@media(max-width:600px){
+.smart-result{grid-template-columns:46px 1fr}
+.smart-result img{width:46px;height:46px}
+.smart-result-go{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -43,7 +92,9 @@ footer{background:var(--dark);color:white;padding:34px 7%;display:flex;justify-c
 <nav class="header-actions">
 <a class="nav-link" href="#shops">ร้านค้า</a>
 <a class="nav-link" href="#how">วิธีใช้งาน</a>
-<a href="account.html" class="account-button">👤 Account</a>
+<a class="nav-link" href="favorites.html">❤️ รายการโปรด</a>
+<a class="nav-link" href="rider-login.html">🛵 สำหรับไรเดอร์</a>
+<a href="account.html" class="account-button">📦 ติดตามออเดอร์</a>
 </nav>
 </header>
 
@@ -54,26 +105,105 @@ footer{background:var(--dark);color:white;padding:34px 7%;display:flex;justify-c
 <p class="hero-description">เลือกสินค้าได้ง่ายจากหลายร้านในระบบ ค้นหา เพิ่มลงตะกร้า ตรวจสอบรายละเอียด และยืนยันคำสั่งซื้อได้ในไม่กี่ขั้นตอน</p>
 <div class="hero-actions">
 <a href="#shops" class="hero-primary">เลือกร้านค้า →</a>
-<a href="account.html" class="hero-secondary">ตรวจสอบคำสั่งซื้อ</a>
+<a href="account.html" class="hero-secondary">ติดตามคำสั่งซื้อ</a>
+<a href="favorites.html" class="hero-secondary">❤️ รายการโปรด</a>
 </div>
 <div class="hero-trust"><span>✓ ไม่ต้องสมัครสมาชิก</span><span>✓ ใช้งานง่าย</span><span>✓ รองรับทุกหน้าจอ</span></div>
 </div>
 </section>
 
 <section class="quick-stats">
-<div class="stat"><strong>3</strong><span>ร้านค้าในระบบ</span></div><div class="divider"></div>
-<div class="stat"><strong>12+</strong><span>สินค้าพร้อมเลือก</span></div><div class="divider"></div>
+<div class="stat"><strong id="homeShopCount">-</strong><span>ร้านค้าที่เปิดอยู่</span></div><div class="divider"></div>
+<div class="stat"><strong id="homeProductCount">-</strong><span>สินค้าพร้อมเลือก</span></div><div class="divider"></div>
 <div class="stat"><strong>24/7</strong><span>เลือกสินค้าได้ทุกเวลา</span></div><div class="divider"></div>
 <div class="stat"><strong>100%</strong><span>รองรับมือถือ</span></div>
 </section>
 
 <main class="container">
 <section id="shops">
+
+<div class="smart-search-wrap">
+    <div class="smart-search-box">
+        <span>🔎</span>
+        <input
+            id="globalSearchInput"
+            type="search"
+            placeholder="ค้นหาร้าน สินค้า หรือรหัส เช่น ข้าว / P017 / S004"
+            oninput="runSmartSearch()"
+        >
+        <button type="button" onclick="clearSmartSearch()">✕</button>
+    </div>
+
+    <div class="smart-search-hint">
+        ค้นหาได้ทั้งชื่อร้าน ชื่อสินค้า รหัสร้าน และรหัสสินค้า
+    </div>
+
+    <div id="smartSearchResults" class="smart-search-results"></div>
+</div>
+
 <div class="section-head">
 <div><p class="eyebrow">AVAILABLE SHOPS</p><h2>วันนี้จะเข้าร้านไหนดี?</h2></div>
 <p class="section-note">เลือกร้านที่ต้องการ แล้วระบบจะแสดงเฉพาะสินค้าของร้านนั้น พร้อมค้นหาและจัดการตะกร้าได้ทันที</p>
 </div>
 <section class="shop-grid" id="shopGrid"><div class="loading">กำลังโหลดร้านค้า...</div></section>
+</section>
+
+
+<section class="v2-promo dbt-animate-in">
+  <div class="v2-promo-main">
+    <small>PROMOTION FOR FUN 😎</small>
+    <h2>ส่งฟรีไปเลยครับ!</h2>
+    <p style="margin-top:8px;font-size:13px;line-height:1.65;opacity:.9">
+      โปรจำลองสำหรับ Mini Project ไม่มีการคิดค่าส่งจริง กดโค้ดเพื่อคัดลอกได้เลย
+    </p>
+    <div class="promo-claim">
+      <button type="button" onclick="claimPromoCode()">รับเลย</button>
+      <small>โค้ด: <strong>DBTFREE</strong> · ค่าส่ง 19,999 บาท → ฟรี 😭</small>
+    </div>
+  </div>
+  <div class="v2-expired">
+    <strong>ลด 20%</strong>
+    <span>หมดเขตแล้วครับ 555 😭</span>
+  </div>
+</section>
+
+<section class="v2-section" id="todayMenu">
+  <div class="v2-section-head">
+    <div>
+      <small>MENU OF THE DAY</small>
+      <h2>🍜 เมนูแนะนำวันนี้</h2>
+    </div>
+    <p>ระบบเลือกจากสินค้าที่เปิดขายแบบเปลี่ยนไปตามวัน ไม่ต้องเพิ่มข้อมูลใหม่ในฐานข้อมูล</p>
+  </div>
+  <div class="v2-mini-grid" id="todayMenuGrid">
+    <div class="v2-empty">กำลังเลือกเมนูวันนี้...</div>
+  </div>
+</section>
+
+<section class="v2-section" id="bestSellerSection">
+  <div class="v2-section-head">
+    <div>
+      <small>TOP PRODUCTS</small>
+      <h2>🔥 สินค้าขายดี</h2>
+    </div>
+    <p>คำนวณจากคำสั่งซื้อใน Google Sheets เพื่อให้ข้อมูลเปลี่ยนตามการใช้งานจริง</p>
+  </div>
+  <div class="v2-mini-grid" id="bestSellerGrid">
+    <div class="v2-empty">กำลังคำนวณสินค้าขายดี...</div>
+  </div>
+</section>
+
+<section class="v2-section" id="recentSection">
+  <div class="v2-section-head">
+    <div>
+      <small>RECENTLY VIEWED</small>
+      <h2>👁️ ดูล่าสุด</h2>
+    </div>
+    <p>จำเฉพาะในเครื่องของผู้ใช้ ไม่ต้องสมัครสมาชิกและไม่ส่งข้อมูลส่วนตัวไปที่ฐานข้อมูล</p>
+  </div>
+  <div class="v2-mini-grid" id="recentGrid">
+    <div class="v2-empty">ยังไม่มีรายการที่ดูล่าสุด</div>
+  </div>
 </section>
 
 <section class="how" id="how">
@@ -104,10 +234,13 @@ footer{background:var(--dark);color:white;padding:34px 7%;display:flex;justify-c
 
 <footer><strong>DBT Multi Shop</strong><span>Mini Project · รายวิชาโปรแกรมฐานข้อมูล</span></footer>
 
+<script src="app-ui.js"></script>
 <script>
 
 const API_URL =
     "https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+
+let v2Shops = [];
 
 
 async function loadShops() {
@@ -134,13 +267,17 @@ async function loadShops() {
         }
 
 
-        const shops =
+        v2Shops =
             result.data.filter(
                 shop =>
                     shop.active === true ||
-                    shop.active === "TRUE"
+                    String(shop.active).toUpperCase() === "TRUE"
             );
 
+        const shops = v2Shops;
+
+        document.getElementById("homeShopCount").textContent =
+            shops.length.toLocaleString();
 
         grid.innerHTML = "";
 
@@ -163,7 +300,16 @@ async function loadShops() {
 
             grid.innerHTML += `
 
-                <article class="shop-card">
+                <article class="shop-card dbt-animate-in">
+
+                    <button
+                        type="button"
+                        class="dbt-favorite-btn shop-fav ${window.DBTUI && DBTUI.favorites.has("shop", shop.shop_id) ? "active" : ""}"
+                        aria-label="เพิ่มร้านโปรด"
+                        onclick='event.stopPropagation(); toggleShopFavorite(${JSON.stringify(shop)})'
+                    >
+                        ${window.DBTUI && DBTUI.favorites.has("shop", shop.shop_id) ? "♥" : "♡"}
+                    </button>
 
                     <div class="shop-photo">
 
@@ -211,6 +357,338 @@ async function loadShops() {
     }
 }
 
+
+
+let v2AllProducts = [];
+let v2BestSellerIds = new Set();
+
+async function loadV2Highlights() {
+    await Promise.all([
+        loadAllProductsForV2(),
+        loadBestSellers()
+    ]);
+
+    renderTodayMenu();
+    renderRecent();
+}
+
+async function loadAllProductsForV2() {
+    try {
+        const response = await fetch(`${API_URL}?action=products`);
+        const result = await response.json();
+
+        if (!result.success) throw new Error(result.message);
+
+        v2AllProducts = result.data.filter(
+            p => p.active === true || String(p.active).toUpperCase() === "TRUE"
+        );
+
+        document.getElementById("homeProductCount").textContent =
+            v2AllProducts.length.toLocaleString();
+    } catch (error) {
+        console.error("V2 products:", error);
+        document.getElementById("todayMenuGrid").innerHTML =
+            `<div class="v2-empty">โหลดเมนูแนะนำไม่สำเร็จ</div>`;
+    }
+}
+
+async function loadBestSellers() {
+    const grid = document.getElementById("bestSellerGrid");
+
+    try {
+        const response = await fetch(`${API_URL}?action=bestSellers`);
+        const result = await response.json();
+
+        if (!result.success) throw new Error(result.message);
+
+        const items = Array.isArray(result.data) ? result.data : [];
+        v2BestSellerIds = new Set(items.map(x => String(x.product_id)));
+
+        if (!items.length) {
+            grid.innerHTML =
+                `<div class="v2-empty">ยังมีข้อมูลคำสั่งซื้อไม่พอสำหรับจัดอันดับ</div>`;
+            return;
+        }
+
+        grid.innerHTML = items.slice(0,4).map((item,index) => `
+            <a class="v2-mini-card v2-mini-link dbt-animate-in"
+               href="shop.html?shop_id=${encodeURIComponent(item.shop_id)}&shop_name=${encodeURIComponent(item.shop_name || item.shop_id)}">
+                <span class="v2-badge hot">🔥 TOP ${index + 1}</span>
+                <img src="${item.image || 'https://placehold.co/600x600?text=Product'}"
+                     alt="${item.name}"
+                     loading="lazy"
+                     onerror="this.src='https://placehold.co/600x600?text=Product'">
+                <div class="v2-mini-body">
+                    <strong>${item.name}</strong>
+                    <span>สั่งแล้ว ${item.quantity} ชิ้น · ฿${item.price}</span>
+                </div>
+            </a>
+        `).join("");
+
+    } catch (error) {
+        console.error("Best sellers:", error);
+        grid.innerHTML =
+            `<div class="v2-empty">ยังโหลดอันดับขายดีไม่ได้ — Deploy Apps Script Phase 2 ก่อน</div>`;
+    }
+}
+
+function renderTodayMenu() {
+    const grid = document.getElementById("todayMenuGrid");
+
+    if (!v2AllProducts.length) return;
+
+    // Deterministic per day: same menu all day, changes tomorrow.
+    const now = new Date();
+    const seed = Number(
+        `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}`
+    );
+
+    const items = [...v2AllProducts]
+        .sort((a,b) => {
+            const av = hashForDay(String(a.product_id), seed);
+            const bv = hashForDay(String(b.product_id), seed);
+            return av - bv;
+        })
+        .slice(0,4);
+
+    grid.innerHTML = items.map(item => `
+        <a class="v2-mini-card v2-mini-link dbt-animate-in"
+           href="shop.html?shop_id=${encodeURIComponent(item.shop_id)}&shop_name=${encodeURIComponent(getHomeShopName(item.shop_id))}">
+            <span class="v2-badge today">🍴 TODAY</span>
+            <img src="${item.image}"
+                 alt="${item.name}"
+                 loading="lazy"
+                 onerror="this.src='https://placehold.co/600x600?text=Menu'">
+            <div class="v2-mini-body">
+                <strong>${item.name}</strong>
+                <span>${getHomeShopName(item.shop_id)} · ฿${item.price}</span>
+            </div>
+        </a>
+    `).join("");
+}
+
+function hashForDay(text, seed) {
+    let hash = seed || 1;
+    for (let i = 0; i < text.length; i++) {
+        hash = ((hash << 5) - hash) + text.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
+}
+
+function getHomeShopName(id) {
+    const shop =
+        v2Shops.find(
+            item =>
+                String(item.shop_id)
+                === String(id)
+        );
+
+    return shop
+        ? shop.shop_name
+        : (id || "ร้านค้า");
+}
+
+
+function normalizeSearchText(value) {
+    return String(value || "")
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/[-_.]/g, "")
+        .trim();
+}
+
+function runSmartSearch() {
+    const input =
+        document.getElementById(
+            "globalSearchInput"
+        );
+
+    const resultsBox =
+        document.getElementById(
+            "smartSearchResults"
+        );
+
+    const keyword =
+        normalizeSearchText(
+            input.value
+        );
+
+    if (!keyword) {
+        resultsBox.innerHTML = "";
+        resultsBox.classList.remove("show");
+        return;
+    }
+
+    const shopResults =
+        v2Shops
+            .filter(shop => {
+                const haystack =
+                    normalizeSearchText(
+                        `${shop.shop_id} ${shop.shop_name} ${shop.description || ""}`
+                    );
+
+                return haystack.includes(
+                    keyword
+                );
+            })
+            .slice(0, 4)
+            .map(shop => ({
+                type: "shop",
+                title: shop.shop_name,
+                subtitle: `ร้านค้า · ${shop.shop_id}`,
+                image: shop.image,
+                href:
+                    `shop.html?shop_id=${encodeURIComponent(shop.shop_id)}&shop_name=${encodeURIComponent(shop.shop_name)}`
+            }));
+
+    const productResults =
+        v2AllProducts
+            .filter(product => {
+                const shopName =
+                    getHomeShopName(
+                        product.shop_id
+                    );
+
+                const haystack =
+                    normalizeSearchText(
+                        `${product.product_id} ${product.name} ${product.shop_id} ${shopName}`
+                    );
+
+                return haystack.includes(
+                    keyword
+                );
+            })
+            .slice(0, 6)
+            .map(product => ({
+                type: "product",
+                title: product.name,
+                subtitle:
+                    `${getHomeShopName(product.shop_id)} · ${product.product_id} · ฿${Number(product.price || 0).toLocaleString()}`,
+                image: product.image,
+                href:
+                    `shop.html?shop_id=${encodeURIComponent(product.shop_id)}&shop_name=${encodeURIComponent(getHomeShopName(product.shop_id))}`
+            }));
+
+    const results =
+        [...shopResults, ...productResults]
+            .slice(0, 8);
+
+    if (!results.length) {
+        resultsBox.innerHTML =
+            `<div class="v2-empty" style="padding:18px">ไม่พบร้านหรือสินค้าที่ตรงกับ “${input.value.trim()}”</div>`;
+
+        resultsBox.classList.add("show");
+        return;
+    }
+
+    resultsBox.innerHTML =
+        results
+            .map(item => `
+                <a class="smart-result" href="${item.href}">
+                    <img
+                        src="${item.image || "https://placehold.co/300x300?text=DBT"}"
+                        alt="${item.title}"
+                        onerror="this.src='https://placehold.co/300x300?text=DBT'"
+                    >
+
+                    <div>
+                        <strong>
+                            ${item.type === "shop" ? "🏪" : "📦"}
+                            ${item.title}
+                        </strong>
+
+                        <span>${item.subtitle}</span>
+                    </div>
+
+                    <div class="smart-result-go">
+                        เปิด →
+                    </div>
+                </a>
+            `)
+            .join("");
+
+    resultsBox.classList.add("show");
+}
+
+function clearSmartSearch() {
+    document
+        .getElementById(
+            "globalSearchInput"
+        )
+        .value = "";
+
+    const box =
+        document.getElementById(
+            "smartSearchResults"
+        );
+
+    box.innerHTML = "";
+    box.classList.remove("show");
+}
+
+
+function renderRecent() {
+    const grid = document.getElementById("recentGrid");
+    if (!window.DBTUI) return;
+
+    const items = DBTUI.recent.all().slice(0,4);
+
+    if (!items.length) {
+        grid.innerHTML =
+            `<div class="v2-empty">ยังไม่มีรายการที่ดูล่าสุด ลองเข้าร้านหรือเพิ่มสินค้าลงตะกร้าก่อน 👀</div>`;
+        return;
+    }
+
+    grid.innerHTML = items.map(item => {
+        const isProduct = item.type === "product";
+        const href = isProduct
+            ? `shop.html?shop_id=${encodeURIComponent(item.shop_id || "")}&shop_name=${encodeURIComponent(item.shop_name || item.shop_id || "ร้านค้า")}`
+            : (item.url || `shop.html?shop_id=${encodeURIComponent(item.id)}&shop_name=${encodeURIComponent(item.name || "ร้านค้า")}`);
+
+        return `
+            <a class="v2-mini-card v2-mini-link dbt-animate-in" href="${href}">
+                ${item.image
+                    ? `<img src="${item.image}" alt="${item.name || "ล่าสุด"}" onerror="this.src='https://placehold.co/600x600?text=Recent'">`
+                    : `<div style="aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:42px;background:#eef0f3">👁️</div>`
+                }
+                <div class="v2-mini-body">
+                    <strong>${item.name || "รายการล่าสุด"}</strong>
+                    <span>${isProduct ? `สินค้า${item.price !== undefined ? ` · ฿${item.price}` : ""}` : "ร้านค้าที่ดูล่าสุด"}</span>
+                </div>
+            </a>
+        `;
+    }).join("");
+}
+
+function claimPromoCode() {
+    try {
+        localStorage.setItem("dbt_coupon", "DBTFREE");
+
+        if (window.DBTUI) {
+            DBTUI.toast("รับโค้ด DBTFREE แล้ว 🚚 ใช้อัตโนมัติตอนสั่งซื้อ", "success");
+            DBTUI.sound.play("success");
+        }
+    } catch (_) {
+        alert("รับโค้ด DBTFREE แล้ว");
+    }
+}
+
+window.addEventListener("dbt:recent", renderRecent);
+
+function toggleShopFavorite(shop) {
+    if (!window.DBTUI) return;
+
+    DBTUI.favorites.toggle({
+        type: "shop",
+        id: shop.shop_id,
+        name: shop.shop_name,
+        image: shop.image
+    });
+
+    loadShops();
+}
+
 let adminTapCount = 0;
 let adminTimer = null;
 
@@ -249,11 +727,13 @@ document
             }
         }
     });
-loadShops();
+loadShops()
+    .finally(() => {
+        loadV2Highlights();
+    });
 
 
 </script>
-
-
+<script src="app-pwa.js"></script>
 </body>
 </html>

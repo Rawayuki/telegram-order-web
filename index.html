@@ -1,566 +1,337 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBT Order</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>DBT Multi Shop</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="theme.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--dark:#111827;--dark2:#1f2937;--orange:#ff6b35;--soft:#fff1eb;--muted:#6b7280;--line:#e5e7eb;--bg:#f6f7fb}
+html{scroll-behavior:smooth}
+body{font-family:Arial,"Noto Sans Thai",sans-serif;background:radial-gradient(circle at 10% 12%,rgba(255,107,53,.06),transparent 28%),var(--bg);color:#171717}
+header{position:sticky;top:0;z-index:100;min-height:72px;padding:13px 6%;display:flex;justify-content:space-between;align-items:center;gap:20px;background:rgba(17,24,39,.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08);color:white}
+.brand{user-select:none}.brand h1{font-size:23px}.brand p{color:#9ca3af;font-size:12px;margin-top:3px}
+.header-actions{display:flex;align-items:center;gap:8px}.nav-link,.account-button{text-decoration:none;padding:10px 14px;border-radius:11px;font-size:13px;font-weight:700;transition:.2s}.nav-link{color:#d1d5db}.nav-link:hover{color:white;background:rgba(255,255,255,.08)}.account-button{color:white;background:var(--orange)}
+.hero{min-height:520px;display:flex;align-items:center;position:relative;overflow:hidden;padding:70px 7% 105px;color:white;background:linear-gradient(90deg,rgba(17,24,39,.97),rgba(17,24,39,.84) 48%,rgba(17,24,39,.38)),url("https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1800&q=85");background-size:cover;background-position:center}
+.hero:after{content:"";position:absolute;width:430px;height:430px;border:80px solid rgba(255,255,255,.025);border-radius:50%;right:-140px;top:-170px}
+.hero-content{position:relative;z-index:2;max-width:720px}.hero-tag{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:30px;background:rgba(255,107,53,.16);border:1px solid rgba(255,137,91,.35);color:#ffb08f;font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:18px}.hero-tag:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 5px rgba(255,107,53,.14)}
+.hero h2{font-size:clamp(44px,6vw,72px);line-height:1.03;letter-spacing:-2px}.hero h2 span{color:#ff956c}.hero-description{max-width:580px;margin-top:20px;color:#d1d5db;font-size:15px;line-height:1.75}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.hero-actions a{text-decoration:none;padding:13px 18px;border-radius:12px;font-size:14px;font-weight:800;transition:.2s}.hero-primary{background:var(--orange);color:white}.hero-secondary{color:white;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07)}.hero-actions a:hover{transform:translateY(-2px)}
+.hero-trust{display:flex;flex-wrap:wrap;gap:17px;margin-top:22px;color:#b8bec8;font-size:11px}
+.quick-stats{width:min(1060px,90%);margin:-43px auto 0;position:relative;z-index:10;background:white;border:1px solid var(--line);border-radius:21px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;padding:23px 28px;box-shadow:0 18px 45px rgba(17,24,39,.10)}
+.stat{text-align:center}.stat strong{display:block;font-size:25px;color:var(--dark)}.stat span{display:block;margin-top:5px;color:#8a8f98;font-size:11px}.divider{width:1px;height:38px;background:var(--line)}
+.container{width:min(1150px,92%);margin:72px auto 80px}.section-head,.how-head{display:flex;justify-content:space-between;align-items:end;gap:28px;margin-bottom:26px}.eyebrow{color:var(--orange);font-size:11px;font-weight:800;letter-spacing:1.3px}.section-head h2,.how-head h2,.features h2{font-size:32px;margin-top:6px}.section-note,.how-head>span{max-width:430px;color:var(--muted);font-size:13px;line-height:1.7}
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.shop-card{background:white;border:1px solid var(--line);border-radius:21px;overflow:hidden;box-shadow:0 8px 24px rgba(17,24,39,.045);transition:.25s}.shop-card:hover{transform:translateY(-7px);box-shadow:0 20px 42px rgba(17,24,39,.11)}
+.shop-photo{width:100%;aspect-ratio:1/.82;overflow:hidden;background:#eee}.shop-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:.45s}.shop-card:hover img{transform:scale(1.035)}.shop-content{padding:19px}.shop-content p{font-size:10px;color:#9ca3af;font-weight:800;letter-spacing:1px;margin-bottom:6px}.shop-content h3{font-size:21px;margin-bottom:16px}.shop-button{display:flex;justify-content:space-between;width:100%;text-decoration:none;background:var(--dark);color:white;padding:12px 14px;border-radius:11px;font-weight:800;font-size:13px;transition:.2s}.shop-button:hover{background:var(--orange)}
+.loading{grid-column:1/-1;text-align:center;background:white;padding:45px;border:1px solid var(--line);border-radius:18px;color:#777}
+.how{margin-top:85px;padding-top:58px;border-top:1px solid var(--line)}.steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:15px}.step{min-height:220px;padding:24px;border-radius:21px;background:linear-gradient(145deg,var(--dark),#202b3b);color:white;transition:.25s}.step:hover{transform:translateY(-5px)}.step-top{display:flex;justify-content:space-between;align-items:center}.step-no{color:#ff9a73;font-size:11px;font-weight:800;letter-spacing:1px}.step-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.09);font-size:19px}.step h3{margin-top:31px;margin-bottom:8px;font-size:19px}.step p{color:#adb5c2;font-size:13px;line-height:1.65}.arrow{font-size:22px;color:#aeb3bc}
+.features{margin-top:80px}.feature-intro{max-width:680px;margin-bottom:27px}.feature-intro span{display:block;color:var(--muted);margin-top:10px;line-height:1.7}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature-card{background:white;border:1px solid var(--line);border-radius:19px;padding:25px;transition:.25s}.feature-card:hover{transform:translateY(-5px);box-shadow:0 16px 36px rgba(17,24,39,.08)}.feature-icon{width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:15px;font-size:23px;margin-bottom:17px}.feature-card h3{font-size:19px;margin-bottom:8px}.feature-card p{color:var(--muted);font-size:13px;line-height:1.65}
+.cta{position:relative;overflow:hidden;margin-top:80px;padding:46px;border-radius:26px;background:linear-gradient(125deg,#111827,#1f2937 70%,#4b2c24 130%);color:white;display:flex;justify-content:space-between;align-items:center;gap:30px}.cta:after{content:"";position:absolute;width:250px;height:250px;border:48px solid rgba(255,255,255,.035);border-radius:50%;right:-75px;top:-105px}.cta span{color:#ff9870;font-size:10px;font-weight:800;letter-spacing:1.4px}.cta h2{font-size:32px;line-height:1.25;margin-top:8px}.cta p{color:#aeb5c0;margin-top:9px;font-size:13px}.cta a{position:relative;z-index:2;flex-shrink:0;text-decoration:none;color:var(--dark);background:white;padding:14px 21px;border-radius:12px;font-weight:800;font-size:13px}
+footer{background:var(--dark);color:white;padding:34px 7%;display:flex;justify-content:space-between;gap:20px}footer span{color:#8f98a6;font-size:12px}
+@media(max-width:850px){.shop-grid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}.nav-link{display:none}}
+@media(max-width:600px){header{padding:13px 14px}.brand h1{font-size:18px}.brand p{display:none}.account-button{font-size:12px;padding:9px 11px}.hero{min-height:510px;padding:55px 18px 90px;background-position:62% center}.hero h2{font-size:43px;letter-spacing:-1.3px}.hero-actions{flex-direction:column}.hero-actions a{text-align:center}.quick-stats{width:calc(100% - 28px);margin-top:-44px;grid-template-columns:1fr 1fr;gap:21px 8px;padding:20px 14px}.divider{display:none}.container{width:calc(100% - 28px);margin-top:58px}.section-head,.how-head{flex-direction:column;align-items:flex-start}.section-head h2,.how-head h2,.features h2{font-size:26px}.shop-grid,.feature-grid{grid-template-columns:1fr}.shop-photo{aspect-ratio:1/.72}.how{margin-top:55px;padding-top:42px}.step{min-height:auto}.features{margin-top:60px}.cta{margin-top:58px;padding:31px 23px;flex-direction:column;align-items:flex-start}.cta h2{font-size:26px}.cta a{width:100%;text-align:center}footer{flex-direction:column;padding:28px 18px}}
 
-    <link rel="stylesheet" href="style.css">
+.shop-card{position:relative}
+.shop-fav{
+position:absolute;top:12px;right:12px;z-index:3
+}
+
+
+.smart-search-wrap{margin-bottom:24px}
+.smart-search-box{
+display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;background:white;
+border:1px solid var(--line);border-radius:16px;padding:9px 10px 9px 15px;
+box-shadow:0 10px 28px rgba(17,24,39,.06)
+}
+.smart-search-box input{
+width:100%;height:42px;border:none;outline:none;background:transparent;font-size:15px;color:inherit
+}
+.smart-search-box button{
+width:38px;height:38px;border:none;border-radius:10px;background:#eef0f3;cursor:pointer
+}
+.smart-search-hint{font-size:10px;color:var(--muted);margin:7px 3px 0}
+.smart-search-results{
+display:none;margin-top:10px;background:white;border:1px solid var(--line);border-radius:16px;
+padding:8px;box-shadow:0 16px 38px rgba(17,24,39,.10)
+}
+.smart-search-results.show{display:grid;gap:5px}
+.smart-result{
+display:grid;grid-template-columns:54px 1fr auto;gap:11px;align-items:center;padding:8px;
+border-radius:11px;text-decoration:none;color:inherit
+}
+.smart-result:hover{background:#f6f7f9}
+.smart-result img{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#eee}
+.smart-result strong{display:block;font-size:13px}
+.smart-result span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.smart-result-go{font-size:11px;font-weight:800;color:var(--orange)}
+html[data-theme="dark"] .smart-search-box,
+html[data-theme="dark"] .smart-search-results{
+background:var(--ui-surface)!important;border-color:var(--ui-line)!important
+}
+html[data-theme="dark"] .smart-search-box button{background:#222b38!important;color:white!important}
+html[data-theme="dark"] .smart-result:hover{background:#1b2330}
+@media(max-width:600px){
+.smart-result{grid-template-columns:46px 1fr}
+.smart-result img{width:46px;height:46px}
+.smart-result-go{display:none}
+}
+
+</style>
 </head>
-
 <body>
 
-<header class="topbar">
-
-    <div class="brand">
-        <div class="logo">D</div>
-
-        <div>
-            <h1>DBT Order</h1>
-            <p>ระบบสั่งสินค้าออนไลน์</p>
-        </div>
-    </div>
-
-    <button class="cart-button" onclick="openCart()">
-        🛒
-        <span class="cart-label">ตะกร้า</span>
-        <span id="cartCount" class="cart-count">0</span>
-    </button>
-
+<header>
+<div class="brand" id="secretAdminButton">
+<h1>🛍️ DBT Multi Shop</h1>
+<p>ร้านเล็ก ๆ หลายร้าน รวมไว้ในที่เดียว</p>
+</div>
+<nav class="header-actions">
+<a class="nav-link" href="#shops">ร้านค้า</a>
+<a class="nav-link" href="#how">วิธีใช้งาน</a>
+<a class="nav-link" href="favorites.html">❤️ รายการโปรด</a>
+<a class="nav-link" href="rider-login.html">🛵 สำหรับไรเดอร์</a>
+<a href="account.html" class="account-button">📦 ติดตามออเดอร์</a>
+</nav>
 </header>
 
-
 <section class="hero">
+<div class="hero-content">
+<span class="hero-tag">DBT MULTI SHOP</span>
+<h2>หลายร้าน<br><span>หลายความชอบ</span><br>ในที่เดียว</h2>
+<p class="hero-description">เลือกสินค้าได้ง่ายจากหลายร้านในระบบ ค้นหา เพิ่มลงตะกร้า ตรวจสอบรายละเอียด และยืนยันคำสั่งซื้อได้ในไม่กี่ขั้นตอน</p>
+<div class="hero-actions">
+<a href="#shops" class="hero-primary">เลือกร้านค้า →</a>
+<a href="account.html" class="hero-secondary">ติดตามคำสั่งซื้อ</a>
+<a href="favorites.html" class="hero-secondary">❤️ รายการโปรด</a>
+</div>
+<div class="hero-trust"><span>✓ ไม่ต้องสมัครสมาชิก</span><span>✓ ใช้งานง่าย</span><span>✓ รองรับทุกหน้าจอ</span></div>
+</div>
+</section>
 
-    <div class="hero-content">
+<section class="quick-stats">
+<div class="stat"><strong id="homeShopCount">-</strong><span>ร้านค้าที่เปิดอยู่</span></div><div class="divider"></div>
+<div class="stat"><strong id="homeProductCount">-</strong><span>สินค้าพร้อมเลือก</span></div><div class="divider"></div>
+<div class="stat"><strong>24/7</strong><span>เลือกสินค้าได้ทุกเวลา</span></div><div class="divider"></div>
+<div class="stat"><strong>100%</strong><span>รองรับมือถือ</span></div>
+</section>
 
-        <span class="hero-tag">
-            ORDER ONLINE
-        </span>
+<main class="container">
+<section id="shops">
 
-        <h2>
-            สั่งง่าย<br>
-            <span>เลือกได้ตามใจ</span>
-        </h2>
-
-        <p>
-            เลือกสินค้า เพิ่มลงตะกร้า
-            ตรวจสอบรายการ และยืนยันคำสั่งซื้อ
-        </p>
-
+<div class="smart-search-wrap">
+    <div class="smart-search-box">
+        <span>🔎</span>
+        <input
+            id="globalSearchInput"
+            type="search"
+            placeholder="ค้นหาร้าน สินค้า หรือรหัส เช่น ข้าว / P017 / S004"
+            oninput="runSmartSearch()"
+        >
+        <button type="button" onclick="clearSmartSearch()">✕</button>
     </div>
 
+    <div class="smart-search-hint">
+        ค้นหาได้ทั้งชื่อร้าน ชื่อสินค้า รหัสร้าน และรหัสสินค้า
+    </div>
+
+    <div id="smartSearchResults" class="smart-search-results"></div>
+</div>
+
+<div class="section-head">
+<div><p class="eyebrow">AVAILABLE SHOPS</p><h2>วันนี้จะเข้าร้านไหนดี?</h2></div>
+<p class="section-note">เลือกร้านที่ต้องการ แล้วระบบจะแสดงเฉพาะสินค้าของร้านนั้น พร้อมค้นหาและจัดการตะกร้าได้ทันที</p>
+</div>
+<section class="shop-grid" id="shopGrid"><div class="loading">กำลังโหลดร้านค้า...</div></section>
 </section>
 
 
-<main class="container">
+<section class="v2-promo dbt-animate-in">
+  <div class="v2-promo-main">
+    <small>PROMOTION FOR FUN 😎</small>
+    <h2>ส่งฟรีไปเลยครับ!</h2>
+    <p style="margin-top:8px;font-size:13px;line-height:1.65;opacity:.9">
+      โปรจำลองสำหรับ Mini Project ไม่มีการคิดค่าส่งจริง กดโค้ดเพื่อคัดลอกได้เลย
+    </p>
+    <div class="promo-claim">
+      <button type="button" onclick="claimPromoCode()">รับเลย</button>
+      <small>โค้ด: <strong>DBTFREE</strong> · ค่าส่ง 19,999 บาท → ฟรี 😭</small>
+    </div>
+  </div>
+  <div class="v2-expired">
+    <strong>ลด 20%</strong>
+    <span>หมดเขตแล้วครับ 555 😭</span>
+  </div>
+</section>
 
-    <!-- USER -->
+<section class="v2-section" id="todayMenu">
+  <div class="v2-section-head">
+    <div>
+      <small>MENU OF THE DAY</small>
+      <h2>🍜 เมนูแนะนำวันนี้</h2>
+    </div>
+    <p>ระบบเลือกจากสินค้าที่เปิดขายแบบเปลี่ยนไปตามวัน ไม่ต้องเพิ่มข้อมูลใหม่ในฐานข้อมูล</p>
+  </div>
+  <div class="v2-mini-grid" id="todayMenuGrid">
+    <div class="v2-empty">กำลังเลือกเมนูวันนี้...</div>
+  </div>
+</section>
 
-    <section class="customer-section">
+<section class="v2-section" id="bestSellerSection">
+  <div class="v2-section-head">
+    <div>
+      <small>TOP PRODUCTS</small>
+      <h2>🔥 สินค้าขายดี</h2>
+    </div>
+    <p>คำนวณจากคำสั่งซื้อใน Google Sheets เพื่อให้ข้อมูลเปลี่ยนตามการใช้งานจริง</p>
+  </div>
+  <div class="v2-mini-grid" id="bestSellerGrid">
+    <div class="v2-empty">กำลังคำนวณสินค้าขายดี...</div>
+  </div>
+</section>
 
-        <div>
-            <p class="small-title">
-                CUSTOMER
-            </p>
+<section class="v2-section" id="recentSection">
+  <div class="v2-section-head">
+    <div>
+      <small>RECENTLY VIEWED</small>
+      <h2>👁️ ดูล่าสุด</h2>
+    </div>
+    <p>จำเฉพาะในเครื่องของผู้ใช้ ไม่ต้องสมัครสมาชิกและไม่ส่งข้อมูลส่วนตัวไปที่ฐานข้อมูล</p>
+  </div>
+  <div class="v2-mini-grid" id="recentGrid">
+    <div class="v2-empty">ยังไม่มีรายการที่ดูล่าสุด</div>
+  </div>
+</section>
 
-            <h3>
-                สวัสดี 👋
-            </h3>
-        </div>
+<section class="how" id="how">
+<div class="how-head">
+<div><p class="eyebrow">HOW IT WORKS</p><h2>สั่งง่าย แค่ 3 ขั้นตอน</h2></div>
+<span>ตั้งแต่เลือกร้านจนถึงยืนยันคำสั่งซื้อ ทุกขั้นตอนถูกออกแบบให้ตรงไปตรงมาและใช้งานง่าย</span>
+</div>
+<div class="steps">
+<article class="step"><div class="step-top"><span class="step-no">STEP 01</span><div class="step-icon">🏪</div></div><h3>เลือกร้าน</h3><p>เลือกร้านค้าที่ต้องการจากร้านทั้งหมดที่เปิดให้บริการในระบบ</p></article>
+<div class="arrow">→</div>
+<article class="step"><div class="step-top"><span class="step-no">STEP 02</span><div class="step-icon">🛒</div></div><h3>เลือกสินค้า</h3><p>ค้นหาสินค้าที่ชอบ ปรับจำนวน และเพิ่มรายการลงในตะกร้า</p></article>
+<div class="arrow">→</div>
+<article class="step"><div class="step-top"><span class="step-no">STEP 03</span><div class="step-icon">✓</div></div><h3>ตรวจสอบและยืนยัน</h3><p>เช็กรายการ ใส่รายละเอียดเพิ่มเติม แล้วจึงยืนยันคำสั่งซื้อ</p></article>
+</div>
+</section>
 
+<section class="features">
+<div class="feature-intro"><p class="eyebrow">WHY DBT MULTI SHOP</p><h2>ออกแบบให้ใช้ง่าย แต่ไม่ทิ้งรายละเอียด</h2><span>เน้นความรวดเร็ว ความชัดเจน และประสบการณ์ใช้งานที่ดี พร้อมจัดการข้อมูลผ่านระบบออนไลน์อย่างเป็นระเบียบ</span></div>
+<div class="feature-grid">
+<article class="feature-card"><div class="feature-icon">⚡</div><h3>รวดเร็ว</h3><p>เลือกสินค้าและดำเนินการสั่งซื้อได้ในไม่กี่ขั้นตอน โดยไม่ต้องผ่านหน้าที่ซับซ้อน</p></article>
+<article class="feature-card"><div class="feature-icon">📊</div><h3>ข้อมูลเป็นระบบ</h3><p>เชื่อมต่อ Google Sheets เพื่อจัดเก็บและบริหารข้อมูลร้าน สินค้า และคำสั่งซื้อ</p></article>
+<article class="feature-card"><div class="feature-icon">📱</div><h3>Responsive</h3><p>ปรับองค์ประกอบให้เหมาะกับคอมพิวเตอร์ แท็บเล็ต และโทรศัพท์มือถือโดยอัตโนมัติ</p></article>
+</div>
+</section>
 
-        <div class="customer-fields">
-
-            <div class="input-group">
-                <label for="customerName">
-                    ชื่อผู้สั่ง
-                </label>
-
-                <input
-                    id="customerName"
-                    type="text"
-                    value="User111"
-                    maxlength="40"
-                    placeholder="กรอกชื่อของคุณ"
-                >
-            </div>
-
-
-            <div class="input-group">
-                <label for="customerNote">
-                    หมายเหตุ
-                </label>
-
-                <input
-                    id="customerNote"
-                    type="text"
-                    maxlength="150"
-                    placeholder="เช่น ไม่ใส่ผัก / เผ็ดน้อย"
-                >
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- MENU HEADER -->
-
-    <section class="menu-heading">
-
-        <div>
-            <p class="small-title">
-                OUR MENU
-            </p>
-
-            <h2>
-                เมนูทั้งหมด
-            </h2>
-        </div>
-
-        <div id="menuCount" class="menu-count">
-            กำลังโหลด...
-        </div>
-
-    </section>
-
-
-    <!-- SEARCH -->
-
-    <section class="search-section">
-
-        <div class="search-box">
-
-            <span>🔎</span>
-
-            <input
-                id="searchInput"
-                type="search"
-                placeholder="ค้นหาสินค้า..."
-                oninput="filterProducts()"
-            >
-
-            <button
-                id="clearSearch"
-                type="button"
-                onclick="clearSearch()"
-                title="ล้างการค้นหา"
-            >
-                ✕
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- PRODUCTS -->
-
-    <section
-        class="product-grid"
-        id="productGrid"
-    >
-    </section>
-
+<section class="cta"><div><span>READY TO ORDER?</span><h2>พร้อมแล้วก็เลือกร้าน<br>แล้วเริ่มกันเลย</h2><p>หลายร้าน หลายสินค้า จัดการได้จากเว็บเดียว</p></div><a href="#shops">เลือกร้านค้า →</a></section>
 </main>
 
+<footer><strong>DBT Multi Shop</strong><span>Mini Project · รายวิชาโปรแกรมฐานข้อมูล</span></footer>
 
-<!-- CART OVERLAY -->
-
-<div
-    id="cartOverlay"
-    class="cart-overlay"
-    onclick="closeCart()"
-></div>
-
-
-<!-- CART -->
-
-<aside
-    id="cartPanel"
-    class="cart-panel"
->
-
-    <div class="cart-header">
-
-        <div>
-            <p class="small-title">
-                YOUR ORDER
-            </p>
-
-            <h2>
-                ตะกร้าของคุณ
-            </h2>
-        </div>
-
-
-        <button
-            class="close-cart"
-            onclick="closeCart()"
-        >
-            ✕
-        </button>
-
-    </div>
-
-
-    <div
-        id="cartItems"
-        class="cart-items"
-    >
-    </div>
-
-
-    <div class="cart-footer">
-
-        <div class="cart-summary-row">
-
-            <span>
-                จำนวนทั้งหมด
-            </span>
-
-            <strong>
-                <span id="totalItems">
-                    0
-                </span>
-                ชิ้น
-            </strong>
-
-        </div>
-
-
-        <div class="cart-total">
-
-            <span>
-                ยอดรวม
-            </span>
-
-            <strong>
-                ฿<span id="totalPrice">0</span>
-            </strong>
-
-        </div>
-
-
-        <button
-            id="checkoutButton"
-            class="checkout-button"
-            onclick="openConfirm()"
-        >
-            ตรวจสอบคำสั่งซื้อ
-        </button>
-
-    </div>
-
-</aside>
-
-
-<!-- CONFIRM ORDER -->
-
-<div
-    id="confirmModal"
-    class="confirm-modal"
->
-
-    <div class="confirm-box">
-
-        <div class="confirm-header">
-
-            <div>
-                <p class="small-title">
-                    CONFIRM ORDER
-                </p>
-
-                <h2>
-                    ยืนยันคำสั่งซื้อ
-                </h2>
-            </div>
-
-            <button
-                class="confirm-close"
-                onclick="closeConfirm()"
-            >
-                ✕
-            </button>
-
-        </div>
-
-
-        <div class="confirm-customer">
-
-            <div>
-                <span>
-                    ผู้สั่ง
-                </span>
-
-                <strong id="confirmName">
-                    -
-                </strong>
-            </div>
-
-
-            <div>
-                <span>
-                    หมายเหตุ
-                </span>
-
-                <strong id="confirmNote">
-                    -
-                </strong>
-            </div>
-
-        </div>
-
-
-        <div
-            id="confirmItems"
-            class="confirm-items"
-        >
-        </div>
-
-
-        <div class="confirm-summary">
-
-            <div>
-                <span>
-                    จำนวน
-                </span>
-
-                <strong>
-                    <span id="confirmTotalItems">
-                        0
-                    </span>
-                    ชิ้น
-                </strong>
-            </div>
-
-
-            <div class="confirm-total-row">
-
-                <span>
-                    ยอดรวม
-                </span>
-
-                <strong>
-                    ฿<span id="confirmTotalPrice">
-                        0
-                    </span>
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="confirm-actions">
-
-            <button
-                class="back-edit-button"
-                onclick="backToCart()"
-            >
-                กลับไปแก้ไข
-            </button>
-
-            <button
-                id="finalOrderButton"
-                class="final-order-button"
-                onclick="checkout()"
-            >
-                ยืนยันและส่งคำสั่งซื้อ
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- TOAST -->
-
-<div
-    id="toast"
-    class="toast"
->
-    เพิ่มลงตะกร้าแล้ว
-</div>
-
-
-<footer>
-
-    <strong>
-        DBT Order
-    </strong>
-
-    <span>
-        ระบบสั่งสินค้าออนไลน์
-    </span>
-
-</footer>
-
-
+<script src="app-ui.js"></script>
 <script>
 
-let products = [];
-let filteredProducts = [];
-let cart = [];
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+
+let v2Shops = [];
 
 
-/* =========================
-   LOAD PRODUCTS
-========================= */
+async function loadShops() {
 
-async function loadProducts() {
+    const grid =
+        document.getElementById("shopGrid");
 
     try {
 
         const response =
-            await fetch("/api/products");
+            await fetch(
+                `${API_URL}?action=shops`
+            );
 
-        if (!response.ok) {
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
             throw new Error(
-                "โหลดสินค้าไม่สำเร็จ"
+                result.message ||
+                "โหลดร้านไม่สำเร็จ"
             );
         }
 
-        products =
-            await response.json();
 
-        filteredProducts =
-            [...products];
+        v2Shops =
+            result.data.filter(
+                shop =>
+                    shop.active === true ||
+                    String(shop.active).toUpperCase() === "TRUE"
+            );
 
-        renderProducts();
+        const shops = v2Shops;
 
-        updateCart();
+        document.getElementById("homeShopCount").textContent =
+            shops.length.toLocaleString();
 
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        document
-            .getElementById("productGrid")
-            .innerHTML = `
-
-            <div class="empty-products">
-                ❌ ไม่สามารถโหลดสินค้าได้
-            </div>
-        `;
-    }
-}
+        grid.innerHTML = "";
 
 
-/* =========================
-   RENDER PRODUCTS
-========================= */
+        if (shops.length === 0) {
 
-function renderProducts() {
+            grid.innerHTML = `
 
-    const grid =
-        document.getElementById(
-            "productGrid"
-        );
-
-    grid.innerHTML = "";
-
-
-    document
-        .getElementById("menuCount")
-        .textContent =
-        `${filteredProducts.length} รายการ`;
-
-
-    if (
-        filteredProducts.length === 0
-    ) {
-
-        grid.innerHTML = `
-
-            <div class="empty-products">
-
-                <div>
-                    🔎
+                <div class="loading">
+                    ยังไม่มีร้านค้าที่เปิดใช้งาน
                 </div>
 
-                <h3>
-                    ไม่พบสินค้า
-                </h3>
+            `;
 
-                <p>
-                    ลองค้นหาด้วยคำอื่น
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-    }
+            return;
+        }
 
 
-    filteredProducts.forEach(
-        product => {
+        shops.forEach(shop => {
 
             grid.innerHTML += `
 
-                <article
-                    class="product-card"
-                >
+                <article class="shop-card dbt-animate-in">
 
-                    <div
-                        class="product-photo"
+                    <button
+                        type="button"
+                        class="dbt-favorite-btn shop-fav ${window.DBTUI && DBTUI.favorites.has("shop", shop.shop_id) ? "active" : ""}"
+                        aria-label="เพิ่มร้านโปรด"
+                        onclick='event.stopPropagation(); toggleShopFavorite(${JSON.stringify(shop)})'
                     >
+                        ${window.DBTUI && DBTUI.favorites.has("shop", shop.shop_id) ? "♥" : "♡"}
+                    </button>
+
+                    <div class="shop-photo">
 
                         <img
-                            src="${product.image}"
-                            alt="${product.name}"
-                            loading="lazy"
+                            src="${shop.image}"
+                            alt="${shop.shop_name}"
+                            onerror="
+                                this.src='https://placehold.co/800x800?text=Shop'
+                            "
                         >
-
-                        <span
-                            class="product-price"
-                        >
-                            ฿${product.price}
-                        </span>
 
                     </div>
 
 
-                    <div
-                        class="product-content"
-                    >
+                    <div class="shop-content">
 
-                        <div>
-
-                            <p
-                                class="product-category"
-                            >
-                                เมนูแนะนำ
-                            </p>
-
-                            <h3>
-                                ${product.name}
-                            </h3>
-
-                        </div>
-
-
-                        <button
-                            class="add-button"
-                            onclick="
-                                addToCart(
-                                    ${product.id}
-                                )
-                            "
-                        >
-                            <span>
-                                ＋
-                            </span>
-
-                            เพิ่มลงตะกร้า
-                        </button>
+                        <p>${shop.shop_id}</p>
+                        <h3>${shop.shop_name}</h3>
+                        <a class="shop-button"
+                           href="shop.html?shop_id=${shop.shop_id}&shop_name=${encodeURIComponent(shop.shop_name)}">
+                            <span>เข้าร้าน</span><span>→</span>
+                        </a>
 
                     </div>
 
@@ -568,800 +339,401 @@ function renderProducts() {
 
             `;
 
-        }
-    );
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function filterProducts() {
-
-    const keyword =
-        document
-            .getElementById(
-                "searchInput"
-            )
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    filteredProducts =
-        products.filter(
-            product =>
-                product.name
-                    .toLowerCase()
-                    .includes(keyword)
-        );
-
-
-    renderProducts();
-}
-
-
-function clearSearch() {
-
-    document
-        .getElementById(
-            "searchInput"
-        )
-        .value = "";
-
-    filteredProducts =
-        [...products];
-
-    renderProducts();
-}
-
-
-/* =========================
-   ADD CART
-========================= */
-
-function addToCart(productId) {
-
-    const product =
-        products.find(
-            p => p.id === productId
-        );
-
-
-    if (!product) {
-        return;
-    }
-
-
-    const existing =
-        cart.find(
-            item =>
-                item.id === productId
-        );
-
-
-    if (existing) {
-
-        existing.quantity++;
-
-    }
-
-    else {
-
-        cart.push({
-            ...product,
-            quantity: 1
         });
-
-    }
-
-
-    updateCart();
-
-    showToast(
-        `${product.name} เพิ่มลงตะกร้าแล้ว`
-    );
-}
-
-
-/* =========================
-   QUANTITY
-========================= */
-
-function changeQuantity(
-    productId,
-    amount
-) {
-
-    const item =
-        cart.find(
-            item =>
-                item.id === productId
-        );
-
-
-    if (!item) {
-        return;
-    }
-
-
-    item.quantity += amount;
-
-
-    if (
-        item.quantity <= 0
-    ) {
-
-        cart =
-            cart.filter(
-                item =>
-                    item.id !==
-                    productId
-            );
-    }
-
-
-    updateCart();
-}
-
-
-/* =========================
-   REMOVE
-========================= */
-
-function removeItem(productId) {
-
-    cart =
-        cart.filter(
-            item =>
-                item.id !== productId
-        );
-
-    updateCart();
-}
-
-
-/* =========================
-   CART
-========================= */
-
-function updateCart() {
-
-    const cartItems =
-        document.getElementById(
-            "cartItems"
-        );
-
-
-    if (
-        cart.length === 0
-    ) {
-
-        cartItems.innerHTML = `
-
-            <div class="empty-cart">
-
-                <div
-                    class="empty-icon"
-                >
-                    🛒
-                </div>
-
-                <h3>
-                    ตะกร้ายังว่าง
-                </h3>
-
-                <p>
-                    เลือกสินค้าที่ต้องการ
-                    จากหน้าร้าน
-                </p>
-
-            </div>
-
-        `;
-    }
-
-    else {
-
-        cartItems.innerHTML = "";
-
-
-        cart.forEach(
-            item => {
-
-                cartItems.innerHTML += `
-
-                    <div
-                        class="cart-item"
-                    >
-
-                        <img
-                            src="${item.image}"
-                            alt="${item.name}"
-                        >
-
-
-                        <div
-                            class="cart-item-info"
-                        >
-
-                            <h4>
-                                ${item.name}
-                            </h4>
-
-                            <p>
-                                ฿${item.price}
-                                / ชิ้น
-                            </p>
-
-
-                            <div
-                                class="quantity-control"
-                            >
-
-                                <button
-                                    onclick="
-                                        changeQuantity(
-                                            ${item.id},
-                                            -1
-                                        )
-                                    "
-                                >
-                                    −
-                                </button>
-
-                                <span>
-                                    ${item.quantity}
-                                </span>
-
-                                <button
-                                    onclick="
-                                        changeQuantity(
-                                            ${item.id},
-                                            1
-                                        )
-                                    "
-                                >
-                                    +
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="cart-item-right"
-                        >
-
-                            <strong>
-                                ฿${
-                                    item.price *
-                                    item.quantity
-                                }
-                            </strong>
-
-                            <button
-                                class="delete-button"
-                                onclick="
-                                    removeItem(
-                                        ${item.id}
-                                    )
-                                "
-                            >
-                                ลบ
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
-            }
-        );
-    }
-
-
-    const totalItems =
-        cart.reduce(
-            (
-                sum,
-                item
-            ) =>
-                sum +
-                item.quantity,
-            0
-        );
-
-
-    const totalPrice =
-        cart.reduce(
-            (
-                sum,
-                item
-            ) =>
-                sum +
-                (
-                    item.price *
-                    item.quantity
-                ),
-            0
-        );
-
-
-    document
-        .getElementById(
-            "cartCount"
-        )
-        .textContent =
-        totalItems;
-
-
-    document
-        .getElementById(
-            "totalItems"
-        )
-        .textContent =
-        totalItems;
-
-
-    document
-        .getElementById(
-            "totalPrice"
-        )
-        .textContent =
-        totalPrice;
-
-
-    document
-        .getElementById(
-            "checkoutButton"
-        )
-        .disabled =
-        cart.length === 0;
-}
-
-
-/* =========================
-   OPEN CART
-========================= */
-
-function openCart() {
-
-    document
-        .getElementById(
-            "cartPanel"
-        )
-        .classList.add(
-            "active"
-        );
-
-
-    document
-        .getElementById(
-            "cartOverlay"
-        )
-        .classList.add(
-            "active"
-        );
-
-
-    document
-        .body
-        .classList
-        .add(
-            "no-scroll"
-        );
-}
-
-
-/* =========================
-   CLOSE CART
-========================= */
-
-function closeCart() {
-
-    document
-        .getElementById(
-            "cartPanel"
-        )
-        .classList.remove(
-            "active"
-        );
-
-
-    document
-        .getElementById(
-            "cartOverlay"
-        )
-        .classList.remove(
-            "active"
-        );
-
-
-    document
-        .body
-        .classList
-        .remove(
-            "no-scroll"
-        );
-}
-
-
-/* =========================
-   CONFIRM
-========================= */
-
-function openConfirm() {
-
-    const customerName =
-        document
-            .getElementById(
-                "customerName"
-            )
-            .value
-            .trim();
-
-
-    const note =
-        document
-            .getElementById(
-                "customerNote"
-            )
-            .value
-            .trim();
-
-
-    if (!customerName) {
-
-        alert(
-            "กรุณากรอกชื่อผู้สั่ง"
-        );
-
-        return;
-    }
-
-
-    if (
-        cart.length === 0
-    ) {
-
-        alert(
-            "กรุณาเลือกสินค้า"
-        );
-
-        return;
-    }
-
-
-    document
-        .getElementById(
-            "confirmName"
-        )
-        .textContent =
-        customerName;
-
-
-    document
-        .getElementById(
-            "confirmNote"
-        )
-        .textContent =
-        note || "ไม่มี";
-
-
-    const confirmItems =
-        document.getElementById(
-            "confirmItems"
-        );
-
-
-    confirmItems.innerHTML = "";
-
-
-    cart.forEach(
-        item => {
-
-            confirmItems.innerHTML += `
-
-                <div
-                    class="confirm-item"
-                >
-
-                    <div>
-
-                        <strong>
-                            ${item.name}
-                        </strong>
-
-                        <span>
-                            ${item.quantity}
-                            ชิ้น
-                        </span>
-
-                    </div>
-
-                    <strong>
-                        ฿${
-                            item.price *
-                            item.quantity
-                        }
-                    </strong>
-
-                </div>
-
-            `;
-        }
-    );
-
-
-    const totalItems =
-        cart.reduce(
-            (
-                sum,
-                item
-            ) =>
-                sum +
-                item.quantity,
-            0
-        );
-
-
-    const totalPrice =
-        cart.reduce(
-            (
-                sum,
-                item
-            ) =>
-                sum +
-                (
-                    item.price *
-                    item.quantity
-                ),
-            0
-        );
-
-
-    document
-        .getElementById(
-            "confirmTotalItems"
-        )
-        .textContent =
-        totalItems;
-
-
-    document
-        .getElementById(
-            "confirmTotalPrice"
-        )
-        .textContent =
-        totalPrice;
-
-
-    closeCart();
-
-
-    document
-        .getElementById(
-            "confirmModal"
-        )
-        .classList.add(
-            "active"
-        );
-}
-
-
-function closeConfirm() {
-
-    document
-        .getElementById(
-            "confirmModal"
-        )
-        .classList.remove(
-            "active"
-        );
-
-
-    document
-        .body
-        .classList
-        .remove(
-            "no-scroll"
-        );
-}
-
-
-function backToCart() {
-
-    closeConfirm();
-
-    openCart();
-}
-
-
-/* =========================
-   CHECKOUT
-========================= */
-
-async function checkout() {
-
-    const customerName =
-        document
-            .getElementById(
-                "customerName"
-            )
-            .value
-            .trim();
-
-
-    const note =
-        document
-            .getElementById(
-                "customerNote"
-            )
-            .value
-            .trim();
-
-
-    const orderItems =
-        cart.map(
-            item => ({
-
-                id:
-                    item.id,
-
-                name:
-                    item.name,
-
-                price:
-                    item.price,
-
-                quantity:
-                    item.quantity
-
-            })
-        );
-
-
-    const button =
-        document.getElementById(
-            "finalOrderButton"
-        );
-
-
-    button.disabled = true;
-
-    button.textContent =
-        "กำลังส่งคำสั่งซื้อ...";
-
-
-    try {
-
-        const response =
-            await fetch(
-                "/order",
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            username:
-                                customerName,
-
-                            note:
-                                note,
-
-                            items:
-                                orderItems
-
-                        })
-                }
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result.message ||
-                "เกิดข้อผิดพลาด"
-            );
-        }
-
-
-        closeConfirm();
-
-
-        cart = [];
-
-        updateCart();
-
-
-        document
-            .getElementById(
-                "customerNote"
-            )
-            .value = "";
-
-
-        alert(
-            result.message
-        );
 
     }
 
     catch (error) {
 
-        alert(
-            error.message ||
-            "ไม่สามารถส่งคำสั่งซื้อได้"
-        );
-    }
+        console.error(error);
 
-    finally {
+        grid.innerHTML = `
 
-        button.disabled =
-            false;
+            <div class="loading">
+                ❌ ไม่สามารถโหลดร้านค้าได้
+            </div>
 
-        button.textContent =
-            "ยืนยันและส่งคำสั่งซื้อ";
+        `;
     }
 }
 
 
-/* =========================
-   TOAST
-========================= */
 
-function showToast(message) {
+let v2AllProducts = [];
+let v2BestSellerIds = new Set();
 
-    const toast =
-        document.getElementById(
-            "toast"
+async function loadV2Highlights() {
+    await Promise.all([
+        loadAllProductsForV2(),
+        loadBestSellers()
+    ]);
+
+    renderTodayMenu();
+    renderRecent();
+}
+
+async function loadAllProductsForV2() {
+    try {
+        const response = await fetch(`${API_URL}?action=products`);
+        const result = await response.json();
+
+        if (!result.success) throw new Error(result.message);
+
+        v2AllProducts = result.data.filter(
+            p => p.active === true || String(p.active).toUpperCase() === "TRUE"
         );
 
+        document.getElementById("homeProductCount").textContent =
+            v2AllProducts.length.toLocaleString();
+    } catch (error) {
+        console.error("V2 products:", error);
+        document.getElementById("todayMenuGrid").innerHTML =
+            `<div class="v2-empty">โหลดเมนูแนะนำไม่สำเร็จ</div>`;
+    }
+}
 
-    toast.textContent =
-        message;
+async function loadBestSellers() {
+    const grid = document.getElementById("bestSellerGrid");
 
+    try {
+        const response = await fetch(`${API_URL}?action=bestSellers`);
+        const result = await response.json();
 
-    toast
-        .classList
-        .add(
-            "show"
-        );
+        if (!result.success) throw new Error(result.message);
 
+        const items = Array.isArray(result.data) ? result.data : [];
+        v2BestSellerIds = new Set(items.map(x => String(x.product_id)));
 
-    setTimeout(
-        () => {
+        if (!items.length) {
+            grid.innerHTML =
+                `<div class="v2-empty">ยังมีข้อมูลคำสั่งซื้อไม่พอสำหรับจัดอันดับ</div>`;
+            return;
+        }
 
-            toast
-                .classList
-                .remove(
-                    "show"
-                );
+        grid.innerHTML = items.slice(0,4).map((item,index) => `
+            <a class="v2-mini-card v2-mini-link dbt-animate-in"
+               href="shop.html?shop_id=${encodeURIComponent(item.shop_id)}&shop_name=${encodeURIComponent(item.shop_name || item.shop_id)}">
+                <span class="v2-badge hot">🔥 TOP ${index + 1}</span>
+                <img src="${item.image || 'https://placehold.co/600x600?text=Product'}"
+                     alt="${item.name}"
+                     loading="lazy"
+                     onerror="this.src='https://placehold.co/600x600?text=Product'">
+                <div class="v2-mini-body">
+                    <strong>${item.name}</strong>
+                    <span>สั่งแล้ว ${item.quantity} ชิ้น · ฿${item.price}</span>
+                </div>
+            </a>
+        `).join("");
 
-        },
-        1800
+    } catch (error) {
+        console.error("Best sellers:", error);
+        grid.innerHTML =
+            `<div class="v2-empty">ยังโหลดอันดับขายดีไม่ได้ — Deploy Apps Script Phase 2 ก่อน</div>`;
+    }
+}
+
+function renderTodayMenu() {
+    const grid = document.getElementById("todayMenuGrid");
+
+    if (!v2AllProducts.length) return;
+
+    // Deterministic per day: same menu all day, changes tomorrow.
+    const now = new Date();
+    const seed = Number(
+        `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}`
     );
+
+    const items = [...v2AllProducts]
+        .sort((a,b) => {
+            const av = hashForDay(String(a.product_id), seed);
+            const bv = hashForDay(String(b.product_id), seed);
+            return av - bv;
+        })
+        .slice(0,4);
+
+    grid.innerHTML = items.map(item => `
+        <a class="v2-mini-card v2-mini-link dbt-animate-in"
+           href="shop.html?shop_id=${encodeURIComponent(item.shop_id)}&shop_name=${encodeURIComponent(getHomeShopName(item.shop_id))}">
+            <span class="v2-badge today">🍴 TODAY</span>
+            <img src="${item.image}"
+                 alt="${item.name}"
+                 loading="lazy"
+                 onerror="this.src='https://placehold.co/600x600?text=Menu'">
+            <div class="v2-mini-body">
+                <strong>${item.name}</strong>
+                <span>${getHomeShopName(item.shop_id)} · ฿${item.price}</span>
+            </div>
+        </a>
+    `).join("");
+}
+
+function hashForDay(text, seed) {
+    let hash = seed || 1;
+    for (let i = 0; i < text.length; i++) {
+        hash = ((hash << 5) - hash) + text.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
+}
+
+function getHomeShopName(id) {
+    const shop =
+        v2Shops.find(
+            item =>
+                String(item.shop_id)
+                === String(id)
+        );
+
+    return shop
+        ? shop.shop_name
+        : (id || "ร้านค้า");
 }
 
 
-loadProducts();
+function normalizeSearchText(value) {
+    return String(value || "")
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/[-_.]/g, "")
+        .trim();
+}
+
+function runSmartSearch() {
+    const input =
+        document.getElementById(
+            "globalSearchInput"
+        );
+
+    const resultsBox =
+        document.getElementById(
+            "smartSearchResults"
+        );
+
+    const keyword =
+        normalizeSearchText(
+            input.value
+        );
+
+    if (!keyword) {
+        resultsBox.innerHTML = "";
+        resultsBox.classList.remove("show");
+        return;
+    }
+
+    const shopResults =
+        v2Shops
+            .filter(shop => {
+                const haystack =
+                    normalizeSearchText(
+                        `${shop.shop_id} ${shop.shop_name} ${shop.description || ""}`
+                    );
+
+                return haystack.includes(
+                    keyword
+                );
+            })
+            .slice(0, 4)
+            .map(shop => ({
+                type: "shop",
+                title: shop.shop_name,
+                subtitle: `ร้านค้า · ${shop.shop_id}`,
+                image: shop.image,
+                href:
+                    `shop.html?shop_id=${encodeURIComponent(shop.shop_id)}&shop_name=${encodeURIComponent(shop.shop_name)}`
+            }));
+
+    const productResults =
+        v2AllProducts
+            .filter(product => {
+                const shopName =
+                    getHomeShopName(
+                        product.shop_id
+                    );
+
+                const haystack =
+                    normalizeSearchText(
+                        `${product.product_id} ${product.name} ${product.shop_id} ${shopName}`
+                    );
+
+                return haystack.includes(
+                    keyword
+                );
+            })
+            .slice(0, 6)
+            .map(product => ({
+                type: "product",
+                title: product.name,
+                subtitle:
+                    `${getHomeShopName(product.shop_id)} · ${product.product_id} · ฿${Number(product.price || 0).toLocaleString()}`,
+                image: product.image,
+                href:
+                    `shop.html?shop_id=${encodeURIComponent(product.shop_id)}&shop_name=${encodeURIComponent(getHomeShopName(product.shop_id))}`
+            }));
+
+    const results =
+        [...shopResults, ...productResults]
+            .slice(0, 8);
+
+    if (!results.length) {
+        resultsBox.innerHTML =
+            `<div class="v2-empty" style="padding:18px">ไม่พบร้านหรือสินค้าที่ตรงกับ “${input.value.trim()}”</div>`;
+
+        resultsBox.classList.add("show");
+        return;
+    }
+
+    resultsBox.innerHTML =
+        results
+            .map(item => `
+                <a class="smart-result" href="${item.href}">
+                    <img
+                        src="${item.image || "https://placehold.co/300x300?text=DBT"}"
+                        alt="${item.title}"
+                        onerror="this.src='https://placehold.co/300x300?text=DBT'"
+                    >
+
+                    <div>
+                        <strong>
+                            ${item.type === "shop" ? "🏪" : "📦"}
+                            ${item.title}
+                        </strong>
+
+                        <span>${item.subtitle}</span>
+                    </div>
+
+                    <div class="smart-result-go">
+                        เปิด →
+                    </div>
+                </a>
+            `)
+            .join("");
+
+    resultsBox.classList.add("show");
+}
+
+function clearSmartSearch() {
+    document
+        .getElementById(
+            "globalSearchInput"
+        )
+        .value = "";
+
+    const box =
+        document.getElementById(
+            "smartSearchResults"
+        );
+
+    box.innerHTML = "";
+    box.classList.remove("show");
+}
+
+
+function renderRecent() {
+    const grid = document.getElementById("recentGrid");
+    if (!window.DBTUI) return;
+
+    const items = DBTUI.recent.all().slice(0,4);
+
+    if (!items.length) {
+        grid.innerHTML =
+            `<div class="v2-empty">ยังไม่มีรายการที่ดูล่าสุด ลองเข้าร้านหรือเพิ่มสินค้าลงตะกร้าก่อน 👀</div>`;
+        return;
+    }
+
+    grid.innerHTML = items.map(item => {
+        const isProduct = item.type === "product";
+        const href = isProduct
+            ? `shop.html?shop_id=${encodeURIComponent(item.shop_id || "")}&shop_name=${encodeURIComponent(item.shop_name || item.shop_id || "ร้านค้า")}`
+            : (item.url || `shop.html?shop_id=${encodeURIComponent(item.id)}&shop_name=${encodeURIComponent(item.name || "ร้านค้า")}`);
+
+        return `
+            <a class="v2-mini-card v2-mini-link dbt-animate-in" href="${href}">
+                ${item.image
+                    ? `<img src="${item.image}" alt="${item.name || "ล่าสุด"}" onerror="this.src='https://placehold.co/600x600?text=Recent'">`
+                    : `<div style="aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:42px;background:#eef0f3">👁️</div>`
+                }
+                <div class="v2-mini-body">
+                    <strong>${item.name || "รายการล่าสุด"}</strong>
+                    <span>${isProduct ? `สินค้า${item.price !== undefined ? ` · ฿${item.price}` : ""}` : "ร้านค้าที่ดูล่าสุด"}</span>
+                </div>
+            </a>
+        `;
+    }).join("");
+}
+
+function claimPromoCode() {
+    try {
+        localStorage.setItem("dbt_coupon", "DBTFREE");
+
+        if (window.DBTUI) {
+            DBTUI.toast("รับโค้ด DBTFREE แล้ว 🚚 ใช้อัตโนมัติตอนสั่งซื้อ", "success");
+            DBTUI.sound.play("success");
+        }
+    } catch (_) {
+        alert("รับโค้ด DBTFREE แล้ว");
+    }
+}
+
+window.addEventListener("dbt:recent", renderRecent);
+
+function toggleShopFavorite(shop) {
+    if (!window.DBTUI) return;
+
+    DBTUI.favorites.toggle({
+        type: "shop",
+        id: shop.shop_id,
+        name: shop.shop_name,
+        image: shop.image
+    });
+
+    loadShops();
+}
+
+let adminTapCount = 0;
+let adminTimer = null;
+
+document
+    .getElementById("secretAdminButton")
+    .addEventListener("click", () => {
+
+        adminTapCount++;
+
+        clearTimeout(adminTimer);
+
+        adminTimer = setTimeout(() => {
+            adminTapCount = 0;
+        }, 2000);
+
+
+        if (adminTapCount >= 5) {
+
+            adminTapCount = 0;
+
+            const password =
+                prompt("🔐 Admin Access");
+
+
+            if (password === "1234") {
+
+                window.location.href =
+                    "admin.html";
+
+            }
+
+            else if (password !== null) {
+
+                alert("รหัสผ่านไม่ถูกต้อง");
+
+            }
+        }
+    });
+loadShops()
+    .finally(() => {
+        loadV2Highlights();
+    });
+
 
 </script>
-
+<script src="app-pwa.js"></script>
 </body>
 </html>

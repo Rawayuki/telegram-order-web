@@ -1,840 +1,969 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#111827">
-    <title>DBT Account</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --dark: #111827;
-            --dark-2: #1f2937;
-            --orange: #ff6b35;
-            --orange-dark: #e85a27;
-            --orange-soft: #fff1eb;
-            --bg: #f6f7fb;
-            --surface: #ffffff;
-            --muted: #6b7280;
-            --line: #e5e7eb;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: Arial, "Noto Sans Thai", sans-serif;
-            background:
-                radial-gradient(circle at 10% 12%, rgba(255,107,53,.05), transparent 28%),
-                var(--bg);
-            color: #171717;
-        }
-
-        button,
-        input {
-            font: inherit;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            min-height: 72px;
-            padding: 13px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            background: rgba(17,24,39,.96);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(255,255,255,.08);
-            color: white;
-        }
-
-        .brand h1 {
-            font-size: 22px;
-        }
-
-        .brand p {
-            margin-top: 3px;
-            color: #9ca3af;
-            font-size: 11px;
-        }
-
-        .back-button {
-            text-decoration: none;
-            color: white;
-            background: var(--orange);
-            padding: 10px 14px;
-            border-radius: 11px;
-            font-size: 13px;
-            font-weight: 800;
-            transition: .2s;
-        }
-
-        .back-button:hover {
-            background: var(--orange-dark);
-            transform: translateY(-1px);
-        }
-
-        /* =========================
-           HERO
-        ========================= */
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            min-height: 300px;
-            padding: 55px 6% 75px;
-            display: flex;
-            align-items: center;
-            color: white;
-            background:
-                linear-gradient(120deg, rgba(17,24,39,.98), rgba(31,41,55,.91) 68%, rgba(255,107,53,.16));
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            width: 280px;
-            height: 280px;
-            border: 50px solid rgba(255,255,255,.03);
-            border-radius: 50%;
-            right: -80px;
-            top: -100px;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 680px;
-        }
-
-        .hero-tag {
-            display: inline-block;
-            color: #ffad8c;
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-            margin-bottom: 9px;
-        }
-
-        .hero h2 {
-            font-size: clamp(38px, 6vw, 56px);
-            line-height: 1.06;
-            letter-spacing: -1.2px;
-        }
-
-        .hero p {
-            margin-top: 12px;
-            max-width: 560px;
-            color: #cbd5e1;
-            font-size: 14px;
-            line-height: 1.7;
-        }
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        .container {
-            width: min(980px, 92%);
-            margin: -30px auto 75px;
-            position: relative;
-            z-index: 5;
-        }
-
-        .account-card {
-            background: white;
-            border: 1px solid var(--line);
-            border-radius: 22px;
-            padding: 25px;
-            box-shadow: 0 15px 38px rgba(17,24,39,.08);
-        }
-
-        .account-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: end;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .account-title p {
-            color: var(--orange);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-        }
-
-        .account-title h2 {
-            font-size: 28px;
-            margin-top: 5px;
-        }
-
-        .account-title span {
-            max-width: 330px;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.65;
-            text-align: right;
-        }
-
-        .search-user {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-            padding: 15px;
-            border-radius: 16px;
-            background: #f7f8fa;
-        }
-
-        .search-user input {
-            width: 100%;
-            height: 48px;
-            padding: 0 14px;
-            border: 1px solid #d9dde4;
-            border-radius: 11px;
-            font-size: 15px;
-            outline: none;
-            background: white;
-        }
-
-        .search-user input:focus {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(255,107,53,.11);
-        }
-
-        .search-user button {
-            min-width: 110px;
-            border: none;
-            background: var(--dark);
-            color: white;
-            padding: 0 18px;
-            border-radius: 11px;
-            cursor: pointer;
-            font-weight: 800;
-        }
-
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-top: 24px;
-        }
-
-        .summary-card {
-            position: relative;
-            overflow: hidden;
-            background: #f7f8fa;
-            border: 1px solid #edf0f3;
-            border-radius: 17px;
-            padding: 20px;
-        }
-
-        .summary-card span {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .summary-card strong {
-            display: block;
-            margin-top: 8px;
-            font-size: 25px;
-            line-height: 1.2;
-        }
-
-        .summary-card.highlight {
-            background: var(--orange-soft);
-            border-color: #ffd9c9;
-        }
-
-        .summary-card.highlight strong {
-            color: var(--orange);
-        }
-
-        .summary-icon {
-            position: absolute;
-            right: 14px;
-            top: 13px;
-            font-size: 24px;
-            opacity: .15;
-        }
-
-        /* =========================
-           ORDERS
-        ========================= */
-
-        .orders-section {
-            margin-top: 34px;
-        }
-
-        .orders-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: end;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-
-        .orders-head p {
-            color: var(--orange);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-        }
-
-        .orders-head h2 {
-            margin-top: 5px;
-            font-size: 25px;
-        }
-
-        .orders-head span {
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .order {
-            background: white;
-            border-radius: 17px;
-            padding: 18px;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 18px;
-            margin-bottom: 12px;
-            border: 1px solid var(--line);
-            box-shadow: 0 7px 18px rgba(17,24,39,.035);
-            transition: .2s;
-        }
-
-        .order:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(17,24,39,.07);
-        }
-
-        .order-id {
-            display: inline-block;
-            padding: 5px 8px;
-            border-radius: 30px;
-            background: #eef0f3;
-            color: #737983;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .order-items {
-            margin-top: 10px;
-            font-weight: 800;
-            line-height: 1.55;
-        }
-
-        .order-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px 14px;
-            margin-top: 8px;
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .order-note {
-            margin-top: 9px;
-            padding: 9px 11px;
-            border-radius: 10px;
-            background: #f8f9fb;
-            color: #555;
-            font-size: 11px;
-            line-height: 1.55;
-        }
-
-        .order-right {
-            min-width: 145px;
-            text-align: right;
-        }
-
-        .order-price {
-            font-size: 21px;
-            font-weight: 800;
-            color: var(--orange);
-        }
-
-        .order-date {
-            margin-top: 8px;
-            color: #8b9199;
-            font-size: 10px;
-        }
-
-        .message {
-            margin-top: 22px;
-            padding: 30px 20px;
-            text-align: center;
-            background: #f7f8fa;
-            border: 1px dashed #dfe3e8;
-            border-radius: 16px;
-            color: var(--muted);
-        }
-
-        .message-icon {
-            font-size: 38px;
-            margin-bottom: 8px;
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 650px) {
-
-            header {
-                padding: 13px 14px;
-            }
-
-            .brand h1 {
-                font-size: 18px;
-            }
-
-            .brand p {
-                display: none;
-            }
-
-            .back-button {
-                padding: 9px 11px;
-                font-size: 12px;
-            }
-
-            .hero {
-                min-height: 255px;
-                padding: 42px 18px 62px;
-            }
-
-            .hero h2 {
-                font-size: 39px;
-            }
-
-            .container {
-                width: calc(100% - 28px);
-                margin-top: -24px;
-            }
-
-            .account-card {
-                padding: 18px;
-            }
-
-            .account-title {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .account-title span {
-                text-align: left;
-            }
-
-            .search-user {
-                grid-template-columns: 1fr;
-            }
-
-            .search-user button {
-                height: 48px;
-            }
-
-            .summary {
-                grid-template-columns: 1fr;
-            }
-
-            .orders-head {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .order {
-                grid-template-columns: 1fr;
-            }
-
-            .order-right {
-                text-align: left;
-            }
-
-            .order-date {
-                text-align: left;
-            }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>ติดตามคำสั่งซื้อ · DBT Multi Shop</title>
+<link rel="stylesheet" href="theme.css">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--dark:#111827;--orange:#ff6b35;--bg:#f5f6f8;--surface:#fff;--line:#e5e7eb;--muted:#6b7280;--green:#15803d;--red:#b91c1c}
+body{font-family:Arial,"Noto Sans Thai",sans-serif;background:var(--bg);color:#171717}
+button,input{font:inherit}
+header{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 5%;background:rgba(17,24,39,.96);color:white;backdrop-filter:blur(14px)}
+header h1{font-size:19px}
+.back{text-decoration:none;color:white;background:#2b3545;padding:10px 13px;border-radius:10px;font-size:12px;font-weight:800}
+.hero{padding:44px 6% 72px;background:linear-gradient(120deg,#111827,#1f2937 72%,#493027);color:white}
+.hero small{font-size:10px;color:#ff9b73;font-weight:800;letter-spacing:1.2px}
+.hero h2{font-size:clamp(35px,5vw,54px);margin-top:7px}
+.hero p{max-width:680px;color:#cbd5e1;font-size:13px;line-height:1.7;margin-top:9px}
+.container{width:min(1120px,92%);margin:-30px auto 70px;position:relative;z-index:5}
+.search-card{display:grid;grid-template-columns:1fr auto;gap:9px;background:white;border:1px solid var(--line);border-radius:18px;padding:13px;box-shadow:0 15px 36px rgba(17,24,39,.09)}
+.search-card input{height:48px;border:1px solid #d9dde4;border-radius:11px;padding:0 14px;outline:none}
+.search-card button{border:none;border-radius:11px;padding:0 18px;background:var(--orange);color:white;font-weight:900;cursor:pointer}
+.auto-refresh{margin:7px 3px 0;color:var(--muted);font-size:10px}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:18px}
+.summary-card{background:white;border:1px solid var(--line);border-radius:15px;padding:14px;box-shadow:0 7px 20px rgba(17,24,39,.04)}
+.summary-card span{display:block;color:var(--muted);font-size:10px}
+.summary-card strong{display:block;font-size:22px;margin-top:5px}
+.summary-card.highlight strong{color:var(--orange)}
+.section{margin-top:34px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:14px;margin-bottom:13px}
+.section-head small{color:var(--orange);font-weight:800;font-size:9px;letter-spacing:1px}
+.section-head h3{font-size:23px;margin-top:4px}
+.section-head span{font-size:10px;color:var(--muted)}
+.tracking-list,.history-list{display:grid;gap:12px}
+.order-card{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 7px 20px rgba(17,24,39,.04)}
+.order-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.order-id{font-size:13px;font-weight:900}
+.order-date{font-size:9px;color:var(--muted);margin-top:4px}
+.order-price{font-size:22px;color:var(--orange);font-weight:900;text-align:right}
+.status-pill{display:inline-flex;margin-top:8px;padding:6px 9px;border-radius:30px;background:#eef0f3;color:#374151;font-size:10px;font-weight:900}
+.status-pill.delivery{background:#eff6ff;color:#1d4ed8}
+.status-pill.success{background:#dcfce7;color:#166534}
+.status-pill.cancel{background:#fee2e2;color:#991b1b}
+.rider-box{margin-top:11px;padding:10px 12px;border-radius:11px;background:#f7f8fa;font-size:11px;color:#4b5563}
+.rider-box strong{color:#111827}
+.items{margin-top:10px;color:#4b5563;font-size:11px;line-height:1.65}
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:15px}
+.step{position:relative;text-align:center;padding-top:21px;color:#9ca3af;font-size:8px;line-height:1.35}
+.step::before{content:"";position:absolute;top:6px;left:50%;width:10px;height:10px;border-radius:50%;background:#d1d5db;transform:translateX(-50%);z-index:2}
+.step::after{content:"";position:absolute;top:10px;left:-50%;width:100%;height:2px;background:#e5e7eb;z-index:1}
+.step:first-child::after{display:none}
+.step.done{color:#374151;font-weight:800}
+.step.done::before{background:var(--orange)}
+.step.done::after{background:#ffc4ae}
+.order-actions{display:flex;justify-content:flex-end;margin-top:13px}
+.cancel-btn{border:none;border-radius:10px;background:#fee2e2;color:#991b1b;padding:9px 12px;font-size:10px;font-weight:900;cursor:pointer}
+.cancel-btn:disabled{opacity:.5;cursor:not-allowed}
+.empty{background:white;border:1px dashed #cfd4db;border-radius:17px;padding:42px 20px;text-align:center;color:var(--muted)}
+.history-card{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:white;border:1px solid var(--line);border-radius:15px;padding:14px}
+.history-meta{color:var(--muted);font-size:10px;margin-top:5px;line-height:1.55}
+html[data-theme="dark"] .search-card,
+html[data-theme="dark"] .summary-card,
+html[data-theme="dark"] .order-card,
+html[data-theme="dark"] .history-card,
+html[data-theme="dark"] .empty{background:var(--ui-surface)!important;border-color:var(--ui-line)!important;color:var(--ui-text)!important}
+html[data-theme="dark"] input{background:#101720!important;color:var(--ui-text)!important;border-color:var(--ui-line)!important}
+html[data-theme="dark"] .rider-box{background:var(--ui-surface-2)!important;color:var(--ui-muted)!important}
+html[data-theme="dark"] .rider-box strong{color:var(--ui-text)!important}
+@media(max-width:900px){.summary{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){
+header{padding:12px 14px}.hero{padding:36px 18px 64px}.container{width:calc(100% - 28px)}
+.search-card{grid-template-columns:1fr}.search-card button{min-height:45px}
+.summary{grid-template-columns:repeat(2,1fr)}.steps{overflow-x:auto;grid-template-columns:repeat(6,78px);padding-bottom:4px}
+.order-top{flex-direction:column}.order-price{text-align:left}
+}
+
+/* =========================
+   NOTIFICATION CENTER
+========================= */
+.notify-button{
+position:relative;
+border:none;
+text-decoration:none;
+color:white;
+background:#2b3545;
+min-width:42px;
+height:40px;
+padding:0 11px;
+border-radius:10px;
+font-size:14px;
+font-weight:900;
+cursor:pointer;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+}
+.notify-badge{
+position:absolute;
+top:-5px;
+right:-5px;
+min-width:18px;
+height:18px;
+padding:0 5px;
+border-radius:20px;
+display:none;
+align-items:center;
+justify-content:center;
+background:#ef4444;
+color:white;
+font-size:8px;
+font-weight:900;
+border:2px solid #111827;
+}
+.notify-badge.show{display:flex}
+.notify-overlay{
+position:fixed;
+inset:0;
+z-index:1800;
+display:none;
+align-items:flex-start;
+justify-content:flex-end;
+padding:70px 18px 18px;
+background:rgba(17,24,39,.42);
+backdrop-filter:blur(5px);
+}
+.notify-overlay.active{display:flex}
+.notify-panel{
+width:min(390px,100%);
+max-height:calc(100dvh - 90px);
+overflow:hidden;
+display:flex;
+flex-direction:column;
+background:white;
+border:1px solid #e5e7eb;
+border-radius:18px;
+box-shadow:0 28px 80px rgba(0,0,0,.28);
+color:#171717;
+}
+.notify-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+padding:15px 16px;
+border-bottom:1px solid #e5e7eb;
+}
+.notify-head small{
+display:block;
+font-size:8px;
+font-weight:900;
+letter-spacing:1px;
+color:#ff6b35;
+}
+.notify-head h3{
+font-size:18px;
+margin-top:3px;
+}
+.notify-head-actions{
+display:flex;
+gap:6px;
+}
+.notify-head-actions button{
+border:none;
+border-radius:9px;
+background:#eef0f3;
+padding:8px 9px;
+font-size:9px;
+font-weight:900;
+cursor:pointer;
+}
+.notify-list{
+overflow:auto;
+padding:8px;
+display:grid;
+gap:6px;
+}
+.notify-item{
+padding:11px 12px;
+border:1px solid #e5e7eb;
+border-radius:12px;
+background:#fbfbfc;
+}
+.notify-item.unread{
+border-color:#ffc4ae;
+background:#fff6f2;
+}
+.notify-item-top{
+display:flex;
+justify-content:space-between;
+gap:10px;
+align-items:flex-start;
+}
+.notify-item strong{
+font-size:11px;
+}
+.notify-item time{
+font-size:8px;
+color:#9ca3af;
+white-space:nowrap;
+}
+.notify-item p{
+margin-top:5px;
+font-size:10px;
+line-height:1.55;
+color:#6b7280;
+}
+.notify-empty{
+padding:38px 18px;
+text-align:center;
+color:#6b7280;
+font-size:11px;
+}
+.notify-permission{
+margin:0 8px 8px;
+padding:10px 11px;
+border-radius:11px;
+background:#eff6ff;
+color:#1d4ed8;
+font-size:9px;
+line-height:1.55;
+}
+.notify-permission button{
+display:block;
+width:100%;
+margin-top:7px;
+border:none;
+border-radius:8px;
+background:#1d4ed8;
+color:white;
+padding:8px;
+font-size:9px;
+font-weight:900;
+cursor:pointer;
+}
+html[data-theme="dark"] .notify-panel,
+html[data-theme="dark"] .notify-item{
+background:var(--ui-surface)!important;
+border-color:var(--ui-line)!important;
+color:var(--ui-text)!important;
+}
+html[data-theme="dark"] .notify-item.unread{
+background:#2c1d18!important;
+border-color:#643522!important;
+}
+@media(max-width:600px){
+.notify-overlay{
+align-items:flex-end;
+padding:0;
+}
+.notify-panel{
+width:100%;
+max-height:82dvh;
+border-radius:20px 20px 0 0;
+}
+}
+
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 
 <body>
-
 <header>
+<h1>📦 ติดตามคำสั่งซื้อ</h1>
 
-    <div class="brand">
-        <h1>👤 DBT Account</h1>
-        <p>ดูข้อมูลและประวัติการสั่งซื้อ</p>
-    </div>
+<div style="display:flex;gap:7px;align-items:center">
+<button type="button" class="notify-button" onclick="openNotifications()">
+🔔
+<span id="notifyBadge" class="notify-badge">0</span>
+</button>
 
-    <a href="home.html" class="back-button">
-        ← หน้าหลัก
-    </a>
-
+<a href="home.html" class="back">← หน้าหลัก</a>
+</div>
 </header>
 
-
 <section class="hero">
-
-    <div class="hero-content">
-
-        <span class="hero-tag">
-            USER DASHBOARD
-        </span>
-
-        <h2>
-            เช็กคำสั่งซื้อ<br>
-            ของคุณได้ง่าย ๆ
-        </h2>
-
-        <p>
-            ค้นหาด้วยชื่อที่ใช้สั่งสินค้า
-            เพื่อดูจำนวนคำสั่งซื้อ ยอดรวม และรายการย้อนหลังจากระบบ
-        </p>
-
-    </div>
-
+<small>ORDER TRACKING</small>
+<h2>ตอนนี้ออเดอร์ไปถึงไหนแล้ว?</h2>
+<p>ค้นหาด้วยชื่อเดียวกับตอนสั่งซื้อ ดูสถานะไรเดอร์แบบเป็นขั้นตอน ประวัติการซื้อ และออเดอร์ที่ยกเลิกได้ในหน้าเดียว</p>
 </section>
-
 
 <main class="container">
 
-    <section class="account-card">
+<section class="search-card">
+<input id="customerInput" type="text" maxlength="60" placeholder="ชื่อที่ใช้สั่งสินค้า เช่น User111">
+<button onclick="loadAccount(false)">ค้นหา / รีเฟรช</button>
+</section>
+<div class="auto-refresh">เมื่อเปิดข้อมูลแล้ว ระบบจะอัปเดตสถานะอัตโนมัติทุก 15 วินาที</div>
 
-        <div class="account-title">
+<div id="summary"></div>
 
-            <div>
-                <p>ACCOUNT LOOKUP</p>
-                <h2>ข้อมูลผู้ใช้งาน</h2>
-            </div>
+<section class="section" id="trackingSection" style="display:none">
+<div class="section-head">
+<div><small>LIVE TRACKING</small><h3>🚚 ออเดอร์ที่กำลังดำเนินการ</h3></div>
+<span id="trackingCount"></span>
+</div>
+<div id="trackingList" class="tracking-list"></div>
+</section>
 
-            <span>
-                ใช้ชื่อเดียวกับที่กรอกตอนยืนยันคำสั่งซื้อ
-                ระบบจะค้นหาข้อมูลจาก Google Sheets
-            </span>
-
-        </div>
-
-
-        <div class="search-user">
-
-            <input
-                id="customerInput"
-                type="text"
-                placeholder="กรอกชื่อที่ใช้สั่งสินค้า"
-                autocomplete="off"
-            >
-
-            <button onclick="loadAccount()">
-                ค้นหา
-            </button>
-
-        </div>
-
-
-        <div id="accountContent">
-
-            <div class="message">
-                <div class="message-icon">🔎</div>
-                กรอกชื่อผู้ใช้เพื่อดูข้อมูล
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <section
-        id="ordersSection"
-        class="orders-section"
-        style="display:none;"
-    >
-
-        <div class="orders-head">
-
-            <div>
-                <p>ORDER HISTORY</p>
-                <h2>ประวัติการสั่งซื้อ</h2>
-            </div>
-
-            <span id="orderHistoryCount"></span>
-
-        </div>
-
-        <div id="ordersList"></div>
-
-    </section>
+<section class="section" id="historySection" style="display:none">
+<div class="section-head">
+<div><small>ORDER HISTORY</small><h3>🧾 ประวัติการซื้อ</h3></div>
+<span id="historyCount"></span>
+</div>
+<div id="historyList" class="history-list"></div>
+</section>
 
 </main>
 
 
+<div id="notifyOverlay" class="notify-overlay">
+<div class="notify-panel">
+
+<div class="notify-head">
+<div>
+<small>NOTIFICATION CENTER</small>
+<h3>🔔 การแจ้งเตือน</h3>
+</div>
+
+<div class="notify-head-actions">
+<button type="button" onclick="clearNotifications()">ล้าง</button>
+<button type="button" onclick="closeNotifications()">✕</button>
+</div>
+</div>
+
+<div id="notifyPermission" class="notify-permission"></div>
+
+<div id="notifyList" class="notify-list">
+<div class="notify-empty">ยังไม่มีการแจ้งเตือน</div>
+</div>
+
+</div>
+</div>
+
+
+<script src="app-ui.js"></script>
 <script>
+const API_URL="https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+let currentCustomer="";
+let shops=[];
+let refreshTimer=null;
 
-const API_URL =
-    "https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+const STATUS_FLOW=[
+"รอไรเดอร์รับงาน",
+"ไรเดอร์รับงานแล้ว",
+"กำลังไปรับสินค้า",
+"รับสินค้าแล้ว",
+"กำลังจัดส่ง",
+"จัดส่งสำเร็จ"
+];
 
 
-async function loadAccount() {
+/* =========================
+   CUSTOMER NOTIFICATIONS
+========================= */
 
-    const customer =
-        document
-            .getElementById("customerInput")
-            .value
-            .trim();
+let customerNotifications=[];
+let customerStatusSnapshot={};
+let notificationReady=false;
 
-    if (!customer) {
-        alert("กรุณากรอกชื่อผู้ใช้");
-        return;
-    }
 
-    const content =
-        document.getElementById("accountContent");
-
-    content.innerHTML = `
-        <div class="message">
-            <div class="message-icon">⏳</div>
-            กำลังโหลดข้อมูล...
-        </div>
-    `;
-
-    document.getElementById("ordersSection").style.display =
-        "none";
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_URL}?action=account&customer=${encodeURIComponent(customer)}`
-            );
-
-        const result =
-            await response.json();
-
-        if (!result.success) {
-
-            throw new Error(
-                result.message ||
-                "โหลดข้อมูลไม่สำเร็จ"
-            );
-        }
-
-        renderAccount(result);
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        content.innerHTML = `
-            <div class="message">
-                <div class="message-icon">⚠️</div>
-                ${error.message}
-            </div>
-        `;
-    }
+function customerNotifyStorageKey(){
+ return `dbt_customer_notifications_v1:${currentCustomer||"guest"}`;
 }
 
 
-function renderAccount(data) {
-
-    const content =
-        document.getElementById("accountContent");
-
-    content.innerHTML = `
-
-        <div class="summary">
-
-            <div class="summary-card">
-                <div class="summary-icon">👤</div>
-                <span>ชื่อผู้ใช้งาน</span>
-                <strong>${data.customer}</strong>
-            </div>
-
-            <div class="summary-card">
-                <div class="summary-icon">🧾</div>
-                <span>จำนวนคำสั่งซื้อ</span>
-                <strong>${data.total_orders}</strong>
-            </div>
-
-            <div class="summary-card highlight">
-                <div class="summary-icon">💰</div>
-                <span>ยอดรวมทั้งหมด</span>
-                <strong>฿${Number(data.total_spent || 0).toLocaleString()}</strong>
-            </div>
-
-        </div>
-
-    `;
-
-
-    const section =
-        document.getElementById("ordersSection");
-
-    const list =
-        document.getElementById("ordersList");
-
-    section.style.display =
-        "block";
-
-    document.getElementById("orderHistoryCount").textContent =
-        `${data.orders.length} รายการ`;
-
-
-    if (data.orders.length === 0) {
-
-        list.innerHTML = `
-            <div class="message">
-                <div class="message-icon">🧾</div>
-                ยังไม่มีประวัติการสั่งซื้อ
-            </div>
-        `;
-
-        return;
-    }
-
-
-    list.innerHTML = "";
-
-
-    data.orders.forEach(order => {
-
-        const dateText =
-            formatDate(order.date);
-
-        const shopName =
-            getShopName(order.shop_id);
-
-        const note =
-            String(order.note || "").trim();
-
-        list.innerHTML += `
-
-            <article class="order">
-
-                <div>
-
-                    <div class="order-id">
-                        ${order.order_id}
-                    </div>
-
-                    <div class="order-items">
-                        ${order.items}
-                    </div>
-
-                    <div class="order-meta">
-
-                        <span>
-                            🏪 ${shopName}
-                        </span>
-
-                        <span>
-                            📦 ${order.total_qty || 0} ชิ้น
-                        </span>
-
-                    </div>
-
-                    ${
-                        note
-                            ? `
-                                <div class="order-note">
-                                    📝 ${note}
-                                </div>
-                            `
-                            : ""
-                    }
-
-                </div>
-
-
-                <div class="order-right">
-
-                    <div class="order-price">
-                        ฿${Number(order.total_price || 0).toLocaleString()}
-                    </div>
-
-                    <div class="order-date">
-                        ${dateText}
-                    </div>
-
-                </div>
-
-            </article>
-
-        `;
-    });
+function customerSnapshotKey(){
+ return `dbt_customer_status_snapshot_v1:${currentCustomer||"guest"}`;
 }
 
 
-function getShopName(shopId) {
+function loadCustomerNotifications(){
+ try{
+  customerNotifications=
+   JSON.parse(
+    localStorage.getItem(
+     customerNotifyStorageKey()
+    )||"[]"
+   );
+ }catch(_){
+  customerNotifications=[];
+ }
 
-    if (shopId === "S001") {
-        return "108Shop";
-    }
+ try{
+  customerStatusSnapshot=
+   JSON.parse(
+    localStorage.getItem(
+     customerSnapshotKey()
+    )||"{}"
+   );
+ }catch(_){
+  customerStatusSnapshot={};
+ }
 
-    if (shopId === "S002") {
-        return "ร้านขนม";
-    }
-
-    if (shopId === "S003") {
-        return "ร้านป้าชู";
-    }
-
-    return shopId || "-";
+ renderNotificationCenter();
 }
 
 
-function formatDate(value) {
-
-    if (!value) {
-        return "-";
-    }
-
-    const date =
-        new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
-
-    return date.toLocaleString(
-        "th-TH",
-        {
-            dateStyle: "medium",
-            timeStyle: "short"
-        }
-    );
+function saveCustomerNotifications(){
+ try{
+  localStorage.setItem(
+   customerNotifyStorageKey(),
+   JSON.stringify(
+    customerNotifications.slice(0,30)
+   )
+  );
+ }catch(_){}
 }
 
 
-document
-    .getElementById("customerInput")
-    .addEventListener(
-        "keydown",
-        event => {
+function saveCustomerSnapshot(){
+ try{
+  localStorage.setItem(
+   customerSnapshotKey(),
+   JSON.stringify(
+    customerStatusSnapshot
+   )
+  );
+ }catch(_){}
+}
 
-            if (event.key === "Enter") {
-                loadAccount();
-            }
-        }
-    );
 
+function addCustomerNotification(title,message,orderId){
+ const item={
+  id:
+   `${Date.now()}_${Math.random()}`,
+  title,
+  message,
+  order_id:
+   orderId||"",
+  date:
+   new Date().toISOString(),
+  read:false
+ };
+
+ customerNotifications.unshift(item);
+ customerNotifications=
+  customerNotifications.slice(0,30);
+
+ saveCustomerNotifications();
+ renderNotificationCenter();
+
+ if(window.DBTUI){
+  DBTUI.toast(message,"success");
+  DBTUI.sound.play("success");
+ }
+
+ showBrowserNotification(
+  title,
+  message
+ );
+}
+
+
+function checkCustomerOrderChanges(orders){
+ const nextSnapshot={};
+
+ orders.forEach(order=>{
+  const orderId=
+   String(order.order_id||"");
+
+  const status=
+   String(
+    order.status||
+    "รอไรเดอร์รับงาน"
+   );
+
+  const rider=
+   String(order.rider||"");
+
+  const previous=
+   customerStatusSnapshot[orderId];
+
+  nextSnapshot[orderId]={
+   status,
+   rider
+  };
+
+  if(
+   !notificationReady||
+   !previous
+  ){
+   return;
+  }
+
+  if(
+   previous.status!==status
+  ){
+   let title="สถานะออเดอร์เปลี่ยนแล้ว";
+   let message=
+    `${orderId}: ${status}`;
+
+   if(
+    !previous.rider &&
+    rider
+   ){
+    title="มีไรเดอร์รับออเดอร์แล้ว 🛵";
+    message=
+     `${rider} รับออเดอร์ ${orderId} แล้ว`;
+   }
+
+   if(
+    status==="กำลังจัดส่ง"
+   ){
+    title="ของกำลังมาหาคุณ 🚚";
+    message=
+     `${orderId} กำลังจัดส่งโดย ${rider||"ไรเดอร์"}`;
+   }
+
+   if(
+    status==="จัดส่งสำเร็จ"
+   ){
+    title="จัดส่งสำเร็จ 🎉";
+    message=
+     `${orderId} ส่งถึงปลายทางเรียบร้อยแล้ว`;
+   }
+
+   if(
+    status==="ยกเลิก"
+   ){
+    title="ออเดอร์ถูกยกเลิก";
+    message=
+     `${orderId} ถูกยกเลิกแล้ว`;
+   }
+
+   addCustomerNotification(
+    title,
+    message,
+    orderId
+   );
+  }
+ });
+
+ customerStatusSnapshot=
+  nextSnapshot;
+
+ saveCustomerSnapshot();
+
+ notificationReady=true;
+}
+
+
+function renderNotificationCenter(){
+ const list=
+  document.getElementById(
+   "notifyList"
+  );
+
+ const badge=
+  document.getElementById(
+   "notifyBadge"
+  );
+
+ if(!list||!badge)return;
+
+ const unread=
+  customerNotifications.filter(
+   item=>!item.read
+  ).length;
+
+ badge.textContent=
+  unread>99?"99+":unread;
+
+ badge.classList.toggle(
+  "show",
+  unread>0
+ );
+
+ document.title=
+  unread>0
+   ?`(${unread}) ติดตามคำสั่งซื้อ · DBT Multi Shop`
+   :"ติดตามคำสั่งซื้อ · DBT Multi Shop";
+
+ if(!customerNotifications.length){
+  list.innerHTML=
+   `<div class="notify-empty">ยังไม่มีการแจ้งเตือน 🔕</div>`;
+ }else{
+  list.innerHTML=
+   customerNotifications.map(item=>`
+    <article class="notify-item ${item.read?"":"unread"}">
+     <div class="notify-item-top">
+      <strong>${escapeHtml(item.title)}</strong>
+      <time>${formatNotifyTime(item.date)}</time>
+     </div>
+     <p>${escapeHtml(item.message)}</p>
+    </article>
+   `).join("");
+ }
+
+ renderNotificationPermission();
+}
+
+
+function formatNotifyTime(value){
+ const d=new Date(value);
+ if(Number.isNaN(d.getTime()))return"";
+ return d.toLocaleString(
+  "th-TH",
+  {
+   dateStyle:"short",
+   timeStyle:"short"
+  }
+ );
+}
+
+
+function openNotifications(){
+ document
+  .getElementById(
+   "notifyOverlay"
+  )
+  .classList
+  .add("active");
+
+ customerNotifications=
+  customerNotifications.map(
+   item=>({
+    ...item,
+    read:true
+   })
+  );
+
+ saveCustomerNotifications();
+ renderNotificationCenter();
+}
+
+
+function closeNotifications(){
+ document
+  .getElementById(
+   "notifyOverlay"
+  )
+  .classList
+  .remove("active");
+}
+
+
+function clearNotifications(){
+ if(
+  customerNotifications.length&&
+  !confirm(
+   "ล้างประวัติการแจ้งเตือนทั้งหมด?"
+  )
+ ){
+  return;
+ }
+
+ customerNotifications=[];
+ saveCustomerNotifications();
+ renderNotificationCenter();
+}
+
+
+function renderNotificationPermission(){
+ const box=
+  document.getElementById(
+   "notifyPermission"
+  );
+
+ if(!box)return;
+
+ if(
+  !("Notification" in window)
+ ){
+  box.innerHTML=
+   "Browser นี้ไม่รองรับการแจ้งเตือนของระบบ แต่ Toast และเสียงในหน้าเว็บยังใช้ได้";
+  return;
+ }
+
+ if(
+  location.protocol!=="https:" &&
+  location.hostname!=="localhost"
+ ){
+  box.innerHTML=
+   "💡 การแจ้งเตือนของเครื่องจะใช้ได้เมื่อเปิดเว็บผ่าน HTTPS/Render ส่วนเสียงและ Badge ในหน้าเว็บใช้ได้ตามปกติ";
+  return;
+ }
+
+ if(
+  Notification.permission==="granted"
+ ){
+  box.innerHTML=
+   "✅ เปิดการแจ้งเตือนของเครื่องแล้ว";
+  return;
+ }
+
+ if(
+  Notification.permission==="denied"
+ ){
+  box.innerHTML=
+   "🔕 Browser ถูกตั้งให้ปฏิเสธการแจ้งเตือน สามารถเปลี่ยนได้จาก Site Settings";
+  return;
+ }
+
+ box.innerHTML=
+  `ต้องการให้แจ้งเตือนแม้อยู่แท็บอื่นไหม?
+   <button onclick="requestBrowserNotifications()">
+    เปิด Browser Notification
+   </button>`;
+}
+
+
+async function requestBrowserNotifications(){
+ if(
+  !("Notification" in window)
+ )return;
+
+ try{
+  await Notification.requestPermission();
+ }catch(_){}
+
+ renderNotificationPermission();
+}
+
+
+function showBrowserNotification(title,message){
+ if(
+  !("Notification" in window)||
+  Notification.permission!=="granted"
+ ){
+  return;
+ }
+
+ try{
+  new Notification(
+   title,
+   {
+    body:message,
+    icon:"icon-192.png"
+   }
+  );
+ }catch(_){}
+}
+
+
+function escapeHtml(value){
+ return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+function statusClass(status){
+ if(status==="จัดส่งสำเร็จ")return"success";
+ if(status==="ยกเลิก")return"cancel";
+ if(["ไรเดอร์รับงานแล้ว","กำลังไปรับสินค้า","รับสินค้าแล้ว","กำลังจัดส่ง"].includes(status))return"delivery";
+ return"";
+}
+
+function formatDate(value){
+ if(!value)return"-";
+ const d=new Date(value);
+ return Number.isNaN(d.getTime())?String(value):d.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"});
+}
+
+function shopName(id){
+ if(id==="MULTI")return"หลายร้านในบิลเดียว";
+ const shop=shops.find(s=>String(s.shop_id)===String(id));
+ return shop?shop.shop_name:(id||"-");
+}
+
+function canCancel(order){
+ const rider=String(order.rider||"").trim();
+ return !rider && !["จัดส่งสำเร็จ","ยกเลิก"].includes(order.status);
+}
+
+function renderSteps(status){
+ const current=STATUS_FLOW.indexOf(status);
+ return STATUS_FLOW.map((step,index)=>`
+  <div class="step ${current>=index?"done":""}">
+   ${[
+    "รับคำสั่งซื้อ",
+    "ไรเดอร์รับงาน",
+    "ไปรับสินค้า",
+    "รับสินค้าแล้ว",
+    "กำลังจัดส่ง",
+    "สำเร็จ"
+   ][index]}
+  </div>`).join("");
+}
+
+async function loadShops(){
+ try{
+  const r=await fetch(`${API_URL}?action=shops`);
+  const result=await r.json();
+  shops=result.success&&Array.isArray(result.data)?result.data:[];
+ }catch(_){shops=[];}
+}
+
+async function loadAccount(silent=false){
+ const input=document.getElementById("customerInput");
+ const customer=input.value.trim();
+
+ if(!customer){
+  if(!silent)alert("กรุณากรอกชื่อที่ใช้สั่งสินค้า");
+  return;
+ }
+
+ if(
+  currentCustomer!==customer
+ ){
+  notificationReady=false;
+  customerNotifications=[];
+  customerStatusSnapshot={};
+ }
+
+ currentCustomer=customer;
+
+ try{
+  const response=await fetch(`${API_URL}?action=account&customer=${encodeURIComponent(customer)}`);
+  const result=await response.json();
+
+  if(!result.success)throw new Error(result.message||"โหลดข้อมูลไม่สำเร็จ");
+
+  if(currentCustomer){
+   loadCustomerNotifications();
+   checkCustomerOrderChanges(
+    Array.isArray(result.orders)
+     ?result.orders
+     :[]
+   );
+  }
+
+  renderAccount(result);
+
+  if(!refreshTimer){
+   refreshTimer=setInterval(()=>{
+    if(currentCustomer)loadAccount(true);
+   },15000);
+  }
+ }catch(error){
+  if(!silent)alert(error.message||"โหลดข้อมูลไม่สำเร็จ");
+ }
+}
+
+function renderAccount(data){
+ document.getElementById("summary").innerHTML=`
+ <section class="summary">
+  <div class="summary-card"><span>คำสั่งซื้อทั้งหมด</span><strong>${data.total_orders||0}</strong></div>
+  <div class="summary-card"><span>กำลังดำเนินการ</span><strong>${data.active_orders||0}</strong></div>
+  <div class="summary-card"><span>ส่งสำเร็จ</span><strong>${data.completed_orders||0}</strong></div>
+  <div class="summary-card"><span>ยกเลิก</span><strong>${data.cancelled_orders||0}</strong></div>
+  <div class="summary-card highlight"><span>ยอดรวมที่ไม่ถูกยกเลิก</span><strong>฿${Number(data.total_spent||0).toLocaleString()}</strong></div>
+ </section>`;
+
+ const active=data.orders.filter(o=>!["จัดส่งสำเร็จ","ยกเลิก"].includes(o.status));
+ const history=data.orders.filter(o=>["จัดส่งสำเร็จ","ยกเลิก"].includes(o.status));
+
+ document.getElementById("trackingSection").style.display="block";
+ document.getElementById("historySection").style.display="block";
+ document.getElementById("trackingCount").textContent=`${active.length} ออเดอร์`;
+ document.getElementById("historyCount").textContent=`${history.length} รายการ`;
+
+ const tracking=document.getElementById("trackingList");
+
+ if(!active.length){
+  tracking.innerHTML=`<div class="empty">ตอนนี้ไม่มีออเดอร์ที่กำลังดำเนินการ 🎉</div>`;
+ }else{
+  tracking.innerHTML=active.map(order=>`
+   <article class="order-card">
+    <div class="order-top">
+     <div>
+      <div class="order-id">${escapeHtml(order.order_id)}</div>
+      <div class="order-date">${formatDate(order.date)} · 🏪 ${escapeHtml(shopName(order.shop_id))}</div>
+      <span class="status-pill ${statusClass(order.status)}">${escapeHtml(order.status||"รอไรเดอร์รับงาน")}</span>
+     </div>
+     <div class="order-price">฿${Number(order.total_price||0).toLocaleString()}</div>
+    </div>
+
+    <div class="rider-box">
+     ${order.rider
+       ?`🛵 ไรเดอร์ <strong>${escapeHtml(order.rider)}</strong> · ${escapeHtml(order.status)}`
+       :`⏳ <strong>ยังไม่มีไรเดอร์รับออเดอร์</strong> กำลังรอคนรับงาน`}
+    </div>
+
+    <div class="items">${escapeHtml(order.items||"")}</div>
+    <div class="steps">${renderSteps(order.status||"รอไรเดอร์รับงาน")}</div>
+
+    <div class="order-actions">
+     ${canCancel(order)
+      ?`<button class="cancel-btn" onclick="cancelOrder('${order.order_id}',this)">ยกเลิกคำสั่งซื้อ</button>`
+      :""}
+    </div>
+   </article>
+  `).join("");
+ }
+
+ const historyBox=document.getElementById("historyList");
+
+ if(!history.length){
+  historyBox.innerHTML=`<div class="empty">ยังไม่มีประวัติที่เสร็จสิ้นหรือยกเลิก</div>`;
+ }else{
+  historyBox.innerHTML=history.map(order=>`
+   <article class="history-card">
+    <div>
+     <div class="order-id">${escapeHtml(order.order_id)}</div>
+     <div class="history-meta">
+      ${formatDate(order.date)} · 🏪 ${escapeHtml(shopName(order.shop_id))}<br>
+      ${escapeHtml(order.items||"")}
+      ${order.rider?`<br>🛵 ${escapeHtml(order.rider)}`:""}
+     </div>
+     <span class="status-pill ${statusClass(order.status)}">${escapeHtml(order.status)}</span>
+    </div>
+    <div class="order-price">฿${Number(order.total_price||0).toLocaleString()}</div>
+   </article>
+  `).join("");
+ }
+}
+
+async function cancelOrder(orderId,button){
+ if(!confirm("ยกเลิกคำสั่งซื้อนี้ใช่ไหม?\nหลังไรเดอร์รับงานแล้วจะยกเลิกจากหน้านี้ไม่ได้"))return;
+
+ button.disabled=true;
+ button.textContent="กำลังยกเลิก...";
+
+ try{
+  const response=await fetch(API_URL,{
+   method:"POST",
+   headers:{"Content-Type":"text/plain;charset=utf-8"},
+   body:JSON.stringify({
+    action:"cancelOrderByCustomer",
+    order_id:orderId,
+    customer:currentCustomer
+   })
+  });
+
+  const result=await response.json();
+  if(!result.success)throw new Error(result.message||"ยกเลิกไม่สำเร็จ");
+
+  if(window.DBTUI){
+   DBTUI.toast("ยกเลิกคำสั่งซื้อแล้ว","success");
+   DBTUI.sound.play("remove");
+  }
+
+  await loadAccount(true);
+ }catch(error){
+  alert(error.message||"ยกเลิกไม่สำเร็จ");
+ }finally{
+  button.disabled=false;
+  button.textContent="ยกเลิกคำสั่งซื้อ";
+ }
+}
+
+document.getElementById("notifyOverlay").addEventListener("click",event=>{
+ if(event.target===event.currentTarget)closeNotifications();
+});
+
+document.getElementById("customerInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter")loadAccount(false);
+});
+
+(async()=>{
+ await loadShops();
+ try{
+  const saved=localStorage.getItem("dbt_last_customer");
+  if(saved){
+   document.getElementById("customerInput").value=saved;
+  }
+ }catch(_){}
+})();
+
+document.getElementById("customerInput").addEventListener("input",e=>{
+ try{localStorage.setItem("dbt_last_customer",e.target.value.trim());}catch(_){}
+});
 </script>
-
+<script src="app-pwa.js"></script>
 </body>
 </html>

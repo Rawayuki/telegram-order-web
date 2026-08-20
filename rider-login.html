@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>เข้าสู่ระบบไรเดอร์ · DBT Multi Shop</title>
+<link rel="stylesheet" href="theme.css">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--dark:#111827;--orange:#ff6b35;--line:#e5e7eb;--muted:#6b7280}
+body{min-height:100vh;font-family:Arial,"Noto Sans Thai",sans-serif;background:radial-gradient(circle at 12% 10%,rgba(255,107,53,.16),transparent 30%),#0f172a;color:white;display:grid;place-items:center;padding:24px}
+.shell{width:min(920px,100%);display:grid;grid-template-columns:1.05fr .95fr;background:#111827;border:1px solid rgba(255,255,255,.10);border-radius:26px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.35)}
+.visual{padding:48px;background:linear-gradient(145deg,#ff6b35,#e95020);display:flex;flex-direction:column;justify-content:space-between;min-height:570px}
+.visual small{font-size:10px;font-weight:900;letter-spacing:1.4px}
+.visual h1{font-size:clamp(40px,6vw,64px);line-height:.98;margin-top:10px}
+.visual p{margin-top:16px;max-width:420px;font-size:13px;line-height:1.75;color:#fff3ed}
+.big-icon{font-size:90px;filter:drop-shadow(0 15px 25px rgba(0,0,0,.18))}
+.form-side{padding:42px;background:#fff;color:#171717}
+.back{display:inline-flex;text-decoration:none;color:#374151;font-size:11px;font-weight:800;margin-bottom:28px}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:7px;background:#f1f3f5;padding:5px;border-radius:12px}
+.mode button{border:none;border-radius:9px;padding:10px;background:transparent;font-weight:800;cursor:pointer;color:#6b7280}
+.mode button.active{background:white;color:#111827;box-shadow:0 3px 12px rgba(17,24,39,.08)}
+.form-side h2{font-size:28px;margin-top:26px}
+.form-side>p{color:var(--muted);font-size:11px;line-height:1.6;margin-top:7px}
+.field{margin-top:17px}
+.field label{display:block;font-size:11px;font-weight:900;margin-bottom:6px}
+.field input{width:100%;height:48px;border:1px solid #d9dde4;border-radius:11px;padding:0 13px;outline:none;font-size:14px}
+.field input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,53,.1)}
+.submit{width:100%;height:49px;margin-top:19px;border:none;border-radius:11px;background:var(--dark);color:white;font-weight:900;cursor:pointer}
+.submit:disabled{opacity:.55}
+.note{margin-top:12px;padding:10px 12px;background:#fff6f2;color:#9a3d1c;border-radius:10px;font-size:10px;line-height:1.55}
+@media(max-width:760px){.shell{grid-template-columns:1fr}.visual{min-height:auto;padding:30px}.big-icon{font-size:60px;margin-top:28px}.form-side{padding:30px 22px}}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+
+<body>
+<div class="shell">
+
+<section class="visual">
+<div>
+<small>DBT MULTI SHOP · RIDER</small>
+<h1>รับงาน.<br>ส่งของ.<br>เก็บเครดิต.</h1>
+<p>หน้าไรเดอร์ส่วนตัวสำหรับดูงานใหม่ รับออเดอร์ เปลี่ยนสถานะ และดูสถิติการทำงานของตัวเอง</p>
+</div>
+<div class="big-icon">🛵</div>
+</section>
+
+<section class="form-side">
+<a href="home.html" class="back">← กลับหน้าหลัก</a>
+
+<div class="mode">
+<button id="loginMode" class="active" onclick="setMode('login')">เข้าสู่ระบบ</button>
+<button id="registerMode" onclick="setMode('register')">สร้างโปรไฟล์</button>
+</div>
+
+<h2 id="title">เข้าสู่ระบบไรเดอร์</h2>
+<p id="description">กรอกชื่อและรหัสของคุณเพื่อเข้าหน้างานส่วนตัว</p>
+
+<div class="field">
+<label>ชื่อไรเดอร์</label>
+<input id="riderName" maxlength="40" placeholder="เช่น Rider01">
+</div>
+
+<div class="field">
+<label>รหัสเข้าใช้งาน</label>
+<input id="riderCode" type="password" minlength="4" maxlength="30" placeholder="อย่างน้อย 4 ตัว">
+</div>
+
+<button id="submitButton" class="submit" onclick="submitAuth()">เข้าสู่ระบบ</button>
+
+<div class="note">
+🔐 รหัสจะถูกแปลงเป็น SHA-256 ก่อนเก็บในชีต Riders และหน้าไรเดอร์จะใช้ Session ของแต่ละคน
+</div>
+</section>
+
+</div>
+
+<script src="app-ui.js"></script>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+let mode="login";
+
+function setMode(value){
+ mode=value;
+ document.getElementById("loginMode").classList.toggle("active",mode==="login");
+ document.getElementById("registerMode").classList.toggle("active",mode==="register");
+ document.getElementById("title").textContent=mode==="login"?"เข้าสู่ระบบไรเดอร์":"สร้างโปรไฟล์ไรเดอร์";
+ document.getElementById("description").textContent=mode==="login"
+  ?"กรอกชื่อและรหัสของคุณเพื่อเข้าหน้างานส่วนตัว"
+  :"ใช้ชื่อกับรหัสที่จำได้ ระบบจะสร้างบัญชีไรเดอร์ใหม่ให้";
+ document.getElementById("submitButton").textContent=mode==="login"?"เข้าสู่ระบบ":"สร้างโปรไฟล์และเข้าใช้งาน";
+}
+
+async function submitAuth(){
+ const rider_name=document.getElementById("riderName").value.trim();
+ const access_code=document.getElementById("riderCode").value.trim();
+
+ if(rider_name.length<2){alert("กรุณากรอกชื่อไรเดอร์");return;}
+ if(access_code.length<4){alert("รหัสต้องมีอย่างน้อย 4 ตัว");return;}
+
+ const button=document.getElementById("submitButton");
+ button.disabled=true;
+ button.textContent="กำลังตรวจสอบ...";
+
+ try{
+  const response=await fetch(API_URL,{
+   method:"POST",
+   headers:{"Content-Type":"text/plain;charset=utf-8"},
+   body:JSON.stringify({action:"riderAuth",mode,rider_name,access_code})
+  });
+
+  const result=await response.json();
+  if(!result.success)throw new Error(result.message||"เข้าสู่ระบบไม่สำเร็จ");
+
+  localStorage.setItem("dbt_rider_session_v1",JSON.stringify(result.rider));
+
+  location.href="rider.html";
+ }catch(error){
+  alert(error.message||"เข้าสู่ระบบไม่สำเร็จ");
+ }finally{
+  button.disabled=false;
+  button.textContent=mode==="login"?"เข้าสู่ระบบ":"สร้างโปรไฟล์และเข้าใช้งาน";
+ }
+}
+
+document.getElementById("riderCode").addEventListener("keydown",e=>{
+ if(e.key==="Enter")submitAuth();
+});
+</script>
+<script src="app-pwa.js"></script>
+</body>
+</html>

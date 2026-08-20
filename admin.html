@@ -5,12 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#111827">
 <title>DBT Admin</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="theme.css">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--dark:#111827;--dark2:#1f2937;--orange:#ff6b35;--orange-dark:#e85a27;--soft:#fff1eb;--bg:#f5f6f8;--line:#e5e7eb;--muted:#6b7280;--red:#dc2626;--green:#15803d}
 body{font-family:Arial,"Noto Sans Thai",sans-serif;background:radial-gradient(circle at 10% 12%,rgba(255,107,53,.05),transparent 28%),var(--bg);color:#171717}
 button,input,select{font:inherit}
+body.no-scroll{overflow:hidden}
 
 header{position:sticky;top:0;z-index:100;background:rgba(17,24,39,.96);backdrop-filter:blur(14px);color:white;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid rgba(255,255,255,.08)}
 header h1{font-size:21px} header p{color:#9ca3af;font-size:11px;margin-top:3px}
@@ -91,6 +95,55 @@ display:none;margin-bottom:14px;padding:12px 14px;border-radius:12px;font-size:1
 .notice.info{background:#eff6ff;color:#1d4ed8}
 button.busy{pointer-events:none;opacity:.6}
 
+
+.recent-orders-panel{
+background:white;border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:18px;
+box-shadow:0 7px 20px rgba(17,24,39,.04)
+}
+.recent-orders-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:12px}
+.recent-orders-head p{color:var(--orange);font-size:10px;font-weight:800;letter-spacing:1px}
+.recent-orders-head h3{font-size:20px;margin-top:4px}
+.recent-orders-list{display:grid;gap:8px}
+.recent-order{display:grid;grid-template-columns:1fr auto;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+.recent-order:last-child{border-bottom:none}
+.recent-order strong{font-size:13px}.recent-order span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.recent-order-price{text-align:right;color:var(--orange);font-weight:800}
+html[data-theme="dark"] .recent-orders-panel{background:var(--ui-surface)!important;border-color:var(--ui-line)!important}
+
+.shop-management{
+background:white;border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:18px;
+box-shadow:0 7px 20px rgba(17,24,39,.04)
+}
+.shop-management-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:14px}
+.shop-management-head p{color:var(--orange);font-size:10px;font-weight:800;letter-spacing:1px}
+.shop-management-head h3{font-size:20px;margin-top:4px}
+.shop-management-head button{border:none;background:var(--dark);color:white;padding:10px 13px;border-radius:10px;font-weight:800;cursor:pointer}
+.shop-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.shop-admin-card{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff}
+.shop-admin-image{width:100%;aspect-ratio:16/8;object-fit:cover;background:#eef0f3;display:block}
+.shop-admin-body{padding:13px}
+.shop-admin-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.shop-admin-title h4{font-size:16px}
+.shop-admin-id{color:var(--muted);font-size:10px;margin-top:4px}
+.shop-admin-description{color:var(--muted);font-size:11px;line-height:1.55;margin-top:8px;min-height:34px}
+.shop-admin-announcement{margin-top:8px;padding:7px 9px;border-radius:9px;background:var(--soft);color:#c64d20;font-size:10px}
+.shop-admin-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:11px}
+.shop-admin-actions button{border:none;border-radius:8px;padding:8px 6px;font-size:10px;font-weight:800;cursor:pointer}
+.shop-edit{background:var(--dark);color:white}
+.shop-toggle{background:var(--soft);color:#c64d20}
+.shop-delete{background:#fee2e2;color:#b91c1c}
+.shop-textarea{width:100%;min-height:80px;border:1px solid #d9dde4;border-radius:10px;padding:10px 12px;resize:vertical;outline:none}
+html[data-theme="dark"] .shop-management,
+html[data-theme="dark"] .shop-admin-card{background:var(--ui-surface)!important;border-color:var(--ui-line)!important}
+@media(max-width:900px){.shop-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){
+.shop-management-head{align-items:flex-start;flex-direction:column}
+.shop-management-head button{width:100%}
+.shop-list{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){.recent-order{grid-template-columns:1fr}.recent-order-price{text-align:left}}
+
 @media(max-width:700px){
 header{padding:13px 14px}header h1{font-size:17px}header p{display:none}.back-button{font-size:11px;padding:9px 10px}
 .hero{padding:32px 18px 50px}.hero h2{font-size:34px}
@@ -99,6 +152,255 @@ header{padding:13px 14px}header h1{font-size:17px}header p{display:none}.back-bu
 .product{grid-template-columns:68px 1fr}.product>img{width:68px;height:68px}.right{grid-column:1/-1;min-width:0;text-align:left}.actions{display:grid;grid-template-columns:repeat(3,1fr)}.price{text-align:left}
 .modal{align-items:flex-end;padding:0}.modal-box{width:100%;border-radius:22px 22px 0 0;padding:19px 16px}.image-actions{grid-template-columns:1fr}.remove-image-btn{height:43px}.modal-actions{grid-template-columns:1fr}.modal-actions button{height:50px}
 }
+
+/* =========================
+   LOCAL SHOP QR
+========================= */
+.qr-shop-button{
+    border:none;
+    border-radius:11px;
+    min-height:42px;
+    padding:0 13px;
+    background:#2b3545;
+    color:white;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.qr-overlay{
+    position:fixed;
+    inset:0;
+    z-index:1700;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(17,24,39,.74);
+    backdrop-filter:blur(8px);
+}
+
+.qr-overlay.active{
+    display:flex;
+}
+
+.qr-card{
+    width:min(440px,100%);
+    max-height:calc(100dvh - 40px);
+    overflow-y:auto;
+    background:white;
+    color:#171717;
+    border-radius:22px;
+    padding:23px;
+    text-align:center;
+    box-shadow:0 30px 80px rgba(0,0,0,.30);
+}
+
+.qr-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+    text-align:left;
+}
+
+.qr-head small{
+    display:block;
+    color:#ff6b35;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.qr-head h3{
+    margin-top:4px;
+    font-size:22px;
+}
+
+.qr-close{
+    flex-shrink:0;
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:50%;
+    background:#eef0f3;
+    cursor:pointer;
+}
+
+.qr-canvas-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:292px;
+    margin-top:16px;
+    padding:15px;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    background:white;
+}
+
+.qr-canvas-wrap canvas{
+    display:block;
+    max-width:100%;
+    height:auto;
+}
+
+.qr-url{
+    margin-top:12px;
+    padding:10px 11px;
+    border-radius:10px;
+    background:#f7f8fa;
+    color:#6b7280;
+    font-size:10px;
+    line-height:1.5;
+    word-break:break-all;
+    text-align:left;
+}
+
+.qr-warning{
+    display:none;
+    margin-top:12px;
+    padding:10px 11px;
+    border-radius:10px;
+    background:#fff1f2;
+    color:#991b1b;
+    font-size:10px;
+    line-height:1.55;
+    text-align:left;
+}
+
+.qr-warning.show{
+    display:block;
+}
+
+.qr-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:13px;
+}
+
+.qr-actions button{
+    min-height:44px;
+    border:none;
+    border-radius:10px;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.qr-copy{
+    background:#eef0f3;
+    color:#222;
+}
+
+.qr-download{
+    background:#111827;
+    color:white;
+}
+
+html[data-theme="dark"] .qr-card{
+    background:var(--ui-surface);
+    color:var(--ui-text);
+}
+
+html[data-theme="dark"] .qr-url{
+    background:var(--ui-surface-2);
+    color:var(--ui-muted);
+}
+
+@media(max-width:600px){
+    .qr-overlay{
+        align-items:flex-end;
+        padding:0;
+    }
+
+    .qr-card{
+        width:100%;
+        max-height:94dvh;
+        border-radius:22px 22px 0 0;
+        padding:19px 16px;
+    }
+
+    .qr-actions{
+        grid-template-columns:1fr;
+    }
+}
+
+
+/* =========================
+   RIDER MANAGEMENT
+========================= */
+.rider-management{
+background:white;border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:18px;
+box-shadow:0 7px 20px rgba(17,24,39,.04)
+}
+.rider-management-head{
+display:flex;justify-content:space-between;align-items:end;gap:14px;margin-bottom:14px
+}
+.rider-management-head p{color:var(--orange);font-size:10px;font-weight:800;letter-spacing:1px}
+.rider-management-head h3{font-size:20px;margin-top:4px}
+.rider-management-head a{
+text-decoration:none;background:var(--dark);color:white;padding:10px 13px;border-radius:10px;
+font-size:11px;font-weight:800
+}
+.rider-admin-grid{
+display:grid;grid-template-columns:repeat(3,1fr);gap:12px
+}
+.rider-admin-card{
+border:1px solid var(--line);border-radius:15px;padding:14px;background:#fff
+}
+.rider-admin-top{
+display:flex;justify-content:space-between;align-items:flex-start;gap:10px
+}
+.rider-avatar{
+width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+background:#fff1eb;font-size:20px;flex-shrink:0
+}
+.rider-name-block{flex:1}
+.rider-name-block h4{font-size:15px}
+.rider-id{font-size:9px;color:var(--muted);margin-top:3px}
+.rider-active-pill{
+padding:5px 8px;border-radius:30px;font-size:9px;font-weight:800;background:#dcfce7;color:#166534
+}
+.rider-active-pill.off{background:#fee2e2;color:#991b1b}
+.rider-mini-stats{
+display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px
+}
+.rider-mini-stat{
+background:#f7f8fa;border-radius:9px;padding:8px 6px;text-align:center
+}
+.rider-mini-stat strong{display:block;font-size:14px}
+.rider-mini-stat span{display:block;font-size:8px;color:var(--muted);margin-top:2px}
+.rider-credit{
+margin-top:10px;padding:9px 10px;border-radius:10px;background:#fff6f2;color:#c64d20;
+font-size:10px;font-weight:800
+}
+.rider-login-time{margin-top:8px;font-size:9px;color:var(--muted)}
+.rider-admin-actions{
+display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px
+}
+.rider-admin-actions button{
+border:none;border-radius:9px;padding:9px 8px;font-size:10px;font-weight:800;cursor:pointer
+}
+.rider-toggle-btn{background:#eef0f3;color:#374151}
+.rider-delete-btn{background:#fee2e2;color:#991b1b}
+.rider-empty{
+grid-column:1/-1;padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:13px
+}
+html[data-theme="dark"] .rider-management,
+html[data-theme="dark"] .rider-admin-card{
+background:var(--ui-surface)!important;border-color:var(--ui-line)!important
+}
+html[data-theme="dark"] .rider-mini-stat{background:var(--ui-surface-2)!important}
+@media(max-width:1000px){.rider-admin-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){
+.rider-admin-grid{grid-template-columns:1fr}
+.rider-management-head{align-items:flex-start;flex-direction:column}
+.rider-management-head a{width:100%;text-align:center}
+}
+
 </style>
 </head>
 
@@ -109,7 +411,10 @@ header{padding:13px 14px}header h1{font-size:17px}header p{display:none}.back-bu
 <h1>⚙️ DBT Admin</h1>
 <p>จัดการข้อมูลสินค้าและรูปภาพ</p>
 </div>
+<div style="display:flex;gap:8px;align-items:center">
+<a href="rider-login.html" class="back-button" style="background:#2b3545">🛵 Rider</a>
 <a href="home.html" class="back-button">← หน้าหลัก</a>
+</div>
 </header>
 
 <section class="hero">
@@ -134,14 +439,60 @@ header{padding:13px 14px}header h1{font-size:17px}header p{display:none}.back-bu
 
 <div id="notice" class="notice"></div>
 
+
+<section class="recent-orders-panel">
+<div class="recent-orders-head">
+<div>
+<p>RECENT ORDERS</p>
+<h3>ออเดอร์ล่าสุด</h3>
+</div>
+<span style="color:var(--muted);font-size:10px">5 รายการล่าสุด</span>
+</div>
+<div id="recentOrdersList" class="recent-orders-list">
+<div class="loading" style="padding:18px">กำลังโหลดออเดอร์ล่าสุด...</div>
+</div>
+</section>
+
+<section class="shop-management">
+<div class="shop-management-head">
+<div>
+<p>SHOP MANAGEMENT</p>
+<h3>จัดการร้านค้า</h3>
+</div>
+<button type="button" onclick="openAddShop()">＋ เพิ่มร้านใหม่</button>
+</div>
+<div id="shopList" class="shop-list">
+<div class="loading" style="grid-column:1/-1;padding:20px">กำลังโหลดร้านค้า...</div>
+</div>
+</section>
+
+
+<section class="rider-management">
+
+<div class="rider-management-head">
+<div>
+<p>RIDER MANAGEMENT</p>
+<h3>จัดการไรเดอร์</h3>
+</div>
+
+<a href="rider-login.html">
+🛵 เปิดหน้าสำหรับไรเดอร์
+</a>
+</div>
+
+<div id="riderAdminGrid" class="rider-admin-grid">
+<div class="rider-empty">
+กำลังโหลดข้อมูลไรเดอร์...
+</div>
+</div>
+
+</section>
+
 <section class="admin-bar">
 <input id="searchInput" type="search" placeholder="ค้นหาสินค้า..." oninput="renderProducts()">
 
 <select id="shopFilter" onchange="renderProducts()">
 <option value="">ทุกร้าน</option>
-<option value="S001">108Shop</option>
-<option value="S002">ร้านขนม</option>
-<option value="S003">ร้านป้าชู</option>
 </select>
 
 <button class="add-btn" onclick="openAdd()">＋ เพิ่มสินค้า</button>
@@ -152,6 +503,127 @@ header{padding:13px 14px}header h1{font-size:17px}header p{display:none}.back-bu
 </section>
 
 </main>
+
+
+
+<div id="shopQrOverlay" class="qr-overlay">
+    <div class="qr-card">
+
+        <div class="qr-head">
+            <div>
+                <small>SHOP QR CODE</small>
+                <h3 id="qrShopTitle">QR ร้านค้า</h3>
+            </div>
+
+            <button
+                type="button"
+                class="qr-close"
+                onclick="closeShopQr()"
+            >
+                ✕
+            </button>
+        </div>
+
+        <div class="qr-canvas-wrap">
+            <canvas id="shopQrCanvas"></canvas>
+        </div>
+
+        <div
+            id="shopQrUrl"
+            class="qr-url"
+        ></div>
+
+        <div
+            id="shopQrWarning"
+            class="qr-warning"
+        >
+            ⚠️ ตอนนี้เปิดเว็บผ่านไฟล์ในเครื่อง (`file://`) QR นี้จะใช้แชร์ไปมือถือไม่ได้
+            ต้องเปิดเว็บผ่าน Render/HTTPS ก่อน แล้ว QR จะสร้างลิงก์ออนไลน์ให้อัตโนมัติ
+        </div>
+
+        <div class="qr-actions">
+            <button
+                type="button"
+                class="qr-copy"
+                onclick="copyShopQrLink()"
+            >
+                🔗 คัดลอกลิงก์
+            </button>
+
+            <button
+                type="button"
+                class="qr-download"
+                onclick="saveShopQrImage()"
+            >
+                🖼️ บันทึก QR
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="shopModal" class="modal">
+<div class="modal-box">
+<div class="modal-head">
+<div>
+<span id="shopModalEyebrow">ADD SHOP</span>
+<h2 id="shopModalTitle">เพิ่มร้านค้า</h2>
+</div>
+<button class="close" onclick="closeShopModal()">✕</button>
+</div>
+
+<input id="editingShopId" type="hidden">
+
+<div class="form-group">
+<label>รหัสร้าน</label>
+<input id="shopCode" type="text" value="สร้างอัตโนมัติ" disabled>
+</div>
+
+<div class="form-group">
+<label>ชื่อร้าน</label>
+<input id="shopNameInput" type="text" placeholder="ชื่อร้าน">
+</div>
+
+<div class="form-group">
+<label>รูปหน้าร้าน</label>
+<div class="image-manager">
+<div class="image-preview">
+<div id="shopImagePlaceholder" class="image-placeholder"><strong>🏪</strong>ยังไม่ได้เลือกรูป</div>
+<img id="shopImagePreview" alt="ตัวอย่างรูปร้าน">
+</div>
+<div class="image-actions">
+<label class="upload-label">📁 เลือกรูปจากเครื่อง
+<input id="shopImageFile" type="file" accept="image/*" onchange="handleShopImageFile(event)">
+</label>
+<button type="button" class="remove-image-btn" onclick="clearShopImage()">ล้างรูป</button>
+</div>
+<div class="form-group" style="margin-bottom:0">
+<label>หรือวาง URL รูปภาพ</label>
+<input id="shopImageInput" type="text" placeholder="https://..." oninput="previewShopImageFromUrl()">
+</div>
+<div id="shopUploadStatus" class="upload-status"></div>
+</div>
+</div>
+
+<div class="form-group">
+<label>คำอธิบายร้าน</label>
+<textarea id="shopDescription" class="shop-textarea" maxlength="200" placeholder="คำอธิบายสั้น ๆ ของร้าน"></textarea>
+</div>
+
+<div class="form-group">
+<label>ประกาศหน้าร้าน</label>
+<textarea id="shopAnnouncement" class="shop-textarea" maxlength="120" placeholder="เช่น วันนี้เปิดถึง 16:00 น."></textarea>
+</div>
+
+<label class="check"><input id="shopActive" type="checkbox" checked> เปิดร้าน</label>
+
+<div class="modal-actions">
+<button class="cancel" onclick="closeShopModal()">ยกเลิก</button>
+<button id="saveShopButton" class="save" onclick="saveShop()">บันทึกร้าน</button>
+</div>
+</div>
+</div>
 
 <div id="modal" class="modal">
 <div class="modal-box">
@@ -168,11 +640,7 @@ header{padding:13px 14px}header h1{font-size:17px}header p{display:none}.back-bu
 
 <div class="form-group">
 <label>ร้านค้า</label>
-<select id="shopId">
-<option value="S001">108Shop</option>
-<option value="S002">ร้านขนม</option>
-<option value="S003">ร้านป้าชู</option>
-</select>
+<select id="shopId"></select>
 </div>
 
 <div class="form-group">
@@ -230,13 +698,17 @@ header{padding:13px 14px}header h1{font-size:17px}header p{display:none}.back-bu
 </div>
 </div>
 
+<script src="app-ui.js"></script>
 <script>
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
 
 let products = [];
+let shops = [];
 let editingId = null;
+let editingShopId = null;
 let uploading = false;
+let shopUploading = false;
 
 let statsLoading = false;
 
@@ -301,6 +773,12 @@ async function loadDashboard(){
   document.getElementById("statSales").textContent=
    `฿${Number(result.total_sales||0).toLocaleString()}`;
 
+  renderRecentOrders(
+   Array.isArray(result.recent_orders)
+    ? result.recent_orders
+    : []
+  );
+
  }catch(error){
   console.error(error);
   document.getElementById("statProducts").textContent="-";
@@ -312,6 +790,806 @@ async function loadDashboard(){
  }finally{
   statsLoading=false;
   setStatsLoading(false);
+ }
+}
+
+
+
+function renderRecentOrders(orders){
+ const list=document.getElementById("recentOrdersList");
+ if(!list)return;
+
+ if(!orders.length){
+  list.innerHTML=`<div class="loading" style="padding:18px">ยังไม่มีคำสั่งซื้อ</div>`;
+  return;
+ }
+
+ const read=(order,key)=>{
+  const found=Object.keys(order||{}).find(
+   k=>String(k).trim().toLowerCase()===key.toLowerCase()
+  );
+  return found ? order[found] : "";
+ };
+
+ list.innerHTML=orders.map(order=>{
+  const customer=read(order,"customer") || "-";
+  const orderId=read(order,"order_id") || "-";
+  const shopId=read(order,"shop_id");
+  const qty=read(order,"total_qty") || 0;
+  const items=read(order,"items") || "";
+  const price=read(order,"total_price") || 0;
+  const date=read(order,"date");
+
+  return `
+   <div class="recent-order">
+    <div>
+     <strong>${customer}</strong>
+     <span>${orderId} · ${shopName(String(shopId||"").trim())} · ${qty} ชิ้น</span>
+     <span>${items}</span>
+    </div>
+    <div class="recent-order-price">
+     ฿${Number(price||0).toLocaleString()}
+     <span>${formatAdminDate(date)}</span>
+    </div>
+   </div>
+  `;
+ }).join("");
+}
+
+function formatAdminDate(value){
+ if(!value)return "-";
+ const date=new Date(value);
+ if(Number.isNaN(date.getTime()))return String(value);
+ return date.toLocaleString("th-TH",{dateStyle:"short",timeStyle:"short"});
+}
+
+
+
+
+let currentQrUrl = "";
+let currentQrShopName = "ร้านค้า";
+
+
+function buildShopUrl(
+    shopId,
+    shopName
+) {
+
+    if (
+        location.protocol === "http:" ||
+        location.protocol === "https:"
+    ) {
+
+        const url =
+            new URL(
+                "shop.html",
+                location.href
+            );
+
+        url.searchParams.set(
+            "shop_id",
+            shopId
+        );
+
+        if (shopName) {
+            url.searchParams.set(
+                "shop_name",
+                shopName
+            );
+        }
+
+        return url.href;
+    }
+
+
+    // Local preview only.
+    return (
+        "shop.html?shop_id=" +
+        encodeURIComponent(shopId) +
+        (
+            shopName
+                ? "&shop_name=" +
+                  encodeURIComponent(shopName)
+                : ""
+        )
+    );
+}
+
+
+function openShopQr(
+    shopId,
+    shopName
+) {
+
+    currentQrShopName =
+        shopName ||
+        shopId ||
+        "ร้านค้า";
+
+
+    currentQrUrl =
+        buildShopUrl(
+            shopId,
+            currentQrShopName
+        );
+
+
+    document
+        .getElementById(
+            "qrShopTitle"
+        )
+        .textContent =
+        currentQrShopName;
+
+
+    document
+        .getElementById(
+            "shopQrUrl"
+        )
+        .textContent =
+        currentQrUrl;
+
+
+    const warning =
+        document.getElementById(
+            "shopQrWarning"
+        );
+
+
+    if (
+        location.protocol === "file:"
+    ) {
+        warning.classList.add(
+            "show"
+        );
+    } else {
+        warning.classList.remove(
+            "show"
+        );
+    }
+
+
+    if (
+        !window.DBTQR
+    ) {
+
+        alert(
+            "ไม่พบไฟล์ qr-local.js"
+        );
+
+        return;
+    }
+
+
+    DBTQR.renderCanvas(
+        document.getElementById(
+            "shopQrCanvas"
+        ),
+        currentQrUrl,
+        {
+            size:
+                260,
+
+            margin:
+                4,
+
+            level:
+                "M"
+        }
+    );
+
+
+    document
+        .getElementById(
+            "shopQrOverlay"
+        )
+        .classList
+        .add("active");
+
+
+    document.body
+        .classList
+        .add("no-scroll");
+}
+
+
+function closeShopQr() {
+
+    document
+        .getElementById(
+            "shopQrOverlay"
+        )
+        .classList
+        .remove("active");
+
+
+    document.body
+        .classList
+        .remove("no-scroll");
+}
+
+
+async function copyShopQrLink() {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            currentQrUrl
+        );
+
+
+        if (window.DBTUI) {
+
+            DBTUI.toast(
+                "คัดลอกลิงก์ร้านแล้ว 🔗",
+                "success"
+            );
+
+            DBTUI.sound.play(
+                "tap"
+            );
+        }
+
+    } catch (_) {
+
+        prompt(
+            "คัดลอกลิงก์ร้าน:",
+            currentQrUrl
+        );
+    }
+}
+
+
+function saveShopQrImage() {
+
+    const canvas =
+        document.getElementById(
+            "shopQrCanvas"
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    const safeName =
+        String(
+            currentQrShopName ||
+            "shop"
+        )
+        .replace(
+            /[\\/:*?"<>|]+/g,
+            "_"
+        );
+
+
+    link.download =
+        `QR_${safeName}.png`;
+
+
+    link.href =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    link.click();
+}
+
+
+
+async function loadShopsAdmin(){
+ const list=document.getElementById("shopList");
+ try{
+  const response=await fetch(`${API_URL}?action=shops`);
+  const result=await response.json();
+  if(!result.success)throw new Error(result.message||"โหลดร้านค้าไม่สำเร็จ");
+  shops=Array.isArray(result.data)?result.data:[];
+  renderShopsAdmin();
+  syncShopDropdowns();
+ }catch(error){
+  list.innerHTML=`<div class="loading" style="grid-column:1/-1;padding:20px">❌ ${error.message}</div>`;
+ }
+}
+
+function renderShopsAdmin(){
+ const list=document.getElementById("shopList");
+ if(!shops.length){
+  list.innerHTML=`<div class="loading" style="grid-column:1/-1;padding:20px">ยังไม่มีร้านค้า</div>`;
+  return;
+ }
+ list.innerHTML=shops.map(shop=>{
+  const active=shop.active===true||String(shop.active).toUpperCase()==="TRUE";
+  return `
+   <article class="shop-admin-card">
+    <img class="shop-admin-image" src="${shop.image||'https://placehold.co/900x450?text=Shop'}"
+         onerror="this.src='https://placehold.co/900x450?text=Shop'">
+    <div class="shop-admin-body">
+     <div class="shop-admin-title">
+      <div><h4>${shop.shop_name||"-"}</h4><div class="shop-admin-id">${shop.shop_id||"-"}</div></div>
+      <span class="status ${active?"on":"off"}">${active?"เปิดร้าน":"ปิดร้าน"}</span>
+     </div>
+     <div class="shop-admin-description">${shop.description||"ยังไม่มีคำอธิบายร้าน"}</div>
+     ${shop.announcement?`<div class="shop-admin-announcement">📢 ${shop.announcement}</div>`:""}
+     <div class="shop-admin-actions">
+      <button class="shop-edit" onclick="openEditShop('${shop.shop_id}')">แก้ไข</button>
+      <button class="shop-toggle" onclick="toggleShop('${shop.shop_id}',${!active})">${active?"ปิดร้าน":"เปิดร้าน"}</button>
+      <button class="shop-edit" onclick="openShopQr('${shop.shop_id}', ${JSON.stringify(shop.shop_name || shop.shop_id)})">QR</button>
+      <button class="shop-delete" onclick="deleteShop('${shop.shop_id}')">ลบ</button>
+     </div>
+    </div>
+   </article>`;
+ }).join("");
+}
+
+function syncShopDropdowns(){
+ const filter=document.getElementById("shopFilter");
+ const productShop=document.getElementById("shopId");
+ const oldFilter=filter.value;
+ filter.innerHTML=`<option value="">ทุกร้าน</option>`+
+  shops.map(s=>`<option value="${s.shop_id}">${s.shop_name}</option>`).join("");
+ productShop.innerHTML=
+  shops.filter(s=>s.active===true||String(s.active).toUpperCase()==="TRUE")
+       .map(s=>`<option value="${s.shop_id}">${s.shop_name}</option>`).join("");
+ if([...filter.options].some(o=>o.value===oldFilter))filter.value=oldFilter;
+}
+
+function setShopImagePreview(url){
+ const img=document.getElementById("shopImagePreview");
+ const holder=document.getElementById("shopImagePlaceholder");
+ if(url){img.src=url;img.style.display="block";holder.style.display="none";}
+ else{img.removeAttribute("src");img.style.display="none";holder.style.display="block";}
+}
+function setShopUploadStatus(message,type=""){
+ const el=document.getElementById("shopUploadStatus");
+ el.textContent=message;
+ el.className="upload-status"+(type?` ${type}`:"");
+}
+function openAddShop(){
+ editingShopId=null;
+ document.getElementById("shopModalEyebrow").textContent="ADD SHOP";
+ document.getElementById("shopModalTitle").textContent="เพิ่มร้านค้า";
+ document.getElementById("shopCode").value="สร้างอัตโนมัติ";
+ document.getElementById("shopNameInput").value="";
+ document.getElementById("shopImageInput").value="";
+ document.getElementById("shopDescription").value="";
+ document.getElementById("shopAnnouncement").value="";
+ document.getElementById("shopActive").checked=true;
+ document.getElementById("shopImageFile").value="";
+ setShopImagePreview("");
+ setShopUploadStatus("");
+ document.getElementById("shopModal").classList.add("active");
+}
+function openEditShop(id){
+ const shop=shops.find(s=>String(s.shop_id)===String(id));
+ if(!shop)return;
+ editingShopId=shop.shop_id;
+ document.getElementById("shopModalEyebrow").textContent="EDIT SHOP";
+ document.getElementById("shopModalTitle").textContent="แก้ไขร้านค้า";
+ document.getElementById("shopCode").value=shop.shop_id;
+ document.getElementById("shopNameInput").value=shop.shop_name||"";
+ document.getElementById("shopImageInput").value=shop.image||"";
+ document.getElementById("shopDescription").value=shop.description||"";
+ document.getElementById("shopAnnouncement").value=shop.announcement||"";
+ document.getElementById("shopActive").checked=shop.active===true||String(shop.active).toUpperCase()==="TRUE";
+ document.getElementById("shopImageFile").value="";
+ setShopImagePreview(shop.image||"");
+ setShopUploadStatus("");
+ document.getElementById("shopModal").classList.add("active");
+}
+function closeShopModal(){
+ if(shopUploading){alert("กำลังอัปโหลดรูปร้าน กรุณารอสักครู่");return;}
+ document.getElementById("shopModal").classList.remove("active");
+}
+function previewShopImageFromUrl(){setShopImagePreview(document.getElementById("shopImageInput").value.trim());}
+function clearShopImage(){
+ if(shopUploading)return;
+ document.getElementById("shopImageInput").value="";
+ document.getElementById("shopImageFile").value="";
+ setShopImagePreview("");
+ setShopUploadStatus("");
+}
+function handleShopImageFile(event){
+ const file=event.target.files[0];
+ if(!file)return;
+ if(!file.type.startsWith("image/")){alert("กรุณาเลือกไฟล์รูปภาพ");return;}
+ if(file.size>5*1024*1024){alert("กรุณาใช้รูปขนาดไม่เกิน 5 MB");return;}
+ const reader=new FileReader();
+ reader.onload=e=>setShopImagePreview(e.target.result);
+ reader.readAsDataURL(file);
+ uploadShopImage(file);
+}
+async function uploadShopImage(file){
+ shopUploading=true;
+ const button=document.getElementById("saveShopButton");
+ button.disabled=true;
+ setShopUploadStatus("กำลังอัปโหลดรูปไป Google Drive...","uploading");
+ try{
+  const base64=await fileToBase64(file);
+  const result=await postData({action:"uploadImage",file_name:file.name,mime_type:file.type,base64});
+  if(!result.success)throw new Error(result.message||"อัปโหลดรูปไม่สำเร็จ");
+  document.getElementById("shopImageInput").value=result.image_url;
+  setShopImagePreview(result.image_url);
+  setShopUploadStatus("✓ อัปโหลดรูปเรียบร้อย","success");
+ }catch(error){
+  setShopUploadStatus(error.message||"อัปโหลดรูปไม่สำเร็จ","error");
+ }finally{
+  shopUploading=false;
+  button.disabled=false;
+ }
+}
+async function saveShop(){
+ if(shopUploading){
+  alert("กรุณารอให้อัปโหลดรูปร้านเสร็จก่อน");
+  return;
+ }
+
+ const shop_name=document.getElementById("shopNameInput").value.trim();
+ const image=document.getElementById("shopImageInput").value.trim();
+ const description=document.getElementById("shopDescription").value.trim();
+ const announcement=document.getElementById("shopAnnouncement").value.trim();
+ const active=document.getElementById("shopActive").checked;
+
+ if(!shop_name){
+  alert("กรุณากรอกชื่อร้าน");
+  return;
+ }
+
+ if(!image){
+  alert("กรุณาเลือกรูปร้านหรือใส่ URL");
+  return;
+ }
+
+ const payload={
+  action:editingShopId?"updateShop":"addShop",
+  shop_name,
+  image,
+  description,
+  announcement,
+  active
+ };
+
+ if(editingShopId){
+  payload.shop_id=editingShopId;
+ }
+
+ const button=document.getElementById("saveShopButton");
+ button.disabled=true;
+ button.textContent="กำลังบันทึก...";
+
+ setShopUploadStatus(
+  editingShopId
+   ?"กำลังบันทึกการแก้ไขร้าน..."
+   :"กำลังเพิ่มร้านใหม่...",
+  "uploading"
+ );
+
+ try{
+  const result=await postData(payload);
+
+  if(!result.success){
+   throw new Error(
+    result.message||
+    "บันทึกร้านไม่สำเร็จ"
+   );
+  }
+
+  setShopUploadStatus(
+   "✓ บันทึกร้านเรียบร้อย",
+   "success"
+  );
+
+  document.getElementById("shopModal")
+   .classList.remove("active");
+
+  await loadShopsAdmin();
+  await loadDashboard();
+
+  showNotice(
+   result.message||
+   "บันทึกร้านเรียบร้อย",
+   "success"
+  );
+
+ }catch(error){
+  console.error("SAVE SHOP ERROR:",error);
+
+  setShopUploadStatus(
+   error.message||
+   "บันทึกร้านไม่สำเร็จ",
+   "error"
+  );
+
+  showNotice(
+   error.message||
+   "บันทึกร้านไม่สำเร็จ",
+   "error",
+   5000
+  );
+
+ }finally{
+  button.disabled=false;
+  button.textContent="บันทึกร้าน";
+ }
+}
+async function toggleShop(id,active){
+ try{
+  const result=await postData({action:"toggleShop",shop_id:id,active});
+  if(!result.success)throw new Error(result.message);
+  await loadShopsAdmin();
+  showNotice(result.message||"อัปเดตร้านเรียบร้อย","success");
+ }catch(error){showNotice(error.message||"เปลี่ยนสถานะร้านไม่สำเร็จ","error",4000);}
+}
+async function deleteShop(id){
+ const shop=shops.find(s=>String(s.shop_id)===String(id));
+ if(!shop)return;
+ const count=products.filter(p=>String(p.shop_id)===String(id)).length;
+ if(count>0){alert(`ร้าน "${shop.shop_name}" ยังมีสินค้า ${count} รายการ กรุณาย้ายหรือลบสินค้าก่อน`);return;}
+ if(!confirm(`ต้องการลบร้าน "${shop.shop_name}" จริงหรือไม่?`))return;
+ try{
+  const result=await postData({action:"deleteShop",shop_id:id});
+  if(!result.success)throw new Error(result.message);
+  await loadShopsAdmin();
+  showNotice("ลบร้านเรียบร้อย","success");
+ }catch(error){showNotice(error.message||"ลบร้านไม่สำเร็จ","error",4000);}
+}
+
+
+let adminRiders=[];
+
+
+function formatRiderDate(value){
+ if(!value)return"ยังไม่เคยเข้าสู่ระบบ";
+
+ const date=
+  new Date(value);
+
+ if(
+  Number.isNaN(
+   date.getTime()
+  )
+ ){
+  return String(value);
+ }
+
+ return date.toLocaleString(
+  "th-TH",
+  {
+   dateStyle:"medium",
+   timeStyle:"short"
+  }
+ );
+}
+
+
+async function loadAdminRiders(){
+ const grid=
+  document.getElementById(
+   "riderAdminGrid"
+  );
+
+ try{
+  const response=
+   await fetch(
+    `${API_URL}?action=adminRiders`
+   );
+
+  const result=
+   await response.json();
+
+  if(!result.success){
+   throw new Error(
+    result.message||
+    "โหลดข้อมูลไรเดอร์ไม่สำเร็จ"
+   );
+  }
+
+  adminRiders=
+   Array.isArray(result.data)
+    ?result.data
+    :[];
+
+  renderAdminRiders();
+
+ }catch(error){
+  console.error(error);
+
+  grid.innerHTML=
+   `<div class="rider-empty">❌ ${error.message}</div>`;
+ }
+}
+
+
+function renderAdminRiders(){
+ const grid=
+  document.getElementById(
+   "riderAdminGrid"
+  );
+
+ if(!adminRiders.length){
+  grid.innerHTML=
+   `<div class="rider-empty">
+     ยังไม่มีไรเดอร์ในระบบ<br>
+     <small>ให้ไรเดอร์เข้า rider-login.html แล้วสร้างโปรไฟล์ก่อน</small>
+    </div>`;
+  return;
+ }
+
+ grid.innerHTML=
+  adminRiders.map(rider=>{
+
+   const active=
+    rider.active===true||
+    String(rider.active)
+     .toUpperCase()==="TRUE";
+
+   return `
+    <article class="rider-admin-card">
+
+     <div class="rider-admin-top">
+
+      <div class="rider-avatar">
+       🛵
+      </div>
+
+      <div class="rider-name-block">
+       <h4>${rider.rider_name||"-"}</h4>
+       <div class="rider-id">
+        ${rider.rider_id||"-"}
+       </div>
+      </div>
+
+      <span class="rider-active-pill ${active?"":"off"}">
+       ${active?"พร้อมรับงาน":"ปิดบัญชี"}
+      </span>
+
+     </div>
+
+     <div class="rider-mini-stats">
+
+      <div class="rider-mini-stat">
+       <strong>${Number(rider.accepted_total||0)}</strong>
+       <span>รับทั้งหมด</span>
+      </div>
+
+      <div class="rider-mini-stat">
+       <strong>${Number(rider.active_jobs||0)}</strong>
+       <span>กำลังทำ</span>
+      </div>
+
+      <div class="rider-mini-stat">
+       <strong>${Number(rider.completed_jobs||0)}</strong>
+       <span>สำเร็จ</span>
+      </div>
+
+      <div class="rider-mini-stat">
+       <strong>${Number(rider.cancelled_jobs||0)}</strong>
+       <span>ยกเลิก</span>
+      </div>
+
+     </div>
+
+     <div class="rider-credit">
+      ⭐ เครดิตการทำงาน:
+      ${Number(rider.credits||0)}
+     </div>
+
+     <div class="rider-login-time">
+      เข้าใช้ล่าสุด:
+      ${formatRiderDate(rider.last_login)}
+     </div>
+
+     <div class="rider-admin-actions">
+
+      <button
+       class="rider-toggle-btn"
+       onclick="toggleRiderAccount('${rider.rider_id}',${!active})"
+      >
+       ${active?"ปิดบัญชี":"เปิดบัญชี"}
+      </button>
+
+      <button
+       class="rider-delete-btn"
+       onclick="deleteRiderAccount('${rider.rider_id}','${String(rider.rider_name||"").replace(/'/g,"\\'")}')"
+      >
+       ลบ
+      </button>
+
+     </div>
+
+    </article>
+   `;
+  }).join("");
+}
+
+
+async function toggleRiderAccount(
+ riderId,
+ active
+){
+ try{
+  const result=
+   await postData({
+    action:
+     "toggleRiderActive",
+
+    rider_id:
+     riderId,
+
+    active:
+     active
+   });
+
+  if(!result.success){
+   throw new Error(
+    result.message||
+    "เปลี่ยนสถานะไรเดอร์ไม่สำเร็จ"
+   );
+  }
+
+  showNotice(
+   result.message,
+   "success"
+  );
+
+  await loadAdminRiders();
+
+ }catch(error){
+  showNotice(
+   error.message||
+   "เปลี่ยนสถานะไรเดอร์ไม่สำเร็จ",
+   "error",
+   4000
+  );
+ }
+}
+
+
+async function deleteRiderAccount(
+ riderId,
+ riderName
+){
+ if(
+  !confirm(
+   `ลบไรเดอร์ "${riderName}" จริงหรือไม่?\n\nถ้ายังมีงานที่กำลังทำ ระบบจะไม่อนุญาตให้ลบ`
+  )
+ ){
+  return;
+ }
+
+ try{
+  const result=
+   await postData({
+    action:
+     "deleteRider",
+
+    rider_id:
+     riderId
+   });
+
+  if(!result.success){
+   throw new Error(
+    result.message||
+    "ลบไรเดอร์ไม่สำเร็จ"
+   );
+  }
+
+  showNotice(
+   result.message,
+   "success"
+  );
+
+  await loadAdminRiders();
+
+ }catch(error){
+  showNotice(
+   error.message||
+   "ลบไรเดอร์ไม่สำเร็จ",
+   "error",
+   4000
+  );
  }
 }
 
@@ -337,10 +1615,8 @@ function isActive(product){
 }
 
 function shopName(id){
- if(id==="S001")return"108Shop";
- if(id==="S002")return"ร้านขนม";
- if(id==="S003")return"ร้านป้าชู";
- return id||"-";
+ const shop=shops.find(item=>String(item.shop_id)===String(id));
+ return shop?shop.shop_name:(id||"-");
 }
 
 function renderProducts(){
@@ -388,7 +1664,9 @@ function openAdd(){
  document.getElementById("modalEyebrow").textContent="ADD PRODUCT";
  document.getElementById("modalTitle").textContent="เพิ่มสินค้า";
  document.getElementById("productId").value="";
- document.getElementById("shopId").value="S001";
+ if(document.getElementById("shopId").options.length){
+ document.getElementById("shopId").selectedIndex=0;
+}
  document.getElementById("productName").value="";
  document.getElementById("productPrice").value="";
  document.getElementById("productImage").value="";
@@ -601,29 +1879,56 @@ async function deleteProduct(id){
 }
 
 async function postData(data){
- const response=await fetch(API_URL,{
-  method:"POST",
-  headers:{"Content-Type":"text/plain;charset=utf-8"},
-  body:JSON.stringify(data)
- });
-
- const text=await response.text();
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),15000);
 
  try{
-  return JSON.parse(text);
+  const response=await fetch(API_URL,{
+   method:"POST",
+   headers:{"Content-Type":"text/plain;charset=utf-8"},
+   body:JSON.stringify(data),
+   signal:controller.signal
+  });
+
+  const text=await response.text();
+
+  try{
+   return JSON.parse(text);
+  }catch(error){
+   console.error("Non JSON response:",text);
+   throw new Error(
+    "Apps Script ตอบกลับผิดรูปแบบ กรุณา Deploy เวอร์ชันล่าสุด"
+   );
+  }
+
  }catch(error){
-  console.error("Non JSON response:",text);
-  throw new Error("Apps Script ตอบกลับผิดรูปแบบ กรุณา Deploy เวอร์ชันล่าสุด");
+  if(error.name==="AbortError"){
+   throw new Error(
+    "บันทึกนานเกิน 15 วินาที กรุณาเช็ก Apps Script Deployment"
+   );
+  }
+
+  throw error;
+
+ }finally{
+  clearTimeout(timeout);
  }
 }
 
 document.getElementById("modal").addEventListener("click",event=>{
  if(event.target===event.currentTarget)closeModal();
 });
+document.getElementById("shopModal").addEventListener("click",event=>{
+ if(event.target===event.currentTarget)closeShopModal();
+});
 
-loadProducts();
-loadDashboard();
+Promise.allSettled([
+ loadShopsAdmin(),
+ loadAdminRiders()
+]).finally(()=>loadProducts());
 </script>
 
+<script src="qr-local.js"></script>
+<script src="app-pwa.js"></script>
 </body>
 </html>

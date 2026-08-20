@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>Rider Dashboard · DBT Multi Shop</title>
+<link rel="stylesheet" href="theme.css">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--dark:#111827;--orange:#ff6b35;--bg:#f5f6f8;--line:#e5e7eb;--muted:#6b7280;--green:#15803d}
+body{font-family:Arial,"Noto Sans Thai",sans-serif;background:var(--bg);color:#171717}
+button{font:inherit}
+header{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 5%;background:rgba(17,24,39,.97);color:white;backdrop-filter:blur(14px)}
+.brand strong{display:block;font-size:17px}.brand span{font-size:9px;color:#94a3b8}
+.header-actions{display:flex;gap:7px}
+.header-actions button,.header-actions a{border:none;text-decoration:none;color:white;background:#2b3545;padding:10px 12px;border-radius:10px;font-size:10px;font-weight:900;cursor:pointer}
+.hero{padding:37px 6% 65px;background:linear-gradient(120deg,#111827,#1f2937 72%,#4a2d23);color:white}
+.hero small{color:#ff9b73;font-weight:900;font-size:9px;letter-spacing:1px}
+.hero h1{font-size:clamp(32px,5vw,50px);margin-top:5px}
+.hero p{color:#cbd5e1;font-size:12px;margin-top:8px}
+.container{width:min(1160px,92%);margin:-27px auto 70px;position:relative;z-index:5}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 9px 24px rgba(17,24,39,.05)}
+.stat span{display:block;color:var(--muted);font-size:9px}
+.stat strong{display:block;font-size:24px;margin-top:4px}
+.stat.credit{background:linear-gradient(135deg,#fff4ee,#fff);border-color:#ffd7c7}
+.stat.credit strong{color:var(--orange)}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-top:25px}
+.tab{border:none;border-radius:10px;background:#e9edf2;color:#4b5563;padding:10px 13px;font-size:11px;font-weight:900;cursor:pointer}
+.tab.active{background:var(--dark);color:white}
+.list{display:grid;gap:12px;margin-top:13px}
+.card{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:0 7px 20px rgba(17,24,39,.04)}
+.card-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.order-id{font-size:13px;font-weight:900}
+.meta{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.55}
+.price{font-size:21px;color:var(--orange);font-weight:900;text-align:right}
+.status{display:inline-flex;margin-top:7px;padding:6px 9px;border-radius:30px;background:#eff6ff;color:#1d4ed8;font-size:10px;font-weight:900}
+.items{margin-top:10px;background:#f7f8fa;border-radius:10px;padding:10px 11px;color:#4b5563;font-size:11px;line-height:1.6}
+.claim{width:100%;min-height:48px;margin-top:12px;border:none;border-radius:11px;background:var(--orange);color:white;font-size:12px;font-weight:900;cursor:pointer}
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.quick-actions button{min-height:47px;border:1px solid #d9dde4;border-radius:10px;background:#f8fafc;color:#374151;font-size:10px;font-weight:900;cursor:pointer;padding:6px}
+.quick-actions button.current{background:#fff1eb;border-color:#ffc4ae;color:#c64d20}
+.quick-actions button.done{background:#ecfdf5;border-color:#bbf7d0;color:#166534}
+.quick-actions button.next{background:var(--dark);border-color:var(--dark);color:white}
+.quick-actions button:disabled{opacity:.48;cursor:not-allowed}
+.empty{background:white;border:1px dashed #cfd4db;border-radius:17px;padding:45px 20px;text-align:center;color:var(--muted)}
+.history{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+html[data-theme="dark"] .stat,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .empty{background:var(--ui-surface)!important;border-color:var(--ui-line)!important;color:var(--ui-text)!important}
+html[data-theme="dark"] .items{background:var(--ui-surface-2)!important;color:var(--ui-muted)!important}
+@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){
+header{padding:11px 13px}.hero{padding:31px 18px 57px}.container{width:calc(100% - 28px)}
+.stats{grid-template-columns:repeat(2,1fr)}.quick-actions{grid-template-columns:repeat(2,1fr)}
+.card-top{flex-direction:column}.price{text-align:left}
+.header-actions a{display:none}
+}
+
+/* =========================
+   NOTIFICATION CENTER
+========================= */
+.notify-button{
+position:relative;
+border:none;
+text-decoration:none;
+color:white;
+background:#2b3545;
+min-width:42px;
+height:40px;
+padding:0 11px;
+border-radius:10px;
+font-size:14px;
+font-weight:900;
+cursor:pointer;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+}
+.notify-badge{
+position:absolute;
+top:-5px;
+right:-5px;
+min-width:18px;
+height:18px;
+padding:0 5px;
+border-radius:20px;
+display:none;
+align-items:center;
+justify-content:center;
+background:#ef4444;
+color:white;
+font-size:8px;
+font-weight:900;
+border:2px solid #111827;
+}
+.notify-badge.show{display:flex}
+.notify-overlay{
+position:fixed;
+inset:0;
+z-index:1800;
+display:none;
+align-items:flex-start;
+justify-content:flex-end;
+padding:70px 18px 18px;
+background:rgba(17,24,39,.42);
+backdrop-filter:blur(5px);
+}
+.notify-overlay.active{display:flex}
+.notify-panel{
+width:min(390px,100%);
+max-height:calc(100dvh - 90px);
+overflow:hidden;
+display:flex;
+flex-direction:column;
+background:white;
+border:1px solid #e5e7eb;
+border-radius:18px;
+box-shadow:0 28px 80px rgba(0,0,0,.28);
+color:#171717;
+}
+.notify-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+padding:15px 16px;
+border-bottom:1px solid #e5e7eb;
+}
+.notify-head small{
+display:block;
+font-size:8px;
+font-weight:900;
+letter-spacing:1px;
+color:#ff6b35;
+}
+.notify-head h3{
+font-size:18px;
+margin-top:3px;
+}
+.notify-head-actions{
+display:flex;
+gap:6px;
+}
+.notify-head-actions button{
+border:none;
+border-radius:9px;
+background:#eef0f3;
+padding:8px 9px;
+font-size:9px;
+font-weight:900;
+cursor:pointer;
+}
+.notify-list{
+overflow:auto;
+padding:8px;
+display:grid;
+gap:6px;
+}
+.notify-item{
+padding:11px 12px;
+border:1px solid #e5e7eb;
+border-radius:12px;
+background:#fbfbfc;
+}
+.notify-item.unread{
+border-color:#ffc4ae;
+background:#fff6f2;
+}
+.notify-item-top{
+display:flex;
+justify-content:space-between;
+gap:10px;
+align-items:flex-start;
+}
+.notify-item strong{
+font-size:11px;
+}
+.notify-item time{
+font-size:8px;
+color:#9ca3af;
+white-space:nowrap;
+}
+.notify-item p{
+margin-top:5px;
+font-size:10px;
+line-height:1.55;
+color:#6b7280;
+}
+.notify-empty{
+padding:38px 18px;
+text-align:center;
+color:#6b7280;
+font-size:11px;
+}
+.notify-permission{
+margin:0 8px 8px;
+padding:10px 11px;
+border-radius:11px;
+background:#eff6ff;
+color:#1d4ed8;
+font-size:9px;
+line-height:1.55;
+}
+.notify-permission button{
+display:block;
+width:100%;
+margin-top:7px;
+border:none;
+border-radius:8px;
+background:#1d4ed8;
+color:white;
+padding:8px;
+font-size:9px;
+font-weight:900;
+cursor:pointer;
+}
+html[data-theme="dark"] .notify-panel,
+html[data-theme="dark"] .notify-item{
+background:var(--ui-surface)!important;
+border-color:var(--ui-line)!important;
+color:var(--ui-text)!important;
+}
+html[data-theme="dark"] .notify-item.unread{
+background:#2c1d18!important;
+border-color:#643522!important;
+}
+@media(max-width:600px){
+.notify-overlay{
+align-items:flex-end;
+padding:0;
+}
+.notify-panel{
+width:100%;
+max-height:82dvh;
+border-radius:20px 20px 0 0;
+}
+}
+
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+
+<body>
+<header>
+<div class="brand">
+<strong>🛵 <span id="headerName">Rider</span></strong>
+<span id="headerId">กำลังโหลด...</span>
+</div>
+<div class="header-actions">
+
+<button type="button" class="notify-button" onclick="openNotifications()">
+🔔
+<span id="notifyBadge" class="notify-badge">0</span>
+</button>
+
+<a href="home.html">หน้าหลัก</a>
+<button onclick="loadDashboard()">↻ รีเฟรช</button>
+<button onclick="logout()">ออกจากระบบ</button>
+</div>
+</header>
+
+<section class="hero">
+<small>MY RIDER DASHBOARD</small>
+<h1 id="welcome">พร้อมรับงานไหม?</h1>
+<p>กดรับออเดอร์ใหม่ แล้วใช้ปุ่มสถานะด้านล่างแบบเป็นขั้น ๆ ได้เลย ไม่ต้องเลือกจาก dropdown</p>
+</section>
+
+<main class="container">
+
+<section id="stats" class="stats"></section>
+
+<div class="tabs">
+<button class="tab active" onclick="setTab('available',this)">🔥 งานใหม่</button>
+<button class="tab" onclick="setTab('mine',this)">🛵 งานของฉัน</button>
+<button class="tab" onclick="setTab('history',this)">🧾 ประวัติ</button>
+</div>
+
+<section id="orderList" class="list">
+<div class="empty">กำลังโหลดงาน...</div>
+</section>
+
+</main>
+
+
+<div id="notifyOverlay" class="notify-overlay">
+<div class="notify-panel">
+
+<div class="notify-head">
+<div>
+<small>NOTIFICATION CENTER</small>
+<h3>🔔 การแจ้งเตือน</h3>
+</div>
+
+<div class="notify-head-actions">
+<button type="button" onclick="clearNotifications()">ล้าง</button>
+<button type="button" onclick="closeNotifications()">✕</button>
+</div>
+</div>
+
+<div id="notifyPermission" class="notify-permission"></div>
+
+<div id="notifyList" class="notify-list">
+<div class="notify-empty">ยังไม่มีการแจ้งเตือน</div>
+</div>
+
+</div>
+</div>
+
+
+<script src="app-ui.js"></script>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+const SESSION_KEY="dbt_rider_session_v1";
+
+const FLOW=[
+"ไรเดอร์รับงานแล้ว",
+"กำลังไปรับสินค้า",
+"รับสินค้าแล้ว",
+"กำลังจัดส่ง",
+"จัดส่งสำเร็จ"
+];
+
+const LABELS={
+"ไรเดอร์รับงานแล้ว":"รับงานแล้ว",
+"กำลังไปรับสินค้า":"กำลังไปรับสินค้า",
+"รับสินค้าแล้ว":"รับสินค้าแล้ว",
+"กำลังจัดส่ง":"กำลังจัดส่ง",
+"จัดส่งสำเร็จ":"ส่งสำเร็จ"
+};
+
+let session=null;
+let dashboard=null;
+let currentTab="available";
+let refreshTimer=null;
+
+
+/* =========================
+   RIDER NOTIFICATIONS
+========================= */
+
+let riderNotifications=[];
+let riderAvailableSnapshot=[];
+let riderNotificationReady=false;
+
+
+function riderNotifyStorageKey(){
+ return `dbt_rider_notifications_v1:${session?.rider_id||"guest"}`;
+}
+
+
+function riderAvailableStorageKey(){
+ return `dbt_rider_available_snapshot_v1:${session?.rider_id||"guest"}`;
+}
+
+
+function loadRiderNotifications(){
+ try{
+  riderNotifications=
+   JSON.parse(
+    localStorage.getItem(
+     riderNotifyStorageKey()
+    )||"[]"
+   );
+ }catch(_){
+  riderNotifications=[];
+ }
+
+ try{
+  riderAvailableSnapshot=
+   JSON.parse(
+    localStorage.getItem(
+     riderAvailableStorageKey()
+    )||"[]"
+   );
+ }catch(_){
+  riderAvailableSnapshot=[];
+ }
+
+ renderNotificationCenter();
+}
+
+
+function saveRiderNotifications(){
+ try{
+  localStorage.setItem(
+   riderNotifyStorageKey(),
+   JSON.stringify(
+    riderNotifications.slice(0,30)
+   )
+  );
+ }catch(_){}
+}
+
+
+function saveRiderAvailableSnapshot(){
+ try{
+  localStorage.setItem(
+   riderAvailableStorageKey(),
+   JSON.stringify(
+    riderAvailableSnapshot
+   )
+  );
+ }catch(_){}
+}
+
+
+function addRiderNotification(title,message,orderId){
+ const item={
+  id:
+   `${Date.now()}_${Math.random()}`,
+  title,
+  message,
+  order_id:
+   orderId||"",
+  date:
+   new Date().toISOString(),
+  read:false
+ };
+
+ riderNotifications.unshift(item);
+ riderNotifications=
+  riderNotifications.slice(0,30);
+
+ saveRiderNotifications();
+ renderNotificationCenter();
+
+ if(window.DBTUI){
+  DBTUI.toast(message,"success");
+  DBTUI.sound.play("success");
+ }
+
+ showBrowserNotification(
+  title,
+  message
+ );
+}
+
+
+function checkRiderNewJobs(orders){
+ const currentIds=
+  orders.map(order=>
+   String(order.order_id||"")
+  );
+
+ if(riderNotificationReady){
+  const previous=
+   new Set(
+    riderAvailableSnapshot
+   );
+
+  orders.forEach(order=>{
+   const id=
+    String(order.order_id||"");
+
+   if(
+    id &&
+    !previous.has(id)
+   ){
+    addRiderNotification(
+     "งานใหม่เข้า! 🔥",
+     `${id} · ${order.customer||"ลูกค้า"} · ฿${Number(order.total_price||0).toLocaleString()}`,
+     id
+    );
+   }
+  });
+ }
+
+ riderAvailableSnapshot=
+  currentIds;
+
+ saveRiderAvailableSnapshot();
+
+ riderNotificationReady=true;
+}
+
+
+function renderNotificationCenter(){
+ const list=
+  document.getElementById(
+   "notifyList"
+  );
+
+ const badge=
+  document.getElementById(
+   "notifyBadge"
+  );
+
+ if(!list||!badge)return;
+
+ const unread=
+  riderNotifications.filter(
+   item=>!item.read
+  ).length;
+
+ badge.textContent=
+  unread>99?"99+":unread;
+
+ badge.classList.toggle(
+  "show",
+  unread>0
+ );
+
+ document.title=
+  unread>0
+   ?`(${unread}) Rider Dashboard · DBT Multi Shop`
+   :"Rider Dashboard · DBT Multi Shop";
+
+ if(!riderNotifications.length){
+  list.innerHTML=
+   `<div class="notify-empty">ยังไม่มีการแจ้งเตือน 🔕</div>`;
+ }else{
+  list.innerHTML=
+   riderNotifications.map(item=>`
+    <article class="notify-item ${item.read?"":"unread"}">
+     <div class="notify-item-top">
+      <strong>${escapeHtml(item.title)}</strong>
+      <time>${formatNotifyTime(item.date)}</time>
+     </div>
+     <p>${escapeHtml(item.message)}</p>
+    </article>
+   `).join("");
+ }
+
+ renderNotificationPermission();
+}
+
+
+function formatNotifyTime(value){
+ const d=new Date(value);
+ if(Number.isNaN(d.getTime()))return"";
+ return d.toLocaleString(
+  "th-TH",
+  {
+   dateStyle:"short",
+   timeStyle:"short"
+  }
+ );
+}
+
+
+function openNotifications(){
+ document
+  .getElementById(
+   "notifyOverlay"
+  )
+  .classList
+  .add("active");
+
+ riderNotifications=
+  riderNotifications.map(
+   item=>({
+    ...item,
+    read:true
+   })
+  );
+
+ saveRiderNotifications();
+ renderNotificationCenter();
+}
+
+
+function closeNotifications(){
+ document
+  .getElementById(
+   "notifyOverlay"
+  )
+  .classList
+  .remove("active");
+}
+
+
+function clearNotifications(){
+ if(
+  riderNotifications.length&&
+  !confirm(
+   "ล้างประวัติการแจ้งเตือนทั้งหมด?"
+  )
+ ){
+  return;
+ }
+
+ riderNotifications=[];
+ saveRiderNotifications();
+ renderNotificationCenter();
+}
+
+
+function renderNotificationPermission(){
+ const box=
+  document.getElementById(
+   "notifyPermission"
+  );
+
+ if(!box)return;
+
+ if(
+  !("Notification" in window)
+ ){
+  box.innerHTML=
+   "Browser นี้ไม่รองรับ Notification แต่เสียงและ Badge ในหน้า Rider ยังทำงานได้";
+  return;
+ }
+
+ if(
+  location.protocol!=="https:" &&
+  location.hostname!=="localhost"
+ ){
+  box.innerHTML=
+   "💡 Browser Notification ต้องเปิดผ่าน HTTPS/Render ส่วนแจ้งเตือนในหน้าเว็บยังทำงานตามปกติ";
+  return;
+ }
+
+ if(
+  Notification.permission==="granted"
+ ){
+  box.innerHTML=
+   "✅ เปิดการแจ้งเตือนงานใหม่ของเครื่องแล้ว";
+  return;
+ }
+
+ if(
+  Notification.permission==="denied"
+ ){
+  box.innerHTML=
+   "🔕 Browser ปฏิเสธ Notification อยู่ สามารถเปิดใหม่จาก Site Settings";
+  return;
+ }
+
+ box.innerHTML=
+  `อยากให้มี Notification งานใหม่ตอนอยู่แท็บอื่นไหม?
+   <button onclick="requestBrowserNotifications()">
+    เปิดแจ้งเตือนงานใหม่
+   </button>`;
+}
+
+
+async function requestBrowserNotifications(){
+ if(
+  !("Notification" in window)
+ )return;
+
+ try{
+  await Notification.requestPermission();
+ }catch(_){}
+
+ renderNotificationPermission();
+}
+
+
+function showBrowserNotification(title,message){
+ if(
+  !("Notification" in window)||
+  Notification.permission!=="granted"
+ ){
+  return;
+ }
+
+ try{
+  new Notification(
+   title,
+   {
+    body:message,
+    icon:"icon-192.png"
+   }
+  );
+ }catch(_){}
+}
+
+
+function getSession(){
+ try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null");}catch(_){return null;}
+}
+
+function requireSession(){
+ session=getSession();
+
+ if(session&&session.rider_id){
+  loadRiderNotifications();
+ }
+
+ if(!session||!session.rider_id||!session.session_token){
+  location.replace("rider-login.html");
+  return false;
+ }
+ return true;
+}
+
+function escapeHtml(value){
+ return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+function formatDate(value){
+ if(!value)return"-";
+ const d=new Date(value);
+ return Number.isNaN(d.getTime())?String(value):d.toLocaleString("th-TH",{dateStyle:"short",timeStyle:"short"});
+}
+
+async function loadDashboard(silent=false){
+ if(!requireSession())return;
+
+ try{
+  const url=`${API_URL}?action=riderDashboard&rider_id=${encodeURIComponent(session.rider_id)}&token=${encodeURIComponent(session.session_token)}`;
+  const response=await fetch(url);
+  const result=await response.json();
+
+  if(!result.success){
+   if(result.auth_error){logout(false);return;}
+   throw new Error(result.message||"โหลดงานไม่สำเร็จ");
+  }
+
+  dashboard=result;
+
+  checkRiderNewJobs(
+   Array.isArray(
+    result.available_orders
+   )
+    ?result.available_orders
+    :[]
+  );
+
+  document.getElementById("headerName").textContent=result.rider.rider_name;
+  document.getElementById("headerId").textContent=result.rider.rider_id;
+  document.getElementById("welcome").textContent=`สวัสดี ${result.rider.rider_name} 👋`;
+
+  renderStats();
+  renderOrders();
+
+ }catch(error){
+  if(!silent)alert(error.message||"โหลดงานไม่สำเร็จ");
+ }
+}
+
+function renderStats(){
+ const s=dashboard.stats;
+ document.getElementById("stats").innerHTML=`
+  <article class="stat"><span>งานใหม่รอรับ</span><strong>${s.available_jobs}</strong></article>
+  <article class="stat"><span>งานที่รับทั้งหมด</span><strong>${s.accepted_total}</strong></article>
+  <article class="stat"><span>กำลังทำอยู่</span><strong>${s.active_jobs}</strong></article>
+  <article class="stat"><span>ส่งสำเร็จ</span><strong>${s.completed_jobs}</strong></article>
+  <article class="stat credit"><span>เครดิตการทำงาน</span><strong>${s.credits} ⭐</strong></article>
+ `;
+}
+
+function setTab(tab,button){
+ currentTab=tab;
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+ button.classList.add("active");
+ renderOrders();
+}
+
+function renderOrders(){
+ const list=document.getElementById("orderList");
+ let orders=[];
+
+ if(currentTab==="available")orders=dashboard.available_orders||[];
+ if(currentTab==="mine")orders=dashboard.my_active_orders||[];
+ if(currentTab==="history")orders=dashboard.history||[];
+
+ if(!orders.length){
+  list.innerHTML=`<div class="empty">${
+   currentTab==="available"?"ยังไม่มีงานใหม่ตอนนี้ 💤":
+   currentTab==="mine"?"ยังไม่มีงานที่กำลังทำอยู่ 🎉":"ยังไม่มีประวัติการทำงาน"
+  }</div>`;
+  return;
+ }
+
+ list.innerHTML=orders.map(order=>currentTab==="available"
+  ?renderAvailable(order)
+  :renderMine(order,currentTab==="history")
+ ).join("");
+}
+
+function baseOrder(order){
+ return `
+  <div class="card-top">
+   <div>
+    <div class="order-id">${escapeHtml(order.order_id)}</div>
+    <div class="meta">👤 ${escapeHtml(order.customer||"-")} · 🏪 ${escapeHtml(order.shop_id==="MULTI"?"หลายร้าน":(order.shop_id||"-"))} · 📦 ${Number(order.total_qty||0)} ชิ้น</div>
+    <span class="status">${escapeHtml(order.status||"รอไรเดอร์รับงาน")}</span>
+   </div>
+   <div class="price">฿${Number(order.total_price||0).toLocaleString()}<div class="meta">${formatDate(order.date)}</div></div>
+  </div>
+  <div class="items">${escapeHtml(order.items||"")}</div>
+  ${order.note?`<div class="meta">📝 ${escapeHtml(order.note)}</div>`:""}
+ `;
+}
+
+function renderAvailable(order){
+ return `
+  <article class="card">
+   ${baseOrder(order)}
+   <button class="claim" onclick="claimOrder('${order.order_id}',this)">🛵 รับออเดอร์นี้</button>
+  </article>`;
+}
+
+function renderMine(order,isHistory){
+ const current=FLOW.indexOf(order.status);
+ const terminal=["จัดส่งสำเร็จ","ยกเลิก"].includes(order.status);
+
+ const buttons=FLOW.slice(1).map((status,index)=>{
+  const actualIndex=index+1;
+  const done=current>actualIndex;
+  const isCurrent=current===actualIndex;
+  const isNext=current+1===actualIndex;
+  const disabled=terminal||(!isNext&&!isCurrent&&!done);
+
+  return `<button
+   class="${done?"done":isCurrent?"current":isNext?"next":""}"
+   onclick="updateStatus('${order.order_id}','${status}',this)"
+   ${disabled?"disabled":""}>
+   ${LABELS[status]}
+  </button>`;
+ }).join("");
+
+ return `
+  <article class="card">
+   ${baseOrder(order)}
+   ${!isHistory&&!terminal?`<div class="quick-actions">${buttons}</div>`:""}
+   ${isHistory?`<div class="meta">อัปเดตล่าสุด: ${formatDate(order.status_updated_at)}</div>`:""}
+  </article>`;
+}
+
+async function claimOrder(orderId,button){
+ button.disabled=true;
+ button.textContent="กำลังรับงาน...";
+
+ try{
+  const result=await post({
+   action:"claimOrder",
+   rider_id:session.rider_id,
+   token:session.session_token,
+   order_id:orderId
+  });
+
+  if(!result.success)throw new Error(result.message||"รับงานไม่สำเร็จ");
+
+  if(window.DBTUI){DBTUI.toast("รับออเดอร์แล้ว 🛵","success");DBTUI.sound.play("success");}
+  currentTab="mine";
+  document.querySelectorAll(".tab").forEach((x,i)=>x.classList.toggle("active",i===1));
+  await loadDashboard(true);
+
+ }catch(error){
+  alert(error.message||"รับงานไม่สำเร็จ");
+ }finally{
+  button.disabled=false;
+  button.textContent="🛵 รับออเดอร์นี้";
+ }
+}
+
+async function updateStatus(orderId,status,button){
+ if(status==="จัดส่งสำเร็จ"&&!confirm("ยืนยันว่าส่งออเดอร์นี้สำเร็จแล้ว?"))return;
+
+ const old=button.textContent;
+ button.disabled=true;
+ button.textContent="กำลังอัปเดต...";
+
+ try{
+  const result=await post({
+   action:"updateRiderOrder",
+   rider_id:session.rider_id,
+   token:session.session_token,
+   order_id:orderId,
+   status
+  });
+
+  if(!result.success)throw new Error(result.message||"อัปเดตไม่สำเร็จ");
+
+  if(window.DBTUI){DBTUI.toast(`อัปเดต: ${status}`,"success");DBTUI.sound.play("tap");}
+  await loadDashboard(true);
+
+ }catch(error){
+  alert(error.message||"อัปเดตไม่สำเร็จ");
+ }finally{
+  button.disabled=false;
+  button.textContent=old;
+ }
+}
+
+async function post(payload){
+ const response=await fetch(API_URL,{
+  method:"POST",
+  headers:{"Content-Type":"text/plain;charset=utf-8"},
+  body:JSON.stringify(payload)
+ });
+ return response.json();
+}
+
+function logout(redirect=true){
+ try{localStorage.removeItem(SESSION_KEY);}catch(_){}
+ if(redirect!==false)location.replace("rider-login.html");
+ else location.replace("rider-login.html");
+}
+
+document.getElementById("notifyOverlay").addEventListener("click",event=>{
+ if(event.target===event.currentTarget)closeNotifications();
+});
+
+if(requireSession()){
+ loadDashboard();
+ refreshTimer=setInterval(()=>loadDashboard(true),12000);
+}
+</script>
+<script src="app-pwa.js"></script>
+</body>
+</html>

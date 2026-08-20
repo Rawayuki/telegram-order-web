@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#111827">
     <title>DBT Shop</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="theme.css">
 
     <style>
         * {
@@ -1001,7 +1004,646 @@
                 font-size: 10px;
             }
         }
-    </style>
+    
+.product-favorite{
+position:absolute;left:10px;top:10px;z-index:3
+}
+
+/* =========================
+   RECEIPT MODAL
+========================= */
+.receipt-overlay{
+    position:fixed;
+    inset:0;
+    z-index:1100;
+    background:rgba(17,24,39,.72);
+    backdrop-filter:blur(7px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+.receipt-overlay.active{display:flex}
+.receipt-card{
+    width:min(560px,100%);
+    max-height:calc(100dvh - 40px);
+    overflow-y:auto;
+    background:#fff;
+    border-radius:24px;
+    padding:26px;
+    box-shadow:0 30px 80px rgba(0,0,0,.30);
+    animation:rise .22s ease;
+}
+.receipt-top{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    padding-bottom:18px;
+    border-bottom:1px dashed var(--line);
+}
+.receipt-brand strong{display:block;font-size:19px}
+.receipt-brand span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.receipt-order-id{text-align:right;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:1px}
+.receipt-order-id strong{display:block;color:var(--dark);font-size:13px;letter-spacing:0;margin-top:4px}
+.receipt-customer{
+    padding:16px 0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.7;
+    border-bottom:1px dashed var(--line);
+}
+.receipt-customer strong{color:var(--dark);font-size:15px}
+.receipt-items{padding:5px 0}
+.receipt-row{
+    display:flex;
+    justify-content:space-between;
+    gap:18px;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+}
+.receipt-row>div{display:flex;flex-direction:column;gap:4px}
+.receipt-row span{color:var(--muted);font-size:11px}
+.receipt-summary{padding:14px 0}
+.receipt-summary-line,.receipt-grand{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:6px 0;
+}
+.receipt-summary-line{font-size:12px}
+.receipt-summary-line.muted{color:var(--muted)}
+.receipt-summary-line.discount{color:var(--success)}
+.receipt-grand{
+    margin-top:7px;
+    padding-top:14px;
+    border-top:2px solid var(--dark);
+    align-items:center;
+    font-size:16px;
+}
+.receipt-grand strong{font-size:27px;color:var(--orange)}
+.receipt-footer{
+    margin-top:6px;
+    padding:13px;
+    border-radius:12px;
+    background:#f7f8fa;
+    color:var(--muted);
+    text-align:center;
+    font-size:10px;
+    line-height:1.6;
+}
+.receipt-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+    margin-top:15px;
+}
+.receipt-actions button,.success-receipt-button{
+    min-height:44px;
+    border:none;
+    border-radius:11px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+}
+.receipt-copy{background:#eef0f3;color:#333}
+.receipt-print,.success-receipt-button{background:var(--orange);color:#fff}
+.success-receipt-button{width:100%;margin-top:18px}
+@media(max-width:650px){
+    .receipt-overlay{align-items:flex-end;padding:0}
+    .receipt-card{
+        width:100%;
+        max-height:92dvh;
+        border-radius:23px 23px 0 0;
+        padding:20px 17px;
+    }
+    .receipt-top{flex-direction:column}
+    .receipt-order-id{text-align:left}
+    .receipt-actions{grid-template-columns:1fr}
+}
+@media print{
+    body *{visibility:hidden!important}
+    #printableReceipt,#printableReceipt *{visibility:visible!important}
+    #printableReceipt{
+        position:absolute;
+        left:0;top:0;
+        width:100%;
+        max-height:none;
+        overflow:visible;
+        box-shadow:none;
+        border-radius:0;
+    }
+    .receipt-actions,#printableReceipt>.success-close{display:none!important}
+}
+
+
+/* =========================
+   STOREFRONT SETTINGS
+========================= */
+.shop-status-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    margin-top:16px;
+}
+
+.shop-status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 10px;
+    border-radius:30px;
+    font-size:10px;
+    font-weight:800;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.15);
+    color:#e5e7eb;
+}
+
+.shop-status-pill.open{
+    background:rgba(34,197,94,.16);
+    border-color:rgba(74,222,128,.25);
+    color:#bbf7d0;
+}
+
+.shop-status-pill.closed{
+    background:rgba(239,68,68,.16);
+    border-color:rgba(248,113,113,.25);
+    color:#fecaca;
+}
+
+.shop-announcement{
+    display:none;
+    margin:18px 0 22px;
+    padding:14px 16px;
+    border:1px solid #ffd8c8;
+    border-radius:14px;
+    background:#fff1eb;
+    color:#9a3d1c;
+    font-size:12px;
+    line-height:1.6;
+    box-shadow:0 8px 22px rgba(17,24,39,.035);
+}
+
+.shop-announcement.show{
+    display:flex;
+    gap:9px;
+    align-items:flex-start;
+}
+
+.closed-shop-message{
+    display:none;
+    margin-bottom:22px;
+    padding:20px;
+    border-radius:16px;
+    border:1px solid #fecaca;
+    background:#fff1f2;
+    color:#991b1b;
+    text-align:center;
+    line-height:1.6;
+}
+
+.closed-shop-message.show{
+    display:block;
+}
+
+html[data-theme="dark"] .shop-announcement{
+    background:#2a1c16;
+    border-color:#5a3223;
+    color:#ffb08f;
+}
+
+html[data-theme="dark"] .closed-shop-message{
+    background:#2b171a;
+    border-color:#5d292f;
+    color:#fecaca;
+}
+
+
+.favorite-page-button{
+text-decoration:none;color:white;background:#2b3545;padding:10px 12px;border-radius:11px;
+font-size:12px;font-weight:800;white-space:nowrap
+}
+.shop-header-actions{display:flex;align-items:center;gap:8px}
+@media(max-width:650px){
+.favorite-page-button{padding:9px 10px;font-size:0}
+.favorite-page-button::after{content:"♥";font-size:15px}
+}
+
+
+/* =========================
+   LOCAL SHOP QR
+========================= */
+.qr-shop-button{
+    border:none;
+    border-radius:11px;
+    min-height:42px;
+    padding:0 13px;
+    background:#2b3545;
+    color:white;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.qr-overlay{
+    position:fixed;
+    inset:0;
+    z-index:1700;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(17,24,39,.74);
+    backdrop-filter:blur(8px);
+}
+
+.qr-overlay.active{
+    display:flex;
+}
+
+.qr-card{
+    width:min(440px,100%);
+    max-height:calc(100dvh - 40px);
+    overflow-y:auto;
+    background:white;
+    color:#171717;
+    border-radius:22px;
+    padding:23px;
+    text-align:center;
+    box-shadow:0 30px 80px rgba(0,0,0,.30);
+}
+
+.qr-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+    text-align:left;
+}
+
+.qr-head small{
+    display:block;
+    color:#ff6b35;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.qr-head h3{
+    margin-top:4px;
+    font-size:22px;
+}
+
+.qr-close{
+    flex-shrink:0;
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:50%;
+    background:#eef0f3;
+    cursor:pointer;
+}
+
+.qr-canvas-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:292px;
+    margin-top:16px;
+    padding:15px;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    background:white;
+}
+
+.qr-canvas-wrap canvas{
+    display:block;
+    max-width:100%;
+    height:auto;
+}
+
+.qr-url{
+    margin-top:12px;
+    padding:10px 11px;
+    border-radius:10px;
+    background:#f7f8fa;
+    color:#6b7280;
+    font-size:10px;
+    line-height:1.5;
+    word-break:break-all;
+    text-align:left;
+}
+
+.qr-warning{
+    display:none;
+    margin-top:12px;
+    padding:10px 11px;
+    border-radius:10px;
+    background:#fff1f2;
+    color:#991b1b;
+    font-size:10px;
+    line-height:1.55;
+    text-align:left;
+}
+
+.qr-warning.show{
+    display:block;
+}
+
+.qr-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:13px;
+}
+
+.qr-actions button{
+    min-height:44px;
+    border:none;
+    border-radius:10px;
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.qr-copy{
+    background:#eef0f3;
+    color:#222;
+}
+
+.qr-download{
+    background:#111827;
+    color:white;
+}
+
+html[data-theme="dark"] .qr-card{
+    background:var(--ui-surface);
+    color:var(--ui-text);
+}
+
+html[data-theme="dark"] .qr-url{
+    background:var(--ui-surface-2);
+    color:var(--ui-muted);
+}
+
+@media(max-width:600px){
+    .qr-overlay{
+        align-items:flex-end;
+        padding:0;
+    }
+
+    .qr-card{
+        width:100%;
+        max-height:94dvh;
+        border-radius:22px 22px 0 0;
+        padding:19px 16px;
+    }
+
+    .qr-actions{
+        grid-template-columns:1fr;
+    }
+}
+
+
+/* =========================
+   SHOP REVIEWS
+========================= */
+.shop-rating-line{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+    color:#fde68a;
+    font-size:12px;
+}
+
+.shop-rating-line strong{
+    color:white;
+}
+
+.review-section{
+    margin-top:45px;
+    display:grid;
+    grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);
+    gap:18px;
+    align-items:start;
+}
+
+.review-panel,
+.review-form-card{
+    background:white;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 8px 22px rgba(17,24,39,.045);
+}
+
+.review-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    margin-bottom:15px;
+}
+
+.review-head small{
+    display:block;
+    color:var(--orange);
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.review-head h2{
+    font-size:23px;
+    margin-top:4px;
+}
+
+.review-summary{
+    text-align:right;
+}
+
+.review-summary strong{
+    display:block;
+    color:var(--orange);
+    font-size:24px;
+}
+
+.review-summary span{
+    color:var(--muted);
+    font-size:10px;
+}
+
+.review-list{
+    display:grid;
+    gap:10px;
+}
+
+.review-item{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:13px;
+    background:#fbfbfc;
+}
+
+.review-item-top{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    align-items:flex-start;
+}
+
+.review-name{
+    font-size:13px;
+    font-weight:800;
+}
+
+.review-stars{
+    color:#f59e0b;
+    font-size:12px;
+    letter-spacing:1px;
+}
+
+.review-date{
+    color:var(--muted);
+    font-size:9px;
+    margin-top:4px;
+}
+
+.review-comment{
+    margin-top:9px;
+    color:#4b5563;
+    font-size:12px;
+    line-height:1.65;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.review-empty{
+    padding:30px 15px;
+    text-align:center;
+    color:var(--muted);
+    border:1px dashed var(--line);
+    border-radius:14px;
+}
+
+.review-form-card h3{
+    font-size:19px;
+}
+
+.review-form-card > p{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:10px;
+    line-height:1.6;
+}
+
+.star-picker{
+    display:flex;
+    gap:5px;
+    margin:14px 0 16px;
+}
+
+.star-picker button{
+    border:none;
+    background:transparent;
+    font-size:28px;
+    cursor:pointer;
+    color:#d1d5db;
+    transition:transform .15s,color .15s;
+    padding:1px;
+}
+
+.star-picker button.active,
+.star-picker button:hover{
+    color:#f59e0b;
+    transform:translateY(-1px);
+}
+
+.review-field{
+    margin-top:11px;
+}
+
+.review-field label{
+    display:block;
+    font-size:11px;
+    font-weight:800;
+    margin-bottom:6px;
+}
+
+.review-field input,
+.review-field textarea{
+    width:100%;
+    border:1px solid #d9dde4;
+    border-radius:10px;
+    padding:11px 12px;
+    outline:none;
+    background:white;
+}
+
+.review-field textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.review-submit{
+    width:100%;
+    min-height:44px;
+    margin-top:13px;
+    border:none;
+    border-radius:10px;
+    background:var(--orange);
+    color:white;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.review-submit:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+html[data-theme="dark"] .review-panel,
+html[data-theme="dark"] .review-form-card,
+html[data-theme="dark"] .review-item{
+    background:var(--ui-surface)!important;
+    border-color:var(--ui-line)!important;
+    color:var(--ui-text)!important;
+}
+
+html[data-theme="dark"] .review-comment{
+    color:var(--ui-muted)!important;
+}
+
+html[data-theme="dark"] .review-field input,
+html[data-theme="dark"] .review-field textarea{
+    background:#101720!important;
+    color:var(--ui-text)!important;
+    border-color:var(--ui-line)!important;
+}
+
+@media(max-width:800px){
+    .review-section{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:650px){
+    .review-section{
+        margin-top:30px;
+    }
+
+    .review-head{
+        align-items:flex-start;
+    }
+}
+
+</style>
 </head>
 
 <body>
@@ -1014,10 +1656,22 @@
         <strong id="headerShopName">ร้านค้า</strong>
     </div>
 
-    <button class="cart-button" onclick="openCart()">
-        🛒 <span>ตะกร้า</span>
-        <span class="cart-badge" id="cartCount">0</span>
-    </button>
+    <div class="shop-header-actions">
+        <a href="favorites.html" class="favorite-page-button">♥ รายการโปรด</a>
+
+        <button
+            type="button"
+            class="qr-shop-button"
+            onclick="openShopQr(shopId, currentShop?.shop_name || shopName)"
+        >
+            ▦ QR ร้าน
+        </button>
+
+        <button class="cart-button" onclick="openCart()">
+            🛒 <span>ตะกร้า</span>
+            <span class="cart-badge" id="cartCount">0</span>
+        </button>
+    </div>
 </header>
 
 
@@ -1025,14 +1679,31 @@
     <div class="hero-content">
         <span class="hero-tag">SHOP NOW</span>
         <h1 id="shopName">กำลังโหลดร้าน...</h1>
-        <p class="hero-desc">
-            ค้นหาสินค้าที่ต้องการ เพิ่มลงตะกร้า และตรวจสอบรายละเอียดก่อนยืนยันคำสั่งซื้อ
+        <p class="hero-desc" id="shopDescription">
+            กำลังโหลดข้อมูลร้าน...
         </p>
+
+        <div class="shop-status-row">
+            <span id="shopStatusPill" class="shop-status-pill">กำลังตรวจสอบสถานะร้าน...</span>
+        </div>
+
+        <div class="shop-rating-line">
+            <span id="heroRatingStars">☆☆☆☆☆</span>
+            <strong id="heroRatingScore">ยังไม่มีคะแนน</strong>
+            <span id="heroReviewCount"></span>
+        </div>
     </div>
 </section>
 
 
 <main class="container">
+
+    <div id="shopAnnouncement" class="shop-announcement"></div>
+
+    <div id="closedShopMessage" class="closed-shop-message">
+        <strong>🔴 ร้านนี้ปิดให้บริการอยู่</strong><br>
+        ยังสามารถดูสินค้าได้ แต่ไม่สามารถเพิ่มสินค้าใหม่ลงตะกร้าจากร้านนี้ได้
+    </div>
 
     <section class="toolbar">
         <div class="search-box">
@@ -1057,6 +1728,83 @@
         <div class="loading">กำลังโหลดสินค้า...</div>
     </section>
 
+
+<section class="review-section">
+
+    <div class="review-panel">
+
+        <div class="review-head">
+            <div>
+                <small>CUSTOMER REVIEWS</small>
+                <h2>💬 รีวิวร้านนี้</h2>
+            </div>
+
+            <div class="review-summary">
+                <strong id="reviewAverage">-</strong>
+                <span id="reviewCount">0 รีวิว</span>
+            </div>
+        </div>
+
+        <div id="reviewList" class="review-list">
+            <div class="review-empty">
+                กำลังโหลดรีวิว...
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="review-form-card">
+
+        <h3>ให้คะแนนร้าน ⭐</h3>
+
+        <p>
+            รีวิวแบบง่ายสำหรับ Mini Project ไม่ต้องสมัครสมาชิก
+        </p>
+
+        <div id="starPicker" class="star-picker">
+            <button type="button" onclick="setReviewRating(1)">★</button>
+            <button type="button" onclick="setReviewRating(2)">★</button>
+            <button type="button" onclick="setReviewRating(3)">★</button>
+            <button type="button" onclick="setReviewRating(4)">★</button>
+            <button type="button" onclick="setReviewRating(5)">★</button>
+        </div>
+
+        <div class="review-field">
+            <label>ชื่อผู้รีวิว</label>
+
+            <input
+                id="reviewCustomer"
+                type="text"
+                maxlength="40"
+                placeholder="เช่น User111"
+            >
+        </div>
+
+        <div class="review-field">
+            <label>ความคิดเห็น</label>
+
+            <textarea
+                id="reviewComment"
+                maxlength="300"
+                placeholder="ร้านเป็นยังไง อาหารอร่อยไหม บริการโอเคหรือเปล่า..."
+            ></textarea>
+        </div>
+
+        <button
+            id="reviewSubmitButton"
+            type="button"
+            class="review-submit"
+            onclick="submitReview()"
+        >
+            ส่งรีวิว
+        </button>
+
+    </div>
+
+</section>
+
+
 </main>
 
 
@@ -1076,6 +1824,11 @@
     <div id="cartItems" class="cart-items"></div>
 
     <div class="cart-footer">
+
+        <div class="cart-summary-line">
+            <span>จำนวนร้าน</span>
+            <strong><span id="totalShops">0</span> ร้าน</strong>
+        </div>
 
         <div class="cart-summary-line">
             <span>จำนวนสินค้า</span>
@@ -1119,6 +1872,64 @@
         <div class="confirm-total">
             <span>ยอดรวมทั้งหมด</span>
             <strong>฿<span id="confirmTotalPrice">0</span></strong>
+        </div>
+
+
+        <div class="coupon-panel">
+
+            <div class="coupon-panel-title">
+                <strong>🎟️ โค้ดส่วนลด / ส่งฟรี</strong>
+                <span>ใช้ได้ 1 โค้ดต่อคำสั่งซื้อ</span>
+            </div>
+
+            <div class="coupon-input-row">
+                <input
+                    id="couponInput"
+                    type="text"
+                    placeholder="กรอกโค้ด เช่น DBTFREE"
+                    autocomplete="off"
+                >
+
+                <button type="button" onclick="applyCouponFromInput()">
+                    ใช้โค้ด
+                </button>
+            </div>
+
+            <div id="activeCoupon" class="active-coupon">
+                <span>
+                    กำลังใช้โค้ด:
+                    <strong id="activeCouponCode">-</strong>
+                </span>
+
+                <button type="button" onclick="removeCoupon()">
+                    ยกเลิก
+                </button>
+            </div>
+
+            <div class="checkout-breakdown">
+
+                <div class="checkout-breakdown-line">
+                    <span>ค่าสินค้า</span>
+                    <strong>฿<span id="summaryProductTotal">0</span></strong>
+                </div>
+
+                <div class="checkout-breakdown-line shipping">
+                    <span>ค่าส่ง</span>
+                    <strong>฿<span id="summaryShipping">19,999</span></strong>
+                </div>
+
+                <div class="checkout-breakdown-line discount">
+                    <span>ส่วนลดจากโค้ด</span>
+                    <strong>-฿<span id="summaryDiscount">0</span></strong>
+                </div>
+
+                <div class="checkout-final">
+                    <span>ยอดที่ต้องชำระ</span>
+                    <strong>฿<span id="summaryFinalTotal">0</span></strong>
+                </div>
+
+            </div>
+
         </div>
 
         <div class="checkout-form">
@@ -1193,11 +2004,30 @@
             </div>
 
             <div>
-                <span>ยอดรวม</span>
+                <span>ค่าสินค้า</span>
                 <strong id="successTotal">฿0</strong>
             </div>
 
+            <div>
+                <span>โค้ดที่ใช้</span>
+                <strong id="successCoupon">-</strong>
+            </div>
+
+            <div>
+                <span>ค่าส่ง</span>
+                <strong id="successShipping">฿19,999</strong>
+            </div>
+
+            <div>
+                <span>จ่ายจริง</span>
+                <strong id="successFinal">฿0</strong>
+            </div>
+
         </div>
+
+        <button class="success-receipt-button" onclick="openReceipt()">
+            🧾 ดูใบเสร็จ
+        </button>
 
         <button class="success-close" onclick="closeSuccess()">
             เลือกสินค้าต่อ
@@ -1208,9 +2038,134 @@
 </div>
 
 
+
+<div id="receiptOverlay" class="receipt-overlay">
+    <div class="receipt-card" id="printableReceipt">
+
+        <div class="receipt-top">
+            <div class="receipt-brand">
+                <strong>🛍️ DBT Multi Shop</strong>
+                <span id="receiptShop">ร้านค้า</span>
+            </div>
+
+            <div class="receipt-order-id">
+                ORDER ID
+                <strong id="receiptOrderId">-</strong>
+            </div>
+        </div>
+
+        <div class="receipt-customer">
+            <strong id="receiptCustomer">-</strong><br>
+            <span id="receiptDate">-</span><br>
+            <span id="receiptNote">หมายเหตุ: ไม่มี</span>
+        </div>
+
+        <div id="receiptItems" class="receipt-items"></div>
+
+        <div class="receipt-summary">
+            <div class="receipt-summary-line muted">
+                <span>ค่าสินค้า</span>
+                <strong>฿<span id="receiptSubtotal">0</span></strong>
+            </div>
+
+            <div class="receipt-summary-line muted">
+                <span>ค่าส่ง</span>
+                <strong>฿<span id="receiptShipping">19,999</span></strong>
+            </div>
+
+            <div class="receipt-summary-line discount">
+                <span>ส่วนลด / ส่งฟรี</span>
+                <strong>-฿<span id="receiptDiscount">0</span></strong>
+            </div>
+
+            <div class="receipt-summary-line muted">
+                <span>โค้ดที่ใช้</span>
+                <strong id="receiptCoupon">-</strong>
+            </div>
+
+            <div class="receipt-grand">
+                <span>ยอดชำระ</span>
+                <strong>฿<span id="receiptFinal">0</span></strong>
+            </div>
+        </div>
+
+        <div class="receipt-footer">
+            ใบเสร็จจำลองสำหรับ Mini Project · ขอบคุณที่ใช้ DBT Multi Shop 💛
+        </div>
+
+        <div class="receipt-actions">
+            <button class="receipt-copy" onclick="copyOrderId()">คัดลอก Order ID</button>
+            <button class="receipt-print" onclick="window.print()">พิมพ์ / บันทึก PDF</button>
+        </div>
+
+        <button class="success-close" onclick="closeReceipt()">ปิดใบเสร็จ</button>
+
+    </div>
+</div>
+
+
+
+<div id="shopQrOverlay" class="qr-overlay">
+    <div class="qr-card">
+
+        <div class="qr-head">
+            <div>
+                <small>SHOP QR CODE</small>
+                <h3 id="qrShopTitle">QR ร้านค้า</h3>
+            </div>
+
+            <button
+                type="button"
+                class="qr-close"
+                onclick="closeShopQr()"
+            >
+                ✕
+            </button>
+        </div>
+
+        <div class="qr-canvas-wrap">
+            <canvas id="shopQrCanvas"></canvas>
+        </div>
+
+        <div
+            id="shopQrUrl"
+            class="qr-url"
+        ></div>
+
+        <div
+            id="shopQrWarning"
+            class="qr-warning"
+        >
+            ⚠️ ตอนนี้เปิดเว็บผ่านไฟล์ในเครื่อง (`file://`) QR นี้จะใช้แชร์ไปมือถือไม่ได้
+            ต้องเปิดเว็บผ่าน Render/HTTPS ก่อน แล้ว QR จะสร้างลิงก์ออนไลน์ให้อัตโนมัติ
+        </div>
+
+        <div class="qr-actions">
+            <button
+                type="button"
+                class="qr-copy"
+                onclick="copyShopQrLink()"
+            >
+                🔗 คัดลอกลิงก์
+            </button>
+
+            <button
+                type="button"
+                class="qr-download"
+                onclick="saveShopQrImage()"
+            >
+                🖼️ บันทึก QR
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
 <div id="toast" class="toast">เพิ่มลงตะกร้าแล้ว</div>
 
 
+<script src="app-ui.js"></script>
 <script>
 
 const API_URL =
@@ -1218,7 +2173,17 @@ const API_URL =
 
 let products = [];
 let filteredProducts = [];
+const CART_STORAGE_KEY = "dbt_multi_shop_cart_v1";
 let cart = [];
+const SHIPPING_FEE = 19999;
+const FREE_SHIPPING_CODE = "DBTFREE";
+let appliedCoupon = "";
+let lastReceipt = null;
+let bestSellerIds = new Set();
+let todayMenuIds = new Set();
+
+let currentShop = null;
+let shopIsOpen = true;
 
 const params = new URLSearchParams(window.location.search);
 
@@ -1230,6 +2195,699 @@ const shopName =
 document.getElementById("shopName").textContent = shopName;
 document.getElementById("headerShopName").textContent = shopName;
 
+
+
+
+async function loadCurrentShop() {
+
+    if (!shopId) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}?action=shops`
+            );
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+            throw new Error(
+                result.message ||
+                "โหลดข้อมูลร้านไม่สำเร็จ"
+            );
+        }
+
+
+        currentShop =
+            (result.data || []).find(
+                shop =>
+                    String(shop.shop_id)
+                    === String(shopId)
+            ) || null;
+
+
+        if (!currentShop) {
+
+            shopIsOpen = false;
+
+            document
+                .getElementById("shopName")
+                .textContent =
+                "ไม่พบร้านค้า";
+
+            document
+                .getElementById("headerShopName")
+                .textContent =
+                "ไม่พบร้านค้า";
+
+            document
+                .getElementById("shopDescription")
+                .textContent =
+                "ร้านนี้อาจถูกลบออกจากระบบแล้ว";
+
+            updateShopStatusUI();
+
+            return;
+        }
+
+
+        const latestName =
+            String(
+                currentShop.shop_name ||
+                shopName
+            ).trim();
+
+
+        document
+            .getElementById("shopName")
+            .textContent =
+            latestName;
+
+
+        document
+            .getElementById("headerShopName")
+            .textContent =
+            latestName;
+
+
+        const description =
+            String(
+                currentShop.description ||
+                ""
+            ).trim();
+
+
+        document
+            .getElementById("shopDescription")
+            .textContent =
+            description ||
+            "ค้นหาสินค้าที่ต้องการ เพิ่มลงตะกร้า และตรวจสอบรายละเอียดก่อนยืนยันคำสั่งซื้อ";
+
+
+        const announcement =
+            String(
+                currentShop.announcement ||
+                ""
+            ).trim();
+
+
+        const announcementBox =
+            document.getElementById(
+                "shopAnnouncement"
+            );
+
+
+        if (announcement) {
+
+            announcementBox.innerHTML =
+                `<span>📢</span><div><strong>ประกาศจากร้าน</strong><br>${announcement}</div>`;
+
+            announcementBox
+                .classList
+                .add("show");
+
+        } else {
+
+            announcementBox
+                .classList
+                .remove("show");
+        }
+
+
+        const rawActive =
+            currentShop.active;
+
+
+        shopIsOpen =
+            rawActive === true ||
+            String(rawActive)
+                .trim()
+                .toUpperCase()
+                === "TRUE";
+
+
+        const shopImage =
+            String(
+                currentShop.image ||
+                ""
+            ).trim();
+
+
+        if (shopImage) {
+
+            document
+                .querySelector(".hero")
+                .style.background =
+                `linear-gradient(120deg,rgba(17,24,39,.94),rgba(31,41,55,.82) 68%,rgba(255,107,53,.18)),url("${shopImage}") center/cover`;
+        }
+
+
+        updateShopStatusUI();
+
+
+        if (window.DBTUI) {
+
+            DBTUI.recent.add({
+                type:
+                    "shop",
+
+                id:
+                    currentShop.shop_id,
+
+                name:
+                    latestName,
+
+                image:
+                    currentShop.image || "",
+
+                url:
+                    window.location.href
+            });
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "LOAD SHOP ERROR:",
+            error
+        );
+
+
+        document
+            .getElementById("shopDescription")
+            .textContent =
+            "โหลดรายละเอียดร้านไม่สำเร็จ แต่ยังสามารถลองดูสินค้าได้";
+    }
+}
+
+
+function updateShopStatusUI() {
+
+    const pill =
+        document.getElementById(
+            "shopStatusPill"
+        );
+
+    const closedMessage =
+        document.getElementById(
+            "closedShopMessage"
+        );
+
+
+    if (shopIsOpen) {
+
+        pill.className =
+            "shop-status-pill open";
+
+        pill.textContent =
+            "● เปิดให้บริการ";
+
+        closedMessage
+            .classList
+            .remove("show");
+
+    } else {
+
+        pill.className =
+            "shop-status-pill closed";
+
+        pill.textContent =
+            "● ปิดให้บริการ";
+
+        closedMessage
+            .classList
+            .add("show");
+    }
+
+
+    renderProducts();
+}
+
+
+
+let reviewRating = 5;
+
+
+function setReviewRating(value) {
+
+    reviewRating =
+        Math.max(
+            1,
+            Math.min(
+                5,
+                Number(value || 5)
+            )
+        );
+
+
+    document
+        .querySelectorAll(
+            "#starPicker button"
+        )
+        .forEach(
+            (button, index) => {
+
+                button.classList.toggle(
+                    "active",
+                    index < reviewRating
+                );
+            }
+        );
+}
+
+
+function renderStarText(value) {
+
+    const rating =
+        Math.max(
+            0,
+            Math.min(
+                5,
+                Math.round(
+                    Number(value || 0)
+                )
+            )
+        );
+
+
+    return (
+        "★".repeat(rating) +
+        "☆".repeat(5 - rating)
+    );
+}
+
+
+function escapeReviewHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function formatReviewDate(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return String(value);
+    }
+
+
+    return date.toLocaleString(
+        "th-TH",
+        {
+            dateStyle:
+                "medium",
+
+            timeStyle:
+                "short"
+        }
+    );
+}
+
+
+async function loadReviews() {
+
+    const list =
+        document.getElementById(
+            "reviewList"
+        );
+
+
+    if (!shopId) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}?action=reviews&shop_id=${encodeURIComponent(shopId)}`
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+            throw new Error(
+                result.message ||
+                "โหลดรีวิวไม่สำเร็จ"
+            );
+        }
+
+
+        const reviews =
+            Array.isArray(
+                result.data
+            )
+                ? result.data
+                : [];
+
+
+        const average =
+            Number(
+                result.average || 0
+            );
+
+
+        const count =
+            Number(
+                result.count ||
+                reviews.length ||
+                0
+            );
+
+
+        document
+            .getElementById(
+                "reviewAverage"
+            )
+            .textContent =
+            count
+                ? average.toFixed(1)
+                : "-";
+
+
+        document
+            .getElementById(
+                "reviewCount"
+            )
+            .textContent =
+            `${count} รีวิว`;
+
+
+        document
+            .getElementById(
+                "heroRatingStars"
+            )
+            .textContent =
+            count
+                ? renderStarText(
+                    average
+                  )
+                : "☆☆☆☆☆";
+
+
+        document
+            .getElementById(
+                "heroRatingScore"
+            )
+            .textContent =
+            count
+                ? `${average.toFixed(1)} / 5`
+                : "ยังไม่มีคะแนน";
+
+
+        document
+            .getElementById(
+                "heroReviewCount"
+            )
+            .textContent =
+            count
+                ? `(${count} รีวิว)`
+                : "";
+
+
+        if (!reviews.length) {
+
+            list.innerHTML =
+                `<div class="review-empty">
+                    <strong>ยังไม่มีรีวิว</strong><br>
+                    เป็นคนแรกที่ให้คะแนนร้านนี้ได้เลย 😎
+                 </div>`;
+
+            return;
+        }
+
+
+        list.innerHTML =
+            reviews
+                .slice(0, 10)
+                .map(review => `
+
+                    <article class="review-item">
+
+                        <div class="review-item-top">
+
+                            <div>
+                                <div class="review-name">
+                                    ${escapeReviewHtml(review.customer || "ผู้ใช้")}
+                                </div>
+
+                                <div class="review-date">
+                                    ${formatReviewDate(review.date)}
+                                </div>
+                            </div>
+
+                            <div class="review-stars">
+                                ${renderStarText(review.rating)}
+                            </div>
+
+                        </div>
+
+                        <div class="review-comment">
+                            ${escapeReviewHtml(review.comment || "ไม่มีความคิดเห็น")}
+                        </div>
+
+                    </article>
+
+                `)
+                .join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "REVIEW ERROR:",
+            error
+        );
+
+
+        list.innerHTML =
+            `<div class="review-empty">
+                โหลดรีวิวไม่สำเร็จ
+             </div>`;
+    }
+}
+
+
+async function submitReview() {
+
+    if (!shopId) {
+        return;
+    }
+
+
+    const customer =
+        document
+            .getElementById(
+                "reviewCustomer"
+            )
+            .value
+            .trim();
+
+
+    const comment =
+        document
+            .getElementById(
+                "reviewComment"
+            )
+            .value
+            .trim();
+
+
+    if (!customer) {
+
+        alert(
+            "กรุณากรอกชื่อผู้รีวิว"
+        );
+
+        return;
+    }
+
+
+    if (!comment) {
+
+        alert(
+            "กรุณาเขียนความคิดเห็นเล็กน้อย"
+        );
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "reviewSubmitButton"
+        );
+
+
+    button.disabled = true;
+    button.textContent =
+        "กำลังส่งรีวิว...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            action:
+                                "addReview",
+
+                            shop_id:
+                                shopId,
+
+                            customer:
+                                customer,
+
+                            rating:
+                                reviewRating,
+
+                            comment:
+                                comment
+                        })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+
+            throw new Error(
+                result.message ||
+                "ส่งรีวิวไม่สำเร็จ"
+            );
+        }
+
+
+        document
+            .getElementById(
+                "reviewComment"
+            )
+            .value = "";
+
+
+        setReviewRating(
+            5
+        );
+
+
+        if (window.DBTUI) {
+
+            DBTUI.toast(
+                "ส่งรีวิวเรียบร้อย ⭐",
+                "success"
+            );
+
+            DBTUI.sound.play(
+                "success"
+            );
+        }
+
+
+        await loadReviews();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "ส่งรีวิวไม่สำเร็จ"
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "ส่งรีวิว";
+    }
+}
+
+
+
+async function loadShopHighlights() {
+    // Today recommendation is calculated locally from this shop's products later.
+    try {
+        const response = await fetch(`${API_URL}?action=bestSellers`);
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data)) {
+            bestSellerIds = new Set(
+                result.data.map(item => String(item.product_id))
+            );
+        }
+    } catch (error) {
+        console.warn("Best seller badge unavailable:", error);
+    }
+}
+
+function calculateTodayIds() {
+    const now = new Date();
+    const seed = Number(
+        `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}`
+    );
+
+    const ranked = products
+        .map(product => ({
+            id: String(product.product_id),
+            score: shopHashForDay(String(product.product_id), seed)
+        }))
+        .sort((a,b) => a.score - b.score)
+        .slice(0, Math.min(2, products.length));
+
+    todayMenuIds = new Set(ranked.map(x => x.id));
+}
+
+function shopHashForDay(text, seed) {
+    let hash = seed || 1;
+    for (let i = 0; i < text.length; i++) {
+        hash = ((hash << 5) - hash) + text.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash);
+}
 
 /* =========================
    LOAD PRODUCTS
@@ -1281,6 +2939,7 @@ async function loadProducts() {
 
         filteredProducts = [...products];
 
+        calculateTodayIds();
         renderProducts();
 
     }
@@ -1336,6 +2995,15 @@ function renderProducts() {
 
                 <div class="product-photo">
 
+                    <button
+                        type="button"
+                        class="dbt-favorite-btn product-favorite ${window.DBTUI && DBTUI.favorites.has("product", product.product_id) ? "active" : ""}"
+                        aria-label="เพิ่มสินค้าโปรด"
+                        onclick="toggleProductFavorite('${product.product_id}')"
+                    >
+                        ${window.DBTUI && DBTUI.favorites.has("product", product.product_id) ? "♥" : "♡"}
+                    </button>
+
                     <img
                         src="${product.image}"
                         alt="${product.name}"
@@ -1351,6 +3019,13 @@ function renderProducts() {
 
                 <div class="product-info">
 
+                    ${(bestSellerIds.has(String(product.product_id)) || todayMenuIds.has(String(product.product_id))) ? `
+                        <div class="product-highlight-row">
+                            ${bestSellerIds.has(String(product.product_id)) ? `<span class="product-highlight-tag">🔥 ขายดี</span>` : ""}
+                            ${todayMenuIds.has(String(product.product_id)) ? `<span class="product-highlight-tag">🍴 แนะนำวันนี้</span>` : ""}
+                        </div>
+                    ` : ""}
+
                     <div class="product-type">
                         ${product.product_id}
                     </div>
@@ -1360,8 +3035,9 @@ function renderProducts() {
                     <button
                         class="add-button"
                         onclick="addToCart('${product.product_id}')"
+                        ${shopIsOpen ? "" : "disabled"}
                     >
-                        ＋ เพิ่มลงตะกร้า
+                        ${shopIsOpen ? "＋ เพิ่มลงตะกร้า" : "ร้านปิด"}
                     </button>
 
                 </div>
@@ -1372,6 +3048,27 @@ function renderProducts() {
     });
 }
 
+
+
+function toggleProductFavorite(productId) {
+    const product = products.find(
+        item => String(item.product_id) === String(productId)
+    );
+
+    if (!product || !window.DBTUI) return;
+
+    DBTUI.favorites.toggle({
+        type: "product",
+        id: product.product_id,
+        name: product.name,
+        image: product.image,
+        price: Number(product.price || 0),
+        shop_id: shopId,
+        shop_name: shopName
+    });
+
+    renderProducts();
+}
 
 /* =========================
    SEARCH
@@ -1408,11 +3105,91 @@ function clearSearch() {
 }
 
 
+
+function loadCartFromStorage() {
+    try {
+        const saved =
+            JSON.parse(
+                localStorage.getItem(
+                    CART_STORAGE_KEY
+                ) || "[]"
+            );
+
+        cart =
+            Array.isArray(saved)
+                ? saved
+                : [];
+    } catch (_) {
+        cart = [];
+    }
+}
+
+
+function saveCartToStorage() {
+    try {
+        localStorage.setItem(
+            CART_STORAGE_KEY,
+            JSON.stringify(cart)
+        );
+    } catch (_) {}
+}
+
+
+function clearCartStorage() {
+    try {
+        localStorage.removeItem(
+            CART_STORAGE_KEY
+        );
+    } catch (_) {}
+}
+
+
+function getCartShopCount() {
+    return new Set(
+        cart.map(
+            item =>
+                String(
+                    item.shop_id || ""
+                )
+        )
+    ).size;
+}
+
+
+function getCartShopLabel(item) {
+    return (
+        item.shop_name ||
+        item.shop_id ||
+        "ร้านค้า"
+    );
+}
+
 /* =========================
    CART
 ========================= */
 
 function addToCart(productId) {
+
+    if (!shopIsOpen) {
+
+        if (window.DBTUI) {
+            DBTUI.toast(
+                "ร้านนี้ปิดอยู่ ยังเพิ่มสินค้าไม่ได้ 🔴",
+                "error"
+            );
+
+            DBTUI.sound.play(
+                "remove"
+            );
+
+        } else {
+            alert(
+                "ร้านนี้ปิดให้บริการอยู่"
+            );
+        }
+
+        return;
+    }
 
     const product =
         products.find(
@@ -1428,6 +3205,9 @@ function addToCart(productId) {
             item =>
                 String(item.product_id)
                 === String(productId)
+                &&
+                String(item.shop_id || "")
+                === String(shopId || "")
         );
 
     if (existing) {
@@ -1437,25 +3217,42 @@ function addToCart(productId) {
     else {
         cart.push({
             ...product,
+            shop_id: shopId,
+            shop_name: shopName,
             quantity: 1
         });
     }
 
     updateCart();
 
-    showToast(
-        `${product.name} เพิ่มลงตะกร้าแล้ว`
-    );
+    if (window.DBTUI) {
+        DBTUI.recent.add({
+            type: "product",
+            id: product.product_id,
+            name: product.name,
+            image: product.image,
+            price: Number(product.price || 0),
+            shop_id: shopId,
+            shop_name: shopName
+        });
+        DBTUI.sound.play("tap");
+        DBTUI.toast(`${product.name} เพิ่มลงตะกร้าแล้ว`, "success");
+    } else {
+        showToast(`${product.name} เพิ่มลงตะกร้าแล้ว`);
+    }
 }
 
 
-function changeQuantity(productId, amount) {
+function changeQuantity(productId, amount, itemShopId) {
 
     const item =
         cart.find(
             item =>
                 String(item.product_id)
                 === String(productId)
+                &&
+                String(item.shop_id || "")
+                === String(itemShopId || "")
         );
 
     if (!item) return;
@@ -1466,9 +3263,14 @@ function changeQuantity(productId, amount) {
 
         cart =
             cart.filter(
-                item =>
-                    String(item.product_id)
-                    !== String(productId)
+                cartItem =>
+                    !(
+                        String(cartItem.product_id)
+                        === String(productId)
+                        &&
+                        String(cartItem.shop_id || "")
+                        === String(itemShopId || "")
+                    )
             );
     }
 
@@ -1512,12 +3314,15 @@ function updateCart() {
 
                         <div class="cart-item-name">
                             <strong>${item.name}</strong>
+                            <div style="margin-top:4px;color:var(--muted);font-size:10px;">
+                                🏪 ${getCartShopLabel(item)}
+                            </div>
                         </div>
 
                         <div class="quantity-row">
 
                             <button
-                                onclick="changeQuantity('${item.product_id}', -1)"
+                                onclick="changeQuantity('${item.product_id}', -1, '${item.shop_id || ""}')"
                             >
                                 −
                             </button>
@@ -1525,7 +3330,7 @@ function updateCart() {
                             <span>${item.quantity}</span>
 
                             <button
-                                onclick="changeQuantity('${item.product_id}', 1)"
+                                onclick="changeQuantity('${item.product_id}', 1, '${item.shop_id || ""}')"
                             >
                                 +
                             </button>
@@ -1565,6 +3370,9 @@ function updateCart() {
     document.getElementById("cartCount").textContent =
         totalItems;
 
+    document.getElementById("totalShops").textContent =
+        getCartShopCount();
+
     document.getElementById("totalItems").textContent =
         totalItems;
 
@@ -1573,6 +3381,8 @@ function updateCart() {
 
     document.getElementById("checkoutButton").disabled =
         cart.length === 0;
+
+    saveCartToStorage();
 }
 
 
@@ -1599,6 +3409,251 @@ function closeCart() {
     document.body.classList.remove("no-scroll");
 }
 
+
+
+function loadSavedCoupon() {
+    try {
+        const saved =
+            String(localStorage.getItem("dbt_coupon") || "")
+                .trim()
+                .toUpperCase();
+
+        if (saved === FREE_SHIPPING_CODE) {
+            appliedCoupon = saved;
+        }
+    } catch (_) {}
+}
+
+
+function applyCouponFromInput() {
+
+    const input =
+        document.getElementById("couponInput");
+
+    const code =
+        String(input.value || "")
+            .trim()
+            .toUpperCase();
+
+    if (!code) {
+
+        if (window.DBTUI) {
+            DBTUI.toast("กรุณากรอกโค้ดก่อน", "error");
+        } else {
+            alert("กรุณากรอกโค้ดก่อน");
+        }
+
+        return;
+    }
+
+
+    if (code !== FREE_SHIPPING_CODE) {
+
+        if (window.DBTUI) {
+            DBTUI.toast("โค้ดนี้ใช้ไม่ได้ หรือหมดอายุแล้ว 😭", "error");
+            DBTUI.sound.play("remove");
+        } else {
+            alert("โค้ดนี้ใช้ไม่ได้");
+        }
+
+        return;
+    }
+
+
+    appliedCoupon = FREE_SHIPPING_CODE;
+
+    try {
+        localStorage.setItem(
+            "dbt_coupon",
+            appliedCoupon
+        );
+    } catch (_) {}
+
+
+    updateCouponUI();
+    updateCheckoutSummary();
+
+
+    if (window.DBTUI) {
+        DBTUI.toast(
+            "ใช้ DBTFREE แล้ว — ส่งฟรี 19,999 บาท 😂",
+            "success"
+        );
+
+        DBTUI.sound.play("success");
+    }
+}
+
+
+function removeCoupon() {
+
+    appliedCoupon = "";
+
+    try {
+        localStorage.removeItem(
+            "dbt_coupon"
+        );
+    } catch (_) {}
+
+
+    document
+        .getElementById("couponInput")
+        .value = "";
+
+
+    updateCouponUI();
+    updateCheckoutSummary();
+
+
+    if (window.DBTUI) {
+        DBTUI.toast(
+            "ยกเลิกโค้ดแล้ว ค่าส่งกลับมา 19,999 บาท 💀"
+        );
+    }
+}
+
+
+function updateCouponUI() {
+
+    const box =
+        document.getElementById(
+            "activeCoupon"
+        );
+
+    const code =
+        document.getElementById(
+            "activeCouponCode"
+        );
+
+
+    if (!box || !code) {
+        return;
+    }
+
+
+    if (appliedCoupon) {
+
+        box.classList.add("show");
+
+        code.textContent =
+            appliedCoupon;
+
+        document
+            .getElementById(
+                "couponInput"
+            )
+            .value =
+            appliedCoupon;
+
+    } else {
+
+        box.classList.remove("show");
+
+        code.textContent = "-";
+    }
+}
+
+
+function getProductSubtotal() {
+
+    return cart.reduce(
+        (sum, item) =>
+            sum +
+            (
+                Number(item.price) *
+                item.quantity
+            ),
+        0
+    );
+}
+
+
+function getCouponDiscount() {
+
+    if (
+        appliedCoupon ===
+        FREE_SHIPPING_CODE
+    ) {
+        return SHIPPING_FEE;
+    }
+
+    return 0;
+}
+
+
+function getCheckoutFinalTotal() {
+
+    const productTotal =
+        getProductSubtotal();
+
+    const discount =
+        getCouponDiscount();
+
+    return Math.max(
+        0,
+        productTotal +
+        SHIPPING_FEE -
+        discount
+    );
+}
+
+
+function updateCheckoutSummary() {
+
+    const productTotal =
+        getProductSubtotal();
+
+    const discount =
+        getCouponDiscount();
+
+    const finalTotal =
+        getCheckoutFinalTotal();
+
+
+    const productEl =
+        document.getElementById(
+            "summaryProductTotal"
+        );
+
+    const shippingEl =
+        document.getElementById(
+            "summaryShipping"
+        );
+
+    const discountEl =
+        document.getElementById(
+            "summaryDiscount"
+        );
+
+    const finalEl =
+        document.getElementById(
+            "summaryFinalTotal"
+        );
+
+
+    if (productEl) {
+        productEl.textContent =
+            productTotal.toLocaleString();
+    }
+
+    if (shippingEl) {
+        shippingEl.textContent =
+            SHIPPING_FEE.toLocaleString();
+    }
+
+    if (discountEl) {
+        discountEl.textContent =
+            discount.toLocaleString();
+    }
+
+    if (finalEl) {
+        finalEl.textContent =
+            finalTotal.toLocaleString();
+    }
+
+
+    updateCouponUI();
+}
 
 /* =========================
    CONFIRM
@@ -1633,6 +3688,10 @@ function openConfirmOrder() {
                     <strong>${item.name}</strong>
 
                     <span>
+                        🏪 ${getCartShopLabel(item)}
+                    </span>
+
+                    <span>
                         ${item.quantity} ชิ้น × ฿${item.price}
                     </span>
 
@@ -1657,7 +3716,9 @@ function openConfirmOrder() {
         );
 
     document.getElementById("confirmTotalPrice").textContent =
-        totalPrice;
+        totalPrice.toLocaleString();
+
+    updateCheckoutSummary();
 
     closeCart();
 
@@ -1683,6 +3744,340 @@ function backToCart() {
 
     openCart();
 }
+
+
+
+function buildReceipt(data) {
+    if (!data) return;
+
+    document.getElementById("receiptShop").textContent =
+        data.shop_name || shopName;
+
+    document.getElementById("receiptOrderId").textContent =
+        data.order_id || "-";
+
+    document.getElementById("receiptCustomer").textContent =
+        data.customer || "-";
+
+    document.getElementById("receiptDate").textContent =
+        data.date || new Date().toLocaleString("th-TH");
+
+    document.getElementById("receiptNote").textContent =
+        `หมายเหตุ: ${data.note || "ไม่มี"}`;
+
+    const itemsBox =
+        document.getElementById("receiptItems");
+
+    itemsBox.innerHTML =
+        (data.items || []).map(item => `
+            <div class="receipt-row">
+                <div>
+                    <strong>${item.name}</strong>
+                    <span>🏪 ${item.shop_name || item.shop_id || "ร้านค้า"}</span>
+                    <span>${item.quantity} ชิ้น × ฿${Number(item.price).toLocaleString()}</span>
+                </div>
+                <strong>฿${(Number(item.price) * Number(item.quantity)).toLocaleString()}</strong>
+            </div>
+        `).join("");
+
+    document.getElementById("receiptSubtotal").textContent =
+        Number(data.subtotal || 0).toLocaleString();
+
+    document.getElementById("receiptShipping").textContent =
+        Number(data.shipping || 0).toLocaleString();
+
+    document.getElementById("receiptDiscount").textContent =
+        Number(data.discount || 0).toLocaleString();
+
+    document.getElementById("receiptCoupon").textContent =
+        data.coupon || "ไม่ได้ใช้";
+
+    document.getElementById("receiptFinal").textContent =
+        Number(data.final_total || 0).toLocaleString();
+}
+
+
+function openReceipt() {
+    if (!lastReceipt) {
+        if (window.DBTUI) {
+            DBTUI.toast("ยังไม่มีใบเสร็จล่าสุด", "error");
+        }
+        return;
+    }
+
+    buildReceipt(lastReceipt);
+
+    document
+        .getElementById("successOverlay")
+        .classList.remove("active");
+
+    document
+        .getElementById("receiptOverlay")
+        .classList.add("active");
+
+    document.body.classList.add("no-scroll");
+}
+
+
+function closeReceipt() {
+    document
+        .getElementById("receiptOverlay")
+        .classList.remove("active");
+
+    document.body.classList.remove("no-scroll");
+}
+
+
+async function copyOrderId() {
+    if (!lastReceipt) return;
+
+    const id = String(lastReceipt.order_id || "");
+
+    try {
+        await navigator.clipboard.writeText(id);
+
+        if (window.DBTUI) {
+            DBTUI.toast("คัดลอก Order ID แล้ว 🧾", "success");
+        }
+    } catch (_) {
+        prompt("คัดลอก Order ID:", id);
+    }
+}
+
+
+
+let currentQrUrl = "";
+let currentQrShopName = "ร้านค้า";
+
+
+function buildShopUrl(
+    shopId,
+    shopName
+) {
+
+    if (
+        location.protocol === "http:" ||
+        location.protocol === "https:"
+    ) {
+
+        const url =
+            new URL(
+                "shop.html",
+                location.href
+            );
+
+        url.searchParams.set(
+            "shop_id",
+            shopId
+        );
+
+        if (shopName) {
+            url.searchParams.set(
+                "shop_name",
+                shopName
+            );
+        }
+
+        return url.href;
+    }
+
+
+    // Local preview only.
+    return (
+        "shop.html?shop_id=" +
+        encodeURIComponent(shopId) +
+        (
+            shopName
+                ? "&shop_name=" +
+                  encodeURIComponent(shopName)
+                : ""
+        )
+    );
+}
+
+
+function openShopQr(
+    shopId,
+    shopName
+) {
+
+    currentQrShopName =
+        shopName ||
+        shopId ||
+        "ร้านค้า";
+
+
+    currentQrUrl =
+        buildShopUrl(
+            shopId,
+            currentQrShopName
+        );
+
+
+    document
+        .getElementById(
+            "qrShopTitle"
+        )
+        .textContent =
+        currentQrShopName;
+
+
+    document
+        .getElementById(
+            "shopQrUrl"
+        )
+        .textContent =
+        currentQrUrl;
+
+
+    const warning =
+        document.getElementById(
+            "shopQrWarning"
+        );
+
+
+    if (
+        location.protocol === "file:"
+    ) {
+        warning.classList.add(
+            "show"
+        );
+    } else {
+        warning.classList.remove(
+            "show"
+        );
+    }
+
+
+    if (
+        !window.DBTQR
+    ) {
+
+        alert(
+            "ไม่พบไฟล์ qr-local.js"
+        );
+
+        return;
+    }
+
+
+    DBTQR.renderCanvas(
+        document.getElementById(
+            "shopQrCanvas"
+        ),
+        currentQrUrl,
+        {
+            size:
+                260,
+
+            margin:
+                4,
+
+            level:
+                "M"
+        }
+    );
+
+
+    document
+        .getElementById(
+            "shopQrOverlay"
+        )
+        .classList
+        .add("active");
+
+
+    document.body
+        .classList
+        .add("no-scroll");
+}
+
+
+function closeShopQr() {
+
+    document
+        .getElementById(
+            "shopQrOverlay"
+        )
+        .classList
+        .remove("active");
+
+
+    document.body
+        .classList
+        .remove("no-scroll");
+}
+
+
+async function copyShopQrLink() {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            currentQrUrl
+        );
+
+
+        if (window.DBTUI) {
+
+            DBTUI.toast(
+                "คัดลอกลิงก์ร้านแล้ว 🔗",
+                "success"
+            );
+
+            DBTUI.sound.play(
+                "tap"
+            );
+        }
+
+    } catch (_) {
+
+        prompt(
+            "คัดลอกลิงก์ร้าน:",
+            currentQrUrl
+        );
+    }
+}
+
+
+function saveShopQrImage() {
+
+    const canvas =
+        document.getElementById(
+            "shopQrCanvas"
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    const safeName =
+        String(
+            currentQrShopName ||
+            "shop"
+        )
+        .replace(
+            /[\\/:*?"<>|]+/g,
+            "_"
+        );
+
+
+    link.download =
+        `QR_${safeName}.png`;
+
+
+    link.href =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    link.click();
+}
+
 
 
 /* =========================
@@ -1720,6 +4115,8 @@ async function checkout() {
     const orderItems =
         cart.map(item => ({
             product_id: item.product_id,
+            shop_id: item.shop_id || "",
+            shop_name: item.shop_name || "",
             name: item.name,
             price: Number(item.price),
             quantity: item.quantity
@@ -1749,7 +4146,16 @@ async function checkout() {
                             action: "addOrder",
                             customer: customer,
                             note: note,
-                            shop_id: shopId,
+                            shop_id:
+                                getCartShopCount() > 1
+                                    ? "MULTI"
+                                    : String(
+                                        orderItems[0]?.shop_id || shopId || ""
+                                    ),
+                            coupon_code: appliedCoupon,
+                            shipping_fee: SHIPPING_FEE,
+                            shipping_discount: getCouponDiscount(),
+                            final_total: getCheckoutFinalTotal(),
                             items: orderItems
                         })
                 }
@@ -1775,14 +4181,52 @@ async function checkout() {
             `${result.total_qty} ชิ้น`;
 
         document.getElementById("successTotal").textContent =
-            `฿${result.total_price}`;
+            `฿${Number(result.total_price || 0).toLocaleString()}`;
+
+        document.getElementById("successCoupon").textContent =
+            appliedCoupon || "ไม่ได้ใช้";
+
+        document.getElementById("successShipping").textContent =
+            appliedCoupon === FREE_SHIPPING_CODE
+                ? "ฟรี (จาก ฿19,999)"
+                : `฿${SHIPPING_FEE.toLocaleString()}`;
+
+        document.getElementById("successFinal").textContent =
+            `฿${getCheckoutFinalTotal().toLocaleString()}`;
+
+        lastReceipt = {
+            order_id: result.order_id,
+            customer: customer,
+            note: note,
+            shop_id: shopId,
+            shop_name: shopName,
+            date: new Date().toLocaleString("th-TH"),
+            items: orderItems.map(item => ({...item})),
+            subtotal: Number(result.total_price || 0),
+            shipping: SHIPPING_FEE,
+            discount: getCouponDiscount(),
+            coupon: appliedCoupon || "",
+            final_total: getCheckoutFinalTotal()
+        };
+
+        try {
+            localStorage.setItem(
+                "dbt_last_receipt",
+                JSON.stringify(lastReceipt)
+            );
+        } catch (_) {}
 
         document.getElementById("successOverlay")
             .classList.add("active");
 
+        if (window.DBTUI) {
+            DBTUI.sound.play("success");
+        }
+
         document.body.classList.add("no-scroll");
 
         cart = [];
+        clearCartStorage();
         updateCart();
 
         document.getElementById("orderNote").value = "";
@@ -1839,10 +4283,34 @@ function showToast(message) {
    START
 ========================= */
 
-loadProducts();
+try {
+    lastReceipt = JSON.parse(
+        localStorage.getItem("dbt_last_receipt") || "null"
+    );
+} catch (_) {
+    lastReceipt = null;
+}
+
+loadCartFromStorage();
+loadSavedCoupon();
+
+setReviewRating(5);
+
+Promise
+    .all([
+        loadCurrentShop(),
+        loadShopHighlights(),
+        loadReviews()
+    ])
+    .finally(
+        () => loadProducts()
+    );
+
 updateCart();
 
 </script>
 
+<script src="qr-local.js"></script>
+<script src="app-pwa.js"></script>
 </body>
 </html>

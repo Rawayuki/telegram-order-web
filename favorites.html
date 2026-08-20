@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+<title>รายการโปรด · DBT Multi Shop</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="theme.css">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--dark:#111827;--orange:#ff6b35;--bg:#f6f7fb;--line:#e5e7eb;--muted:#6b7280}
+body{font-family:Arial,"Noto Sans Thai",sans-serif;background:var(--bg);color:#171717}
+header{
+position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;gap:15px;
+padding:14px 6%;background:rgba(17,24,39,.96);backdrop-filter:blur(14px);color:white
+}
+header h1{font-size:19px}
+.back{color:white;text-decoration:none;background:#2b3545;padding:10px 13px;border-radius:10px;font-size:12px;font-weight:800}
+.hero{padding:48px 6% 70px;background:linear-gradient(120deg,#111827,#1f2937 72%,#4a2e25);color:white}
+.hero small{color:#ff9b73;font-weight:800;letter-spacing:1.2px;font-size:10px}
+.hero h2{font-size:clamp(34px,5vw,54px);margin-top:7px}
+.hero p{max-width:620px;color:#cbd5e1;font-size:13px;line-height:1.7;margin-top:10px}
+.container{width:min(1100px,92%);margin:-27px auto 70px;position:relative;z-index:5}
+.toolbar{
+background:white;border:1px solid var(--line);border-radius:17px;padding:12px;display:flex;gap:8px;
+flex-wrap:wrap;box-shadow:0 13px 34px rgba(17,24,39,.08)
+}
+.tab{border:none;border-radius:10px;padding:10px 14px;background:#eef0f3;font-weight:800;font-size:12px;cursor:pointer}
+.tab.active{background:var(--orange);color:white}
+.count{margin-left:auto;display:flex;align-items:center;color:var(--muted);font-size:11px;padding:0 8px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-top:18px}
+.card{position:relative;background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 7px 20px rgba(17,24,39,.045)}
+.card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#eee}
+.card-body{padding:13px}
+.card-type{font-size:9px;font-weight:800;color:var(--orange);letter-spacing:1px}
+.card h3{font-size:15px;margin-top:5px}
+.card p{color:var(--muted);font-size:10px;margin-top:5px;line-height:1.5}
+.card-actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:11px}
+.open-btn{
+display:flex;align-items:center;justify-content:center;text-decoration:none;background:var(--dark);color:white;
+border-radius:9px;padding:9px;font-size:11px;font-weight:800
+}
+.remove-btn{border:none;border-radius:9px;background:#fee2e2;color:#b91c1c;padding:0 11px;font-weight:800;cursor:pointer}
+.empty{
+grid-column:1/-1;background:white;border:1px dashed #cfd4db;border-radius:17px;padding:46px 20px;
+text-align:center;color:var(--muted)
+}
+.empty strong{display:block;color:#222;font-size:18px;margin-bottom:7px}
+html[data-theme="dark"] .toolbar,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .empty{
+background:var(--ui-surface)!important;border-color:var(--ui-line)!important;color:var(--ui-text)!important
+}
+html[data-theme="dark"] .tab{background:#222b38;color:#f3f4f6}
+html[data-theme="dark"] .tab.active{background:var(--ui-orange);color:white}
+html[data-theme="dark"] .empty strong{color:white}
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:620px){
+header{padding:12px 14px}.hero{padding:38px 18px 60px}.container{width:calc(100% - 28px)}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card-body{padding:10px}.count{width:100%;margin-left:0}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>❤️ รายการโปรด</h1>
+<a href="home.html" class="back">← หน้าหลัก</a>
+</header>
+
+<section class="hero">
+<small>MY FAVORITES</small>
+<h2>ของที่ชอบ รวมไว้ตรงนี้</h2>
+<p>รายการโปรดถูกบันทึกไว้ในอุปกรณ์เครื่องนี้ ไม่ต้องสมัครสมาชิก และลบออกได้ทุกเมื่อ</p>
+</section>
+
+<main class="container">
+
+<section class="toolbar">
+<button class="tab active" onclick="setFilter('all',this)">ทั้งหมด</button>
+<button class="tab" onclick="setFilter('shop',this)">🏪 ร้านโปรด</button>
+<button class="tab" onclick="setFilter('product',this)">📦 สินค้าโปรด</button>
+<div class="count" id="favoriteCount">0 รายการ</div>
+</section>
+
+<section id="favoriteGrid" class="grid">
+<div class="empty">กำลังโหลดรายการโปรด...</div>
+</section>
+
+</main>
+
+<script src="app-ui.js"></script>
+<script>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzialSfP1raLPbLYIt7VNCYx4znrmq5-fnKbwEGkIbsnxy95fzFOnwgXFyexywvTGXr/exec";
+
+let filterType="all";
+let liveShops=[];
+let liveProducts=[];
+
+async function loadReferenceData(){
+ try{
+  const [shopsResponse,productsResponse]=await Promise.all([
+   fetch(`${API_URL}?action=shops`),
+   fetch(`${API_URL}?action=products`)
+  ]);
+
+  const shopsResult=await shopsResponse.json();
+  const productsResult=await productsResponse.json();
+
+  liveShops=shopsResult.success&&Array.isArray(shopsResult.data)
+   ?shopsResult.data:[];
+  liveProducts=productsResult.success&&Array.isArray(productsResult.data)
+   ?productsResult.data:[];
+
+ }catch(error){
+  console.warn("Reference data unavailable:",error);
+ }
+}
+
+function refreshedFavorite(item){
+ if(item.type==="shop"){
+  const shop=liveShops.find(s=>String(s.shop_id)===String(item.id));
+  if(shop){
+   return {...item,name:shop.shop_name,image:shop.image,active:shop.active,description:shop.description||""};
+  }
+ }
+
+ if(item.type==="product"){
+  const product=liveProducts.find(p=>String(p.product_id)===String(item.id));
+  if(product){
+   const shop=liveShops.find(s=>String(s.shop_id)===String(product.shop_id));
+   return {
+    ...item,
+    name:product.name,
+    image:product.image,
+    price:Number(product.price||0),
+    shop_id:product.shop_id,
+    shop_name:shop?shop.shop_name:(item.shop_name||product.shop_id),
+    active:product.active
+   };
+  }
+ }
+
+ return item;
+}
+
+function isEnabled(value){
+ return value===undefined||
+        value===true||
+        String(value).toUpperCase()==="TRUE";
+}
+
+function renderFavorites(){
+ const grid=document.getElementById("favoriteGrid");
+
+ if(!window.DBTUI){
+  grid.innerHTML=`<div class="empty"><strong>โหลดระบบรายการโปรดไม่สำเร็จ</strong>ตรวจสอบไฟล์ app-ui.js</div>`;
+  return;
+ }
+
+ let items=DBTUI.favorites.all().map(refreshedFavorite);
+
+ if(filterType!=="all"){
+  items=items.filter(item=>item.type===filterType);
+ }
+
+ document.getElementById("favoriteCount").textContent=`${items.length} รายการ`;
+
+ if(!items.length){
+  grid.innerHTML=`
+   <div class="empty">
+    <strong>ยังไม่มีรายการโปรด ❤️</strong>
+    กดหัวใจที่ร้านหรือสินค้าที่ชอบ แล้วรายการจะมาอยู่ตรงนี้
+   </div>`;
+  return;
+ }
+
+ grid.innerHTML=items.map(item=>{
+  const isShop=item.type==="shop";
+  const href=isShop
+   ?`shop.html?shop_id=${encodeURIComponent(item.id)}&shop_name=${encodeURIComponent(item.name||"ร้านค้า")}`
+   :`shop.html?shop_id=${encodeURIComponent(item.shop_id||"")}&shop_name=${encodeURIComponent(item.shop_name||item.shop_id||"ร้านค้า")}`;
+
+  const enabled=isEnabled(item.active);
+
+  return `
+   <article class="card dbt-animate-in">
+    <img
+     src="${item.image||'https://placehold.co/600x600?text=Favorite'}"
+     alt="${item.name||'รายการโปรด'}"
+     onerror="this.src='https://placehold.co/600x600?text=Favorite'"
+    >
+
+    <div class="card-body">
+     <div class="card-type">${isShop?"FAVORITE SHOP":"FAVORITE PRODUCT"}</div>
+     <h3>${item.name||"-"}</h3>
+
+     <p>
+      ${isShop
+       ?`${enabled?"🟢 เปิดร้าน":"🔴 ปิดร้าน"}${item.description?` · ${item.description}`:""}`
+       :`${item.shop_name||item.shop_id||"ร้านค้า"} · ฿${Number(item.price||0).toLocaleString()}${enabled?"":" · ปิดขาย"}`
+      }
+     </p>
+
+     <div class="card-actions">
+      <a class="open-btn" href="${href}">${isShop?"เข้าร้าน":"ดูสินค้า"} →</a>
+      <button class="remove-btn" onclick="removeFavorite('${item.type}','${String(item.id)}')" title="นำออกจากรายการโปรด">♥</button>
+     </div>
+    </div>
+   </article>`;
+ }).join("");
+}
+
+function removeFavorite(type,id){
+ if(!window.DBTUI)return;
+
+ const item=DBTUI.favorites.all().find(
+  x=>x.type===type&&String(x.id)===String(id)
+ );
+
+ if(item){
+  DBTUI.favorites.toggle(item);
+  renderFavorites();
+ }
+}
+
+function setFilter(type,button){
+ filterType=type;
+ document.querySelectorAll(".tab").forEach(tab=>tab.classList.remove("active"));
+ button.classList.add("active");
+ renderFavorites();
+}
+
+window.addEventListener("dbt:favorites",renderFavorites);
+
+async function startFavorites(){
+ await loadReferenceData();
+ renderFavorites();
+}
+
+startFavorites();
+</script>
+<script src="app-pwa.js"></script>
+</body>
+</html>
