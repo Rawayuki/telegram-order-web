@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DBT Deploy Check</title>
+<style>
+body{font-family:Arial,sans-serif;padding:30px;background:#111827;color:white}
+.card{max-width:650px;margin:auto;background:#1f2937;padding:24px;border-radius:18px}
+.ok{color:#86efac}.bad{color:#fca5a5}code{background:#0f172a;padding:2px 6px;border-radius:6px}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🔧 DBT Deploy Check</h1>
+<p>หน้านี้มีไว้เช็กว่าไฟล์สำคัญถูก Deploy ขึ้น Render ครบหรือยัง</p>
+<div id="result">กำลังตรวจ...</div>
+</div>
+<script>
+const files=[
+ "theme.css",
+ "app-ui.js",
+ "rider-login.html",
+ "rider.html",
+ "shop.html",
+ "admin.html",
+ "manifest.webmanifest",
+ "sw.js"
+];
+
+(async()=>{
+ const out=[];
+ for(const file of files){
+  try{
+   const r=await fetch("./"+file,{cache:"no-store"});
+   out.push(`<p class="${r.ok?"ok":"bad"}">${r.ok?"✅":"❌"} <code>${file}</code> — HTTP ${r.status}</p>`);
+  }catch(e){
+   out.push(`<p class="bad">❌ <code>${file}</code> — โหลดไม่ได้</p>`);
+  }
+ }
+ document.getElementById("result").innerHTML=out.join("");
+})();
+</script>
+</body>
+</html>

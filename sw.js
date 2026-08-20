@@ -1,4 +1,4 @@
-const CACHE_NAME = "dbt-multi-shop-v7";
+const CACHE_NAME = "dbt-multi-shop-v8-hotfix";
 
 const APP_SHELL = [
   "./",
